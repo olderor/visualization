@@ -19,7 +19,7 @@ public:
     // Return T - minimum value.
     T get_minimum() {
         if (empty()) {
-            throw;
+            throw empty_exception;
         }
 
         T min = root->value;
@@ -256,7 +256,7 @@ public:
         root->value = other.root->value;
     }
 
-    // Insert the element to the bpq.
+    // Insert the element into the bpq.
     // Time efficiency O(1).
     void insert(const T value) {
         merge(bpq(value));
@@ -267,7 +267,7 @@ public:
     // Return T - minimum value.
     T get_min() {
         if (empty()) {
-            throw;
+            throw empty_exception;
         }
         return root->value;
     }
