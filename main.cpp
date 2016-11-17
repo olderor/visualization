@@ -1,23 +1,16 @@
 #include <iostream> 
-#include <fstream> 
-#include <vector>
-#include <algorithm>
-#include <queue>
 
-
-// insert O(1)
-// merge O(log n)
-// extract min O(log n)
-
-
-// binomial heap
-// used in implementation of priority queues
+// Binomial Heap
+// Used in implementation of priority queues
 template<class T>
 class binomial_heap {
 public:
-    // find minimum value in the heap.
-    // time efficiency O(log n).
-    // return T - minimum value.
+
+    binomial_heap() {}
+
+    // Find the minimum element in the heap.
+    // Time efficiency O(log n).
+    // Return T - minimum value.
     T get_minimum() {
         if (empty()) {
             throw;
@@ -26,7 +19,7 @@ public:
         T min = root->value;
         node *current = root->sibling;
         while (current) {
-            if (min > current->value) {
+            if (current->value < min) {
                 min = current->value;
             }
             current = current->sibling;
@@ -34,19 +27,31 @@ public:
         return min;
     }
 
+    // Insert the value into the heap.
+    // Time efficiency O(log n), O(1) - amortized time.
     void insert(T value) {
         root = binomial_heap::insert(root, value);
     }
 
-    void merge(binomial_heap other) {
+    // Union two different heaps into one.
+    // Time efficiency O(log n).
+    void union_heaps(binomial_heap other) {
         root = binomial_heap::union_heaps(root, other.root);
     }
 
-    // check if heap is empty.
-    // time efficiency O(1).
-    // return bool - true if heap is empty, false otherwise.
+    // Check if the heap is empty.
+    // Time efficiency O(1).
+    // Return bool - true if the heap is empty, false otherwise.
     bool empty() {
-        return size == 0;
+        return !root;
+    }
+
+    // Find and delete the minimum element from the heap
+    // Time efficiency O(log n).
+    T extract_min() {
+        std::pair<T, node*> res = binomial_heap::extract_min(root);
+        root = res.second;
+        return res.first;
     }
 private:
     struct node {
@@ -58,8 +63,8 @@ private:
     };
 
     node *root = nullptr;
-    int size = 0;
 
+    // Insert value into the node.
     static node *insert(node *h1, T value) {
         node *new_root = new node();
         new_root->value = value;
@@ -67,43 +72,53 @@ private:
         return h1;
     }
 
+    // Merge two nodes and return the root.
     static node *merge(node *h1, node *h2) {
-        node *new_root = new node();
+        if (!h1) {
+            return h2;
+        }
+        if (!h2) {
+            return h1;
+        }
+        node *new_root = nullptr;
         node *current_h1 = h1;
         node *current_h2 = h2;
-        if (!current_h1) {
-            return current_h2;
-        }
-        if (!current_h2) {
-            return current_h1;
-        }
+
         if (current_h1->degree <= current_h2->degree) {
             new_root = current_h1;
+            current_h1 = current_h1->sibling;
         } else {
             new_root = current_h2;
+            current_h2 = current_h2->sibling;
         }
+
+        node *tail = new_root;
         while (current_h1 && current_h2)
         {
-            if (current_h1->degree < current_h2->degree) {
+            if (current_h1->degree <= current_h2->degree) {
+                tail->sibling = current_h1;
                 current_h1 = current_h1->sibling;
-            } else if (current_h1->degree == current_h2->degree) {
-                node *temp = current_h1->sibling;
-                current_h1->sibling = current_h2;
-                current_h1 = temp;
-            } else
-            {
-                node *temp = current_h2->sibling;
-                current_h2->sibling = current_h1;
-                current_h2 = temp;
+            } else {
+                tail->sibling = current_h2;
+                current_h2 = current_h2->sibling;
             }
+            tail = tail->sibling;
         }
+
+        if (current_h1) {
+            tail->sibling = current_h1;
+        } else {
+            tail->sibling = current_h2;
+        }
+
         return new_root;
     }
 
+    // Union two different heaps into one and return the root.
     static node *union_heaps(node *h1, node *h2) {
         node *new_root = merge(h1, h2);
         if (!new_root) {
-            return new_root;
+            return nullptr;
         }
 
         node *prev = nullptr;
@@ -117,14 +132,14 @@ private:
                 current = next;
             } else if (current->value <= next->value) {
                 current->sibling = next->sibling;
-                link(next, current);
-            } else {
-                if (!prev) {
-                    new_root = next;
-                } else {
-                    prev->sibling = next;
-                }
                 link(current, next);
+            } else {
+                if (prev) {
+                    prev->sibling = next;
+                } else {
+                    new_root = next;
+                }
+                link(next, current);
                 current = next;
             }
             next = current->sibling;
@@ -132,40 +147,73 @@ private:
         return new_root;
     }
 
-    static void link(node *child, node *parent) {
+    static void link(node *parent, node *child) {
         child->parent = parent;
         child->sibling = parent->child;
         parent->child = child;
-        parent->degree = parent->degree + 1;
+        ++parent->degree;
+    }
+
+    // Extract the minimum element in the heap.
+    // Return the minimum element and new root of the heap.
+    static std::pair<T, node *> extract_min(node *root) {
+        if (!root) {
+            throw;
+        }
+        T min_value = root->value;
+        node *min_node = root;
+        node *min_prev = nullptr;
+        node *current = root->sibling;
+        node *prev = root;
+        while (current) {
+            if (current->value < min_value) {
+                min_value = current->value;
+                min_node = current;
+                min_prev = prev;
+            }
+            prev = current;
+            current = current->sibling;
+        }
+        node *new_root = root;
+        if (!min_prev) {
+            // node to remove is root.
+            new_root = min_node->sibling;
+        } else {
+            min_prev->sibling = min_node->sibling;
+        }
+
+        node *new_root2 = nullptr;
+        current = min_node->child;
+        while (current) {
+            node *temp = current->sibling;
+            current->sibling = new_root2;
+            current->parent = nullptr;
+            new_root2 = current;
+            current = temp;
+        }
+        new_root = union_heaps(new_root2, new_root);
+        return std::make_pair(min_value, new_root);
     }
 };
 
 template<class T>
 using priority_queue = binomial_heap<T>;
 
-struct bpq {
+
+template<class T>
+class bpq {
 public:
     bpq() {}
 
-    bpq(const bpq& other) {
-        if (!other.root) {
-            return;
-        }
-
+    explicit bpq(const T value) {
         root = new node();
-        root->value = other.root->value;
-        root->queue = other.root->queue;
+        root->value = value;
     }
 
-    explicit bpq(const int value) {
-        this->root = new node();
-        this->root->value = value;
-    }
-
-    bpq(const int value, std::priority_queue<bpq> &queue) {
-        this->root = new node();
-        this->root->value = value;
-        this->root->queue = std::priority_queue<bpq>(queue);
+    bpq(const T value, priority_queue<bpq> &queue) {
+        root = new node();
+        root->value = value;
+        root->queue = queue;
     }
 
     bool empty() {
@@ -181,22 +229,55 @@ public:
             return;
         }
         if (root->value < other.root->value) {
-            root->queue.push(other);
+            root->queue.insert(other);
             return;
         }
 
         bpq copy = bpq(root->value, root->queue);
 
         root->queue = other.root->queue;
-        root->queue.push(copy);
+        root->queue.insert(copy);
         root->value = other.root->value;
     }
 
-    void insert(const int value) {
+    void insert(const T value) {
         merge(bpq(value));
     }
 
+    T get_min() {
+        if (empty()) {
+            throw;
+        }
+        return root->value;
+    }
+
+    T extract_min() {
+        if (empty()) {
+            throw;
+        }
+        T min_value = root->value;
+        if (root->queue.empty()) {
+            root = nullptr;
+            return min_value;
+        }
+        priority_queue<bpq> new_queue(root->queue);
+        bpq min_bpq = new_queue.extract_min();
+        new_queue.union_heaps(min_bpq.root->queue);
+        root->value = min_bpq.root->value;
+        root->queue = new_queue;
+        return min_value;
+    }
+
     friend bool operator <(const bpq &q1, const bpq &q2) {
+        return q1.root->value < q2.root->value;
+    }
+    friend bool operator <=(const bpq &q1, const bpq &q2) {
+        return q1.root->value <= q2.root->value;
+    }
+    friend bool operator >(const bpq &q1, const bpq &q2) {
+        return q1.root->value > q2.root->value;
+    }
+    friend bool operator >=(const bpq &q1, const bpq &q2) {
         return q1.root->value > q2.root->value;
     }
 
@@ -210,186 +291,60 @@ public:
             return res;
         }
         if (bpq1.root->value < bpq2.root->value) {
-            std::priority_queue<bpq> new_queue = bpq1.root->queue;
-            new_queue.push(bpq2);
+            priority_queue<bpq> new_queue = bpq1.root->queue;
+            new_queue.insert(bpq2);
             return bpq(bpq1.root->value, new_queue);
         }
-        std::priority_queue<bpq> new_queue = bpq2.root->queue;
-        new_queue.push(bpq1);
+        priority_queue<bpq> new_queue = bpq2.root->queue;
+        new_queue.insert(bpq1);
         return bpq(bpq2.root->value, new_queue);
     }
 
-    static bpq insert(bpq &bpq1, const int value) {
+    static bpq insert(bpq &bpq1, const T value) {
         return merge(bpq1, bpq(value));
     }
 
-    static int get_min(bpq bpq1) {
+    static T get_min(bpq &bpq1) {
         if (bpq1.empty()) {
             throw;
         }
         return bpq1.root->value;
     }
 
-    static std::pair<int, bpq> extract_min(bpq bpq1) {
+    static std::pair<T, bpq> extract_min(bpq &bpq1) {
         if (bpq1.empty()) {
             throw;
         }
         if (bpq1.root->queue.empty()) {
             return std::make_pair(bpq1.root->value, bpq());
         }
-        bpq min_bpq = bpq1.root->queue.top();
-        std::priority_queue<bpq> new_queue(bpq1.root->queue);
-        new_queue.pop();
-        merge(min_bpq.root->queue, new_queue);
-        if (min_bpq.empty()) {
-            return std::make_pair(bpq1.root->value, bpq(min_bpq.root->value, new_queue));
-        }
+        priority_queue<bpq> new_queue(bpq1.root->queue);
+        bpq min_bpq = new_queue.extract_min();
+        new_queue.union_heaps(min_bpq.root->queue);
         return std::make_pair(bpq1.root->value, bpq(min_bpq.root->value, new_queue));
     }
 
 private:
     struct node {
-        int value;
-        std::priority_queue<bpq> queue;
+        T value;
+        priority_queue<bpq> queue;
     };
 
     node *root = nullptr;
-
-    static void merge(std::priority_queue<bpq> queue_from, std::priority_queue<bpq> &queue_to) {
-        while (!queue_from.empty()) {
-            queue_to.push(queue_from.top());
-            queue_from.pop();
-        }
-    }
 };
 
+template<class T>
+using brodal_priority_queue = bpq<T>;
 
 
-void test(bpq &q1) {
-    std::pair<int, bpq> p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
-
-    p = bpq::extract_min(q1);
-    std::cout << p.first << " ";
-    q1 = p.second;
+template<class T>
+void test(bpq<T> &q1) {
+    while (!q1.empty()) {
+        std::cout << q1.extract_min() << " ";
+    }
 }
 
-int main() {
-
-
-    bpq q1 = bpq();
-
+void insert(bpq<int> &q1) {
     q1.insert(3);
     q1.insert(2);
     q1.insert(1);
@@ -420,33 +375,28 @@ int main() {
     q1.insert(40);
     q1.insert(50);
     q1.insert(45);
+}
+int main() {
 
 
-    bpq q2 = bpq(q1);
-    q2.merge(q1);
+    bpq<int> q1 = bpq<int>();
+    insert(q1);
 
-    test(q1);
+
+    test<int>(q1);
     std::cout << '\n';
 
-    test(q2);
-    test(q2);
+
+    insert(q1);
+    bpq<int> q2 = bpq<int>();
+    insert(q2);
+    q1.merge(q2);
 
 
-    binomial_heap<int> bh = binomial_heap<int>();
+    test<int>(q1);
+    test<int>(q1);
+    std::cout << '\n';
 
-    bh.insert(4);
-    bh.insert(3);
-    bh.insert(5);
-    bh.insert(2);
-
-    bh.insert(4);
-    bh.insert(3);
-    bh.insert(5);
-    bh.insert(2);
-    bh.insert(1);
-    bh.insert(3);
-    bh.insert(5);
-    bh.insert(2);
 
     return 0;
 }
