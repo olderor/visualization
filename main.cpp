@@ -210,7 +210,7 @@ using priority_queue = binomial_heap<T>;
 
 // Brodal's and Okasaki's Priority Queue (bpq)
 // Heap/priority queue structure with very low worst case time bounds.
-// Based on data-structural bootstrapping.
+// Based on binomial heaps and the idea of data-structural bootstrapping.
 template<class T>
 class bpq {
 public:
