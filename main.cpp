@@ -3,7 +3,7 @@
 
 class empty_exception : public std::exception {
     virtual const char* what() const throw() {
-        return "Trying to extract number from empty structure.";
+        return "Trying to extract number from an empty structure.";
     }
 } empty_exception;
 
