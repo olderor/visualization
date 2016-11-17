@@ -1,11 +1,17 @@
 #include <iostream> 
+#include <exception>
+
+class empty_exception : public std::exception {
+    virtual const char* what() const throw() {
+        return "Trying to extract number from empty structure.";
+    }
+} empty_exception;
 
 // Binomial Heap
 // Used in implementation of priority queues
 template<class T>
 class binomial_heap {
 public:
-
     binomial_heap() {}
 
     // Find the minimum element in the heap.
@@ -48,11 +54,13 @@ public:
 
     // Find and delete the minimum element from the heap
     // Time efficiency O(log n).
+    // Return T - minimum value, that was removed.
     T extract_min() {
-        std::pair<T, node*> res = binomial_heap::extract_min(root);
+        const std::pair<T, node*> res = binomial_heap::extract_min(root);
         root = res.second;
         return res.first;
     }
+
 private:
     struct node {
         T value;
@@ -158,7 +166,7 @@ private:
     // Return the minimum element and new root of the heap.
     static std::pair<T, node *> extract_min(node *root) {
         if (!root) {
-            throw;
+            throw empty_exception;
         }
         T min_value = root->value;
         node *min_node = root;
@@ -200,6 +208,9 @@ template<class T>
 using priority_queue = binomial_heap<T>;
 
 
+// Brodal's and Okasaki's Priority Queue (bpq)
+// Heap/priority queue structure with very low worst case time bounds.
+// Based on data-structural bootstrapping.
 template<class T>
 class bpq {
 public:
@@ -216,10 +227,15 @@ public:
         root->queue = queue;
     }
 
+    // Check if the heap is empty.
+    // Time efficiency O(1).
+    // Return bool - true if the heap is empty, false otherwise.
     bool empty() {
         return !root;
     }
 
+    // Insert all elements from the other bpq.
+    // Time efficiency O(1).
     void merge(bpq &other) {
         if (empty()) {
             root = other.root;
@@ -233,17 +249,22 @@ public:
             return;
         }
 
-        bpq copy = bpq(root->value, root->queue);
+        const bpq copy = bpq(root->value, root->queue);
 
         root->queue = other.root->queue;
         root->queue.insert(copy);
         root->value = other.root->value;
     }
 
+    // Insert the element to the bpq.
+    // Time efficiency O(1).
     void insert(const T value) {
         merge(bpq(value));
     }
 
+    // Find the minimum value in the bpq.
+    // Time efficiency O(1).
+    // Return T - minimum value.
     T get_min() {
         if (empty()) {
             throw;
@@ -251,17 +272,20 @@ public:
         return root->value;
     }
 
+    // Find and delete the minimum value in the bpq.
+    // Time efficiency O(log n).
+    // Return T - minimum value, that was removed.
     T extract_min() {
         if (empty()) {
-            throw;
+            throw empty_exception;
         }
-        T min_value = root->value;
+        const T min_value = root->value;
         if (root->queue.empty()) {
             root = nullptr;
             return min_value;
         }
         priority_queue<bpq> new_queue(root->queue);
-        bpq min_bpq = new_queue.extract_min();
+        const bpq min_bpq = new_queue.extract_min();
         new_queue.union_heaps(min_bpq.root->queue);
         root->value = min_bpq.root->value;
         root->queue = new_queue;
@@ -281,45 +305,57 @@ public:
         return q1.root->value > q2.root->value;
     }
 
+    // Merge two bpq.
+    // Time efficiency O(1).
+    // Return bpq - new bpq, the result of the merging.
     static bpq merge(bpq &bpq1, bpq &bpq2) {
         if (bpq1.empty()) {
-            bpq res = bpq(bpq2);
-            return res;
+            return bpq(bpq2);
         }
         if (bpq2.empty()) {
-            bpq res = bpq(bpq1);
-            return res;
+            return bpq(bpq1);
         }
         if (bpq1.root->value < bpq2.root->value) {
-            priority_queue<bpq> new_queue = bpq1.root->queue;
+            const priority_queue<bpq> new_queue = bpq1.root->queue;
             new_queue.insert(bpq2);
             return bpq(bpq1.root->value, new_queue);
         }
-        priority_queue<bpq> new_queue = bpq2.root->queue;
+        const priority_queue<bpq> new_queue = bpq2.root->queue;
         new_queue.insert(bpq1);
         return bpq(bpq2.root->value, new_queue);
     }
 
+    // Insert the element into the bpq.
+    // Time efficiency O(1).
+    // Return bpq - new bpq, the result of the inserting.
     static bpq insert(bpq &bpq1, const T value) {
         return merge(bpq1, bpq(value));
     }
 
+    // Find the minimum value in the bpq.
+    // Time efficiency O(1).
+    // Return T - minimum value.
     static T get_min(bpq &bpq1) {
         if (bpq1.empty()) {
-            throw;
+            throw empty_exception;
         }
         return bpq1.root->value;
     }
 
+    // Find and delete the minimum value in the bpq.
+    // Time efficiency O(log n).
+    // Return pair<T, bpq>:
+    // T - minimum value, that was removed.
+    // bpq - new bpq, the result of the removing.
     static std::pair<T, bpq> extract_min(bpq &bpq1) {
         if (bpq1.empty()) {
-            throw;
+            throw empty_exception;
         }
         if (bpq1.root->queue.empty()) {
             return std::make_pair(bpq1.root->value, bpq());
         }
-        priority_queue<bpq> new_queue(bpq1.root->queue);
-        bpq min_bpq = new_queue.extract_min();
+        const priority_queue<bpq> new_queue(bpq1.root->queue);
+        const bpq min_bpq = new_queue.extract_min();
         new_queue.union_heaps(min_bpq.root->queue);
         return std::make_pair(bpq1.root->value, bpq(min_bpq.root->value, new_queue));
     }
@@ -335,6 +371,20 @@ private:
 
 template<class T>
 using brodal_priority_queue = bpq<T>;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 template<class T>
@@ -396,7 +446,8 @@ int main() {
     test<int>(q1);
     test<int>(q1);
     std::cout << '\n';
-
+    int a;
+    std::cin >> a;
 
     return 0;
 }
