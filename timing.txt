@@ -1,0 +1,104 @@
+
+insert1
+pq: 0
+bpq: 0
+
+extract_min
+pq: 0
+bpq: 0
+
+insert2 100
+pq: 1
+bpq: 0
+
+extract_min
+pq: 1
+bpq: 0
+
+insert3 100
+pq: 1
+bpq: 0
+
+extract_min
+pq: 1
+bpq: 0
+
+insert4 100
+pq: 0
+bpq: 0
+
+extract_min
+pq: 1
+bpq: 0
+
+insert5 100
+pq: 0
+bpq: 0
+
+extract_min
+pq: 1
+bpq: 0
+
+insert2 10000
+pq: 56
+bpq: 10
+
+extract_min
+pq: 2916
+bpq: 6
+
+insert3 10000
+pq: 53
+bpq: 8
+
+extract_min
+pq: 2822
+bpq: 10
+
+insert4 10000
+pq: 66
+bpq: 10
+
+extract_min
+pq: 2863
+bpq: 6
+
+insert5 10000
+pq: 59
+bpq: 13
+
+extract_min
+pq: 2852
+bpq: 18
+
+insert2 100000
+pq: 583
+bpq: 117
+
+extract_min
+pq: 275185
+bpq: 70
+
+insert3 100000
+pq: 534
+bpq: 85
+
+extract_min
+pq: 276416
+bpq: 107
+
+insert4 100000
+pq: 709
+bpq: 101
+
+extract_min
+pq: 276001
+bpq: 64
+
+insert5 100000
+pq: 612
+bpq: 137
+
+extract_min
+pq: 276455
+bpq: 259
