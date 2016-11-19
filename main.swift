@@ -4,15 +4,15 @@ enum StructError: Error {
     case outOfElements
 }
 
-class Node<Element> {
+class HeapNode<Element> {
     var value: Element
     var degree: Int
-    var parent: Node<Element>?
-    var child: Node<Element>?
-    var sibling: Node<Element>?
+    var parent: HeapNode<Element>?
+    var child: HeapNode<Element>?
+    var sibling: HeapNode<Element>?
     
-    init(value: Element, degree: Int, parent: Node<Element>?,
-         child: Node<Element>?, sibling: Node<Element>?) {
+    init(value: Element, degree: Int, parent: HeapNode<Element>?,
+         child: HeapNode<Element>?, sibling: HeapNode<Element>?) {
         self.value = value
         self.degree = degree
         self.parent = parent
@@ -23,10 +23,10 @@ class Node<Element> {
 
 class BinomialHeap<Element: Comparable> {
     
-    private var root: Node<Element>?
+    private var root: HeapNode<Element>?
     
-    init() {
-        
+    var empty: Bool {
+        return root == nil
     }
     
     var minimum: Element? {
@@ -52,10 +52,6 @@ class BinomialHeap<Element: Comparable> {
         root = BinomialHeap.union(firstNode: root, secondNode: otherHeap.root)
     }
     
-    var empty: Bool {
-        return root == nil
-    }
-    
     func extractMin() -> Element? {
         if empty {
             return nil
@@ -65,7 +61,7 @@ class BinomialHeap<Element: Comparable> {
         return result.minElement
     }
     
-    private static func merge(firstNode: Node<Element>!, secondNode: Node<Element>!) -> Node<Element>? {
+    private static func merge(firstNode: HeapNode<Element>!, secondNode: HeapNode<Element>!) -> HeapNode<Element>? {
         
         if firstNode == nil {
             return secondNode
@@ -75,7 +71,7 @@ class BinomialHeap<Element: Comparable> {
             return firstNode
         }
         
-        var newRoot: Node<Element>!
+        var newRoot: HeapNode<Element>!
         var currentFirst = firstNode
         var currentSecond = secondNode
         
@@ -108,22 +104,22 @@ class BinomialHeap<Element: Comparable> {
         return newRoot
     }
     
-    private static func link(parent: Node<Element>, child: Node<Element>) {
+    private static func link(parent: HeapNode<Element>, child: HeapNode<Element>) {
         child.parent = parent
         child.sibling = parent.child
         parent.child = child
         parent.degree += 1
     }
     
-    private static func union(firstNode: Node<Element>?, secondNode:
-        Node<Element>?) -> Node<Element>? {
+    private static func union(firstNode: HeapNode<Element>?, secondNode:
+        HeapNode<Element>?) -> HeapNode<Element>? {
         var newRoot = merge(firstNode: firstNode, secondNode: secondNode)
         if newRoot == nil {
             return nil
         }
         
         var currentNode = newRoot!
-        var previousNode: Node<Element>?
+        var previousNode: HeapNode<Element>?
         var nextNode = currentNode.sibling
         
         while nextNode != nil {
@@ -150,16 +146,16 @@ class BinomialHeap<Element: Comparable> {
         return newRoot
     }
     
-    private static func insert(node: Node<Element>?, element: Element) -> Node<Element>? {
-        let elementNode = Node(value: element, degree: 0, parent: nil, child: nil, sibling: nil)
+    private static func insert(node: HeapNode<Element>?, element: Element) -> HeapNode<Element>? {
+        let elementNode = HeapNode(value: element, degree: 0, parent: nil, child: nil, sibling: nil)
         return union(firstNode: node, secondNode: elementNode)
     }
     
-    private static func extractMin(root: Node<Element>) ->
-        (minElement: Element, newRoot: Node<Element>?) {
+    private static func extractMin(root: HeapNode<Element>) ->
+        (minElement: Element, newRoot: HeapNode<Element>?) {
             var minValue = root.value
             var minNode = root
-            var minPreviousNode: Node<Element>!
+            var minPreviousNode: HeapNode<Element>!
             var current = root.sibling
             var previous = root
             
@@ -173,7 +169,7 @@ class BinomialHeap<Element: Comparable> {
                 current = current!.sibling
             }
             
-            var newRoot: Node<Element>? = root
+            var newRoot: HeapNode<Element>? = root
             if minPreviousNode == nil {
                 newRoot = minNode.sibling
             } else {
@@ -181,7 +177,7 @@ class BinomialHeap<Element: Comparable> {
             }
             
             
-            var newRoot2: Node<Element>?
+            var newRoot2: HeapNode<Element>?
             current = minNode.child
             while current != nil {
                 let tempNode = current!.sibling
@@ -198,52 +194,213 @@ class BinomialHeap<Element: Comparable> {
 
 
 
-func insert(heap: BinomialHeap<Int>) {
-    heap.insert(element: 3);
-    heap.insert(element: 2);
-    heap.insert(element: 1);
-    heap.insert(element: 4);
-    heap.insert(element: 5);
-    heap.insert(element: 0);
-    heap.insert(element: 3);
-    heap.insert(element: 2);
-    heap.insert(element: 1);
-    heap.insert(element: 4);
-    heap.insert(element: 5);
-    heap.insert(element: 0);
-    heap.insert(element: 3);
-    heap.insert(element: 2);
-    heap.insert(element: 1);
-    heap.insert(element: 4);
-    heap.insert(element: 5);
-    heap.insert(element: 0);
-    heap.insert(element: 3);
-    heap.insert(element: 2);
-    heap.insert(element: 1);
-    heap.insert(element: 4);
-    heap.insert(element: 5);
-    heap.insert(element: 0);
-    heap.insert(element: -1);
-    heap.insert(element: -100);
-    heap.insert(element: -20);
-    heap.insert(element: 40);
-    heap.insert(element: 50);
-    heap.insert(element: 45);
+
+
+
+
+
+
+
+class BPQNode<Element: Comparable> {
+    var value: Element
+    var queue: BinomialHeap<BrodalPriorityQueue<Element>>
+    
+    init(value: Element) {
+        self.value = value
+        queue = BinomialHeap<BrodalPriorityQueue<Element>>()
+    }
+    
+    init(value: Element, queue: BinomialHeap<BrodalPriorityQueue<Element>>) {
+        self.value = value
+        self.queue = queue
+    }
 }
 
-func test(heap: BinomialHeap<Int>) {
-    print("printing:")
-    while !heap.empty {
-        print(heap.extractMin()!)
+class BrodalPriorityQueue<Element: Comparable> : Comparable {
+    
+    private var root: BPQNode<Element>?
+    
+    var empty: Bool {
+        return root == nil
+    }
+    
+    var minimum: Element? {
+        if empty {
+            return nil
+        }
+        return root!.value
+    }
+    
+    //MARK: - Initialization
+    
+    init() {
+    
+    }
+    
+    init(value: Element) {
+        root = BPQNode(value: value)
+    }
+    
+    init(value: Element, queue: BinomialHeap<BrodalPriorityQueue<Element>>) {
+        root = BPQNode(value: value, queue: queue)
+    }
+    
+    func merge(other: BrodalPriorityQueue) {
+        if empty {
+            root = other.root
+            return
+        }
+        if other.empty {
+            return
+        }
+        
+        if root!.value < other.root!.value {
+            root!.queue.insert(element: other)
+            return
+        }
+        
+        let selfCopy = BrodalPriorityQueue<Element>(value: root!.value, queue: root!.queue)
+        root!.queue = other.root!.queue
+        root!.queue.insert(element: selfCopy)
+        root!.value = other.root!.value
+    }
+    
+    func insert(element: Element) {
+        merge(other: BrodalPriorityQueue(value: element))
+    }
+    
+    func extractMin() -> Element? {
+        if empty {
+            return nil
+        }
+        
+        let minElement = root!.value
+        if root!.queue.empty {
+            root = nil
+            return minElement
+        }
+        
+        if let minRoot = root!.queue.extractMin()?.root {
+            root!.queue.merge(otherHeap: minRoot.queue)
+            root!.value = minRoot.value
+        }
+        
+        return minElement
+    }
+    
+    //MARK: - Comparable
+    
+    static func <(lhs: BrodalPriorityQueue, rhs: BrodalPriorityQueue) -> Bool {
+        if lhs.root == nil {
+            return rhs.root != nil
+        }
+        if rhs.root == nil {
+            return false
+        }
+        return lhs.root!.value < rhs.root!.value
+    }
+    
+    static func <=(lhs: BrodalPriorityQueue, rhs: BrodalPriorityQueue) -> Bool {
+        if lhs.root == nil {
+            return true
+        }
+        if rhs.root == nil {
+            return false
+        }
+        return lhs.root!.value <= rhs.root!.value
+    }
+    
+    static func >=(lhs: BrodalPriorityQueue, rhs: BrodalPriorityQueue) -> Bool {
+        if lhs.root == nil {
+            return rhs.root == nil
+        }
+        if rhs.root == nil {
+            return true
+        }
+        return lhs.root!.value >= rhs.root!.value
+    }
+    
+    static func >(lhs: BrodalPriorityQueue, rhs: BrodalPriorityQueue) -> Bool {
+        if lhs.root == nil {
+            return false
+        }
+        if rhs.root == nil {
+            return true
+        }
+        return lhs.root!.value > rhs.root!.value
+    }
+    
+    //MARK: - Equatable
+    
+    static func ==(lhs: BrodalPriorityQueue, rhs: BrodalPriorityQueue) -> Bool {
+        return lhs.root?.value == rhs.root?.value
     }
 }
 
 
 
-var heap = BinomialHeap<Int>()
-insert(heap: heap)
 
 
+
+
+
+
+
+
+
+
+
+func insert(queue: BrodalPriorityQueue<Int>) {
+    queue.insert(element: 3);
+    queue.insert(element: 2);
+    queue.insert(element: 1);
+    queue.insert(element: 4);
+    queue.insert(element: 5);
+    queue.insert(element: 0);
+    queue.insert(element: 3);
+    queue.insert(element: 2);
+    queue.insert(element: 1);
+    queue.insert(element: 4);
+    queue.insert(element: 5);
+    queue.insert(element: 0);
+    queue.insert(element: 3);
+    queue.insert(element: 2);
+    queue.insert(element: 1);
+    queue.insert(element: 4);
+    queue.insert(element: 5);
+    queue.insert(element: 0);
+    queue.insert(element: 3);
+    queue.insert(element: 2);
+    queue.insert(element: 1);
+    queue.insert(element: 4);
+    queue.insert(element: 5);
+    queue.insert(element: 0);
+    queue.insert(element: -1);
+    queue.insert(element: -100);
+    queue.insert(element: -20);
+    queue.insert(element: 40);
+    queue.insert(element: 50);
+    queue.insert(element: 45);
+}
+
+func test(queue: BrodalPriorityQueue<Int>) {
+    print("printing:")
+    while !queue.empty {
+        print(queue.extractMin()!)
+    }
+}
+
+
+var queue = BrodalPriorityQueue<Int>()
+insert(queue: queue)
+
+
+var queue2 = BrodalPriorityQueue<Int>()
+insert(queue: queue2)
+queue.merge(other: queue2)
+insert(queue: queue)
+test(queue: queue)
+print("done")
 
 
 
