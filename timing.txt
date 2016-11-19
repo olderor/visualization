@@ -102,3 +102,67 @@ bpq: 137
 extract_min
 pq: 276455
 bpq: 259
+
+insert2 10
+pq: 0
+bpq: 0
+
+extract_min
+pq: 0
+bpq: 0
+
+insert3 10
+pq: 0
+bpq: 0
+
+extract_min
+pq: 0
+bpq: 0
+
+insert4 10
+pq: 1
+bpq: 0
+
+extract_min
+pq: 0
+bpq: 0
+
+insert5 10
+pq: 0
+bpq: 0
+
+extract_min
+pq: 0
+bpq: 0
+
+insert2 1000
+pq: 6
+bpq: 1
+
+extract_min
+pq: 53
+bpq: 1
+
+insert3 1000
+pq: 8
+bpq: 1
+
+extract_min
+pq: 45
+bpq: 1
+
+insert4 1000
+pq: 7
+bpq: 1
+
+extract_min
+pq: 35
+bpq: 1
+
+insert5 1000
+pq: 7
+bpq: 1
+
+extract_min
+pq: 42
+bpq: 2
