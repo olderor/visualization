@@ -166,3 +166,27 @@ bpq: 1
 extract_min
 pq: 42
 bpq: 2
+
+insert2 1000000
+bpq: 1057
+
+extract_min
+bpq: 635
+
+insert3 1000000
+bpq: 891
+
+extract_min
+bpq: 1170
+
+insert4 1000000
+bpq: 1014
+
+extract_min
+bpq: 651
+
+insert5 1000000
+bpq: 1321
+
+extract_min
+bpq: 3476
