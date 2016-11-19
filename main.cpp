@@ -6,6 +6,12 @@
 #include <ctime>
 #include <iomanip>
 #include <functional>
+#include <memory>
+#ifdef _DEBUG
+#include <crtdbg.h>
+#define _CRTDBG_MAP_ALLOC
+#endif
+
 
 class empty_exception : public std::exception {
     virtual const char* what() const throw() {
@@ -19,7 +25,6 @@ template<class T>
 class binomial_heap {
 public:
     binomial_heap() {}
-
     // Find the minimum element in the heap.
     // Time efficiency O(log n).
     // Return T - minimum value.
@@ -29,7 +34,7 @@ public:
         }
 
         T min = root->value;
-        node *current = root->sibling;
+        std::shared_ptr<node> current = root->sibling;
         while (current) {
             if (current->value < min) {
                 min = current->value;
@@ -62,7 +67,7 @@ public:
     // Time efficiency O(log n).
     // Return T - minimum value, that was removed.
     T extract_min() {
-        const std::pair<T, node*> res = binomial_heap::extract_min(root);
+        const std::pair<T, std::shared_ptr<node>> res = binomial_heap::extract_min(root);
         root = res.second;
         return res.first;
     }
@@ -71,32 +76,36 @@ private:
     struct node {
         T value;
         int degree = 0;
-        node *parent = nullptr;
-        node *child = nullptr;
-        node *sibling = nullptr;
+        std::shared_ptr<node> parent = nullptr;
+        std::shared_ptr<node> child = nullptr;
+        std::shared_ptr<node> sibling = nullptr;
+        ~node() {
+            parent = nullptr;
+            child = nullptr;
+            sibling = nullptr;
+        }
     };
 
-    node *root = nullptr;
+    std::shared_ptr<node> root = nullptr;
 
     // Insert value into the node.
-    static node *insert(node *h1, T value) {
-        node *new_root = new node();
+    static std::shared_ptr<node> insert(std::shared_ptr<node> h1, T value) {
+        std::shared_ptr<node> new_root = std::make_shared<node>(node());
         new_root->value = value;
-        h1 = union_heaps(h1, new_root);
-        return h1;
+        return union_heaps(h1, new_root);
     }
 
     // Merge two nodes and return the root.
-    static node *merge(node *h1, node *h2) {
+    static std::shared_ptr<node> merge(std::shared_ptr<node> h1, std::shared_ptr<node> h2) {
         if (!h1) {
             return h2;
         }
         if (!h2) {
             return h1;
         }
-        node *new_root = nullptr;
-        node *current_h1 = h1;
-        node *current_h2 = h2;
+        std::shared_ptr<node> new_root = nullptr;
+        std::shared_ptr<node> current_h1 = h1;
+        std::shared_ptr<node> current_h2 = h2;
 
         if (current_h1->degree <= current_h2->degree) {
             new_root = current_h1;
@@ -106,7 +115,7 @@ private:
             current_h2 = current_h2->sibling;
         }
 
-        node *tail = new_root;
+        std::shared_ptr<node> tail = new_root;
         while (current_h1 && current_h2)
         {
             if (current_h1->degree <= current_h2->degree) {
@@ -129,15 +138,15 @@ private:
     }
 
     // Union two different heaps into one and return the root.
-    static node *union_heaps(node *h1, node *h2) {
-        node *new_root = merge(h1, h2);
+    static std::shared_ptr<node> union_heaps(std::shared_ptr<node> h1, std::shared_ptr<node> h2) {
+        std::shared_ptr<node> new_root = merge(h1, h2);
         if (!new_root) {
             return nullptr;
         }
 
-        node *prev = nullptr;
-        node *next = new_root->sibling;
-        node *current = new_root;
+        std::shared_ptr<node> prev = nullptr;
+        std::shared_ptr<node> next = new_root->sibling;
+        std::shared_ptr<node> current = new_root;
         while (next)
         {
             if ((current->degree != next->degree) || (next->sibling
@@ -161,7 +170,7 @@ private:
         return new_root;
     }
 
-    static void link(node *parent, node *child) {
+    static void link(std::shared_ptr<node> parent, std::shared_ptr<node> child) {
         child->parent = parent;
         child->sibling = parent->child;
         parent->child = child;
@@ -170,15 +179,15 @@ private:
 
     // Extract the minimum element in the heap.
     // Return the minimum element and new root of the heap.
-    static std::pair<T, node *> extract_min(node *root) {
+    static std::pair<T, std::shared_ptr<node> > extract_min(std::shared_ptr<node> root) {
         if (!root) {
             throw empty_exception;
         }
         T min_value = root->value;
-        node *min_node = root;
-        node *min_prev = nullptr;
-        node *current = root->sibling;
-        node *prev = root;
+        std::shared_ptr<node> min_node = root;
+        std::shared_ptr<node> min_prev = nullptr;
+        std::shared_ptr<node> current = root->sibling;
+        std::shared_ptr<node> prev = root;
         while (current) {
             if (current->value < min_value) {
                 min_value = current->value;
@@ -188,7 +197,7 @@ private:
             prev = current;
             current = current->sibling;
         }
-        node *new_root = root;
+        std::shared_ptr<node> new_root = root;
         if (!min_prev) {
             // node to remove is root.
             new_root = min_node->sibling;
@@ -196,10 +205,10 @@ private:
             min_prev->sibling = min_node->sibling;
         }
 
-        node *new_root2 = nullptr;
+        std::shared_ptr<node> new_root2 = nullptr;
         current = min_node->child;
         while (current) {
-            node *temp = current->sibling;
+            std::shared_ptr<node> temp = current->sibling;
             current->sibling = new_root2;
             current->parent = nullptr;
             new_root2 = current;
@@ -221,14 +230,13 @@ template<class T>
 class bpq {
 public:
     bpq() {}
-
     explicit bpq(const T value) {
-        root = new node();
+        root = std::make_shared<node>(node());
         root->value = value;
     }
 
     bpq(const T value, priority_queue<bpq> &queue) {
-        root = new node();
+        root = std::make_shared<node>(node());
         root->value = value;
         root->queue = queue;
     }
@@ -372,7 +380,7 @@ private:
         priority_queue<bpq> queue;
     };
 
-    node *root = nullptr;
+    std::shared_ptr<node> root = nullptr;
 };
 
 template<class T>
@@ -430,7 +438,7 @@ void insert1(bpq<int> &q1) {
     q1.insert(5);
     q1.insert(0);
     q1.insert(-1);
-    q1.insert(-100);
+    q1.insert(-10000000);
     q1.insert(-20);
     q1.insert(40);
     q1.insert(50);
@@ -457,6 +465,11 @@ void insert5(bpq<int> &q1, std::vector<int> &numbers) {
     }
 }
 
+void insert6(bpq<int> &q1, const int n) {
+    for (int i = 0; i < n; ++i) {
+        q1.insert(rand());
+    }
+}
 
 
 
@@ -486,7 +499,7 @@ void insert1(std::priority_queue<int, std::vector<int>, std::greater<int> > &q1)
     q1.push(5);
     q1.push(0);
     q1.push(-1);
-    q1.push(-100);
+    q1.push(-10000000);
     q1.push(-20);
     q1.push(40);
     q1.push(50);
@@ -521,81 +534,88 @@ std::vector<int> generate(const int n) {
     return numbers;
 }
 
-int main() {
+
+
+
+
+
+
+void testAll(const int n) {
+
 
     std::ofstream cout("timing.txt", std::ios::app);
 
-    std::priority_queue<int, std::vector<int>, std::greater<int> > queue;
     bpq<int> bpq;
 
     clock_t begin, end;
 
 
-    
+
     // 2
-    cout << "\ninsert2 100000\n";
-    begin = clock();
-    insert2(queue, 100000);
+    cout << "\ninsert2 " << n << "\n";
+    /*begin = clock();
+    insert2(queue, 1000000);
     end = clock();
-    cout << "pq: " << end - begin << '\n';
+    cout << "pq: " << end - begin << '\n';*/
     begin = clock();
-    insert2(bpq, 100000);
+    insert2(bpq, n);
     end = clock();
     cout << "bpq: " << end - begin << '\n';
 
-    cout << "\nextract_min\n";
-    begin = clock();
-    test(queue);
-    end = clock();
-    cout << "pq: " << end - begin << '\n';
+    cout << "\nextract_min\n";/*
+                              begin = clock();
+                              test(queue);
+                              end = clock();
+                              cout << "pq: " << end - begin << '\n';*/
     begin = clock();
     test(bpq);
     end = clock();
     cout << "bpq: " << end - begin << '\n';
 
 
-
+    std::cout << "test #2 - done\n";
 
     // 3
-    cout << "\ninsert3 100000\n";
+    cout << "\ninsert3 " << n << "\n";/*
+                                  begin = clock();
+                                  insert3(queue, 1000000);
+                                  end = clock();
+                                  cout << "pq: " << end - begin << '\n';*/
     begin = clock();
-    insert3(queue, 100000);
-    end = clock();
-    cout << "pq: " << end - begin << '\n';
-    begin = clock();
-    insert3(bpq, 100000);
+    insert3(bpq, n);
     end = clock();
     cout << "bpq: " << end - begin << '\n';
 
-    cout << "\nextract_min\n";
-    begin = clock();
-    test(queue);
-    end = clock();
-    cout << "pq: " << end - begin << '\n';
+    cout << "\nextract_min\n";/*
+                              begin = clock();
+                              test(queue);
+                              end = clock();
+                              cout << "pq: " << end - begin << '\n';*/
     begin = clock();
     test(bpq);
     end = clock();
     cout << "bpq: " << end - begin << '\n';
 
 
+    std::cout << "test #3 - done\n";
 
 
     // 4
-    cout << "\ninsert4 100000\n";
+    cout << "\ninsert4 " << n << "\n";/*
+                                  begin = clock();
+                                  insert4(queue, 1000000);
+                                  end = clock();
+                                  cout << "pq: " << end - begin << '\n';*/
     begin = clock();
-    insert4(queue, 100000);
-    end = clock();
-    cout << "pq: " << end - begin << '\n';
-    begin = clock();
-    insert4(bpq, 100000);
+    insert4(bpq, n);
     end = clock();
     cout << "bpq: " << end - begin << '\n';
 
-    cout << "\nextract_min\n";
-    begin = clock();
-    test(queue);
-    end = clock();
-    cout << "pq: " << end - begin << '\n';
+    cout << "\nextract_min\n";/*
+                              begin = clock();
+                              test(queue);
+                              end = clock();
+                              cout << "pq: " << end - begin << '\n';*/
     begin = clock();
     test(bpq);
     end = clock();
@@ -603,33 +623,56 @@ int main() {
 
 
 
-
-
+    std::cout << "test #4 - done\n";
 
     // 5
-    std::vector<int> numbers = generate(100000);
-    cout << "\ninsert5 100000\n";
+    cout << "\ninsert5 " << n << "\n";
+    /*
     begin = clock();
-    insert5(queue, numbers);
+    insert4(queue, 1000000);
     end = clock();
-    cout << "pq: " << end - begin << '\n';
+    cout << "pq: " << end - begin << '\n';*/
     begin = clock();
-    insert5(bpq, numbers);
+    insert6(bpq, n);
     end = clock();
     cout << "bpq: " << end - begin << '\n';
 
     cout << "\nextract_min\n";
+    /*
     begin = clock();
     test(queue);
     end = clock();
-    cout << "pq: " << end - begin << '\n';
+    cout << "pq: " << end - begin << '\n';*/
     begin = clock();
     test(bpq);
     end = clock();
     cout << "bpq: " << end - begin << '\n';
 
-    
+
+
+    std::cout << "test #5 - done\n";
+
     cout.close();
+}
+
+
+void foo() {
+
+    binomial_heap<int> bh;
+    bh.insert(1);
+}
+
+int main() {
+
+    //std::cout << "testing #1\n";
+    //testAll(1000000);
+    //std::cout << "testing #2\n";
+    //testAll(2000000);
+    std::cout << "testing #3\n";
+    testAll(100);
+    _CrtDumpMemoryLeaks();
+    //std::cout << "testing #4\n";
+    //testAll(4000000);
 
     return 0;
 }
