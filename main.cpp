@@ -1,9 +1,15 @@
 #include <iostream> 
+#include <fstream> 
 #include <exception>
+#include <vector>
+#include <queue>
+#include <ctime>
+#include <iomanip>
+#include <functional>
 
 class empty_exception : public std::exception {
     virtual const char* what() const throw() {
-        return "Trying to extract number from an empty structure.";
+        return "Trying to extract number from empty structure.";
     }
 } empty_exception;
 
@@ -210,7 +216,7 @@ using priority_queue = binomial_heap<T>;
 
 // Brodal's and Okasaki's Priority Queue (bpq)
 // Heap/priority queue structure with very low worst case time bounds.
-// Based on binomial heaps and the idea of data-structural bootstrapping.
+// Based on data-structural bootstrapping.
 template<class T>
 class bpq {
 public:
@@ -387,14 +393,18 @@ using brodal_priority_queue = bpq<T>;
 
 
 
-template<class T>
-void test(bpq<T> &q1) {
+void test(bpq<int> &q1) {
     while (!q1.empty()) {
-        std::cout << q1.extract_min() << " ";
+        q1.extract_min();
+    }
+}
+void test(std::priority_queue<int, std::vector<int>, std::greater<int> > &q1) {
+    while (!q1.empty()) {
+        q1.pop();
     }
 }
 
-void insert(bpq<int> &q1) {
+void insert1(bpq<int> &q1) {
     q1.insert(3);
     q1.insert(2);
     q1.insert(1);
@@ -426,28 +436,200 @@ void insert(bpq<int> &q1) {
     q1.insert(50);
     q1.insert(45);
 }
+void insert2(bpq<int> &q1, const int n) {
+    for (int i = 0; i < n; ++i) {
+        q1.insert(0);
+    }
+}
+void insert3(bpq<int> &q1, const int n) {
+    for (int i = 0; i < n; ++i) {
+        q1.insert(i);
+    }
+}
+void insert4(bpq<int> &q1, const int n) {
+    for (int i = 0; i < n; ++i) {
+        q1.insert(-i);
+    }
+}
+void insert5(bpq<int> &q1, std::vector<int> &numbers) {
+    for (int i = 0; i < numbers.size(); ++i) {
+        q1.insert(numbers[i]);
+    }
+}
+
+
+
+
+void insert1(std::priority_queue<int, std::vector<int>, std::greater<int> > &q1) {
+    q1.push(3);
+    q1.push(2);
+    q1.push(1);
+    q1.push(4);
+    q1.push(5);
+    q1.push(0);
+    q1.push(3);
+    q1.push(2);
+    q1.push(1);
+    q1.push(4);
+    q1.push(5);
+    q1.push(0);
+    q1.push(3);
+    q1.push(2);
+    q1.push(1);
+    q1.push(4);
+    q1.push(5);
+    q1.push(0);
+    q1.push(3);
+    q1.push(2);
+    q1.push(1);
+    q1.push(4);
+    q1.push(5);
+    q1.push(0);
+    q1.push(-1);
+    q1.push(-100);
+    q1.push(-20);
+    q1.push(40);
+    q1.push(50);
+    q1.push(45);
+}
+void insert2(std::priority_queue<int, std::vector<int>, std::greater<int> > &q1, const int n) {
+    for (int i = 0; i < n; ++i) {
+        q1.push(0);
+    }
+}
+void insert3(std::priority_queue<int, std::vector<int>, std::greater<int> > &q1, const int n) {
+    for (int i = 0; i < n; ++i) {
+        q1.push(i);
+    }
+}
+void insert4(std::priority_queue<int, std::vector<int>, std::greater<int> > &q1, const int n) {
+    for (int i = 0; i < n; ++i) {
+        q1.push(-i);
+    }
+}
+void insert5(std::priority_queue<int, std::vector<int>, std::greater<int> > &q1, std::vector<int> &numbers) {
+    for (int i = 0; i < numbers.size(); ++i) {
+        q1.push(numbers[i]);
+    }
+}
+
+std::vector<int> generate(const int n) {
+    std::vector<int> numbers;
+    for (int i = 0; i < n; ++i) {
+        numbers.push_back(rand());
+    }
+    return numbers;
+}
+
 int main() {
 
+    std::ofstream cout("timing.txt", std::ios::app);
 
-    bpq<int> q1 = bpq<int>();
-    insert(q1);
+    std::priority_queue<int, std::vector<int>, std::greater<int> > queue;
+    bpq<int> bpq;
 
-
-    test<int>(q1);
-    std::cout << '\n';
-
-
-    insert(q1);
-    bpq<int> q2 = bpq<int>();
-    insert(q2);
-    q1.merge(q2);
+    clock_t begin, end;
 
 
-    test<int>(q1);
-    test<int>(q1);
-    std::cout << '\n';
-    int a;
-    std::cin >> a;
+    
+    // 2
+    cout << "\ninsert2 100000\n";
+    begin = clock();
+    insert2(queue, 100000);
+    end = clock();
+    cout << "pq: " << end - begin << '\n';
+    begin = clock();
+    insert2(bpq, 100000);
+    end = clock();
+    cout << "bpq: " << end - begin << '\n';
+
+    cout << "\nextract_min\n";
+    begin = clock();
+    test(queue);
+    end = clock();
+    cout << "pq: " << end - begin << '\n';
+    begin = clock();
+    test(bpq);
+    end = clock();
+    cout << "bpq: " << end - begin << '\n';
+
+
+
+
+    // 3
+    cout << "\ninsert3 100000\n";
+    begin = clock();
+    insert3(queue, 100000);
+    end = clock();
+    cout << "pq: " << end - begin << '\n';
+    begin = clock();
+    insert3(bpq, 100000);
+    end = clock();
+    cout << "bpq: " << end - begin << '\n';
+
+    cout << "\nextract_min\n";
+    begin = clock();
+    test(queue);
+    end = clock();
+    cout << "pq: " << end - begin << '\n';
+    begin = clock();
+    test(bpq);
+    end = clock();
+    cout << "bpq: " << end - begin << '\n';
+
+
+
+
+    // 4
+    cout << "\ninsert4 100000\n";
+    begin = clock();
+    insert4(queue, 100000);
+    end = clock();
+    cout << "pq: " << end - begin << '\n';
+    begin = clock();
+    insert4(bpq, 100000);
+    end = clock();
+    cout << "bpq: " << end - begin << '\n';
+
+    cout << "\nextract_min\n";
+    begin = clock();
+    test(queue);
+    end = clock();
+    cout << "pq: " << end - begin << '\n';
+    begin = clock();
+    test(bpq);
+    end = clock();
+    cout << "bpq: " << end - begin << '\n';
+
+
+
+
+
+
+    // 5
+    std::vector<int> numbers = generate(100000);
+    cout << "\ninsert5 100000\n";
+    begin = clock();
+    insert5(queue, numbers);
+    end = clock();
+    cout << "pq: " << end - begin << '\n';
+    begin = clock();
+    insert5(bpq, numbers);
+    end = clock();
+    cout << "bpq: " << end - begin << '\n';
+
+    cout << "\nextract_min\n";
+    begin = clock();
+    test(queue);
+    end = clock();
+    cout << "pq: " << end - begin << '\n';
+    begin = clock();
+    test(bpq);
+    end = clock();
+    cout << "bpq: " << end - begin << '\n';
+
+    
+    cout.close();
 
     return 0;
 }
