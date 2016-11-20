@@ -1,5 +1,7 @@
 //: Playground - noun: a place where people can play
 
+import Foundation
+
 enum StructError: Error {
     case outOfElements
 }
@@ -338,6 +340,25 @@ class BrodalPriorityQueue<Element: Comparable> : Comparable {
 }
 
 
+extension UInt64 {
+    var beautifulString: String {
+        if self == 0 {
+            return "0"
+        }
+        var result = ""
+        var value = self
+        var count = -1
+        while value != 0 {
+            if count % 3 == 2 {
+                result = " " + result
+            }
+            result = "\(value % 10)" + result
+            value /= 10
+            count += 1
+        }
+        return result
+    }
+}
 
 
 
@@ -349,26 +370,7 @@ class BrodalPriorityQueue<Element: Comparable> : Comparable {
 
 
 
-
-func insert(queue: BrodalPriorityQueue<Int>) {
-    queue.insert(element: 3);
-    queue.insert(element: 2);
-    queue.insert(element: 1);
-    queue.insert(element: 4);
-    queue.insert(element: 5);
-    queue.insert(element: 0);
-    queue.insert(element: 3);
-    queue.insert(element: 2);
-    queue.insert(element: 1);
-    queue.insert(element: 4);
-    queue.insert(element: 5);
-    queue.insert(element: 0);
-    queue.insert(element: 3);
-    queue.insert(element: 2);
-    queue.insert(element: 1);
-    queue.insert(element: 4);
-    queue.insert(element: 5);
-    queue.insert(element: 0);
+func insert0(queue: BrodalPriorityQueue<Int>) {
     queue.insert(element: 3);
     queue.insert(element: 2);
     queue.insert(element: 1);
@@ -383,24 +385,73 @@ func insert(queue: BrodalPriorityQueue<Int>) {
     queue.insert(element: 45);
 }
 
-func test(queue: BrodalPriorityQueue<Int>) {
-    print("printing:")
-    while !queue.empty {
-        print(queue.extractMin()!)
+func insert1(queue: BrodalPriorityQueue<Int>, size: Int) {
+    for _ in 0..<size {
+        queue.insert(element: 0)
     }
 }
 
+func insert2(queue: BrodalPriorityQueue<Int>, size: Int) {
+    for i in 0..<size {
+        queue.insert(element: i)
+    }
+}
 
-var queue = BrodalPriorityQueue<Int>()
-insert(queue: queue)
+func insert3(queue: BrodalPriorityQueue<Int>, size: Int) {
+    for i in 0..<size {
+        queue.insert(element: -i)
+    }
+}
 
+func insert4(queue: BrodalPriorityQueue<UInt32>, size: Int) {
+    for _ in 0..<size {
+        queue.insert(element: arc4random())
+    }
+}
 
-var queue2 = BrodalPriorityQueue<Int>()
-insert(queue: queue2)
-queue.merge(other: queue2)
-insert(queue: queue)
-test(queue: queue)
-print("done")
+func extractMins<Element>(queue: BrodalPriorityQueue<Element>) {
+    while !queue.empty {
+        queue.extractMin()!
+    }
+}
+
+func test1() {
+    let queue = BrodalPriorityQueue<Int>()
+    insert1(queue: queue, size: 1000)
+    extractMins(queue: queue)
+    print("done #1")
+}
+func test2() {
+    let queue = BrodalPriorityQueue<Int>()
+    insert2(queue: queue, size: 1000)
+    extractMins(queue: queue)
+    print("done #2")
+}
+func test3() {
+    let queue = BrodalPriorityQueue<Int>()
+    insert3(queue: queue, size: 1000)
+    extractMins(queue: queue)
+    print("done #3")
+}
+func test4() {
+    let queue = BrodalPriorityQueue<UInt32>()
+    insert4(queue: queue, size: 1000)
+    extractMins(queue: queue)
+    print("done #4")
+}
+
+func getTime(closure: () -> ()) {
+    let start = DispatchTime.now()
+    closure()
+    let end = DispatchTime.now()
+    let interval = end.uptimeNanoseconds - start.uptimeNanoseconds
+    print("elapsed within \(interval.beautifulString) nanosecs")
+}
+
+getTime(closure: test1)
+getTime(closure: test2)
+getTime(closure: test3)
+getTime(closure: test4)
 
 
 
