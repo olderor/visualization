@@ -58,13 +58,13 @@ public:
     int size() const {
         return elements_count;
     }
-    
+
     bool empty() const {
         return elements_count == 0;
     }
-    
+
     void push(const T &value) {
-        insert_singleton(new tree(value, 0));
+        insert_singleton(std::make_shared<tree>(tree(value, 0)));
         ++elements_count;
     }
 
@@ -80,7 +80,7 @@ public:
 
     void pop() {
         int index = find_min_index();
-        tree *tree_to_remove = trees[index];
+        std::shared_ptr<tree> tree_to_remove = trees[index];
         trees.erase(trees.begin() + index);
 
         merge_heaps(trees, tree_to_remove->childrens);
@@ -91,13 +91,12 @@ public:
         }
 
         --elements_count;
-        delete tree_to_remove;
     }
 private:
     struct tree {
         int order;
-        std::deque<tree*> childrens;
-        std::deque<tree*> singletons;
+        std::deque<std::shared_ptr<tree>> childrens;
+        std::deque<std::shared_ptr<tree>> singletons;
         T value;
 
         tree(const T &value, int order) : value(value), order(order) {
@@ -105,15 +104,15 @@ private:
         }
     };
 
-    std::deque<tree*> trees;
+    std::deque<std::shared_ptr<tree>> trees;
     int elements_count = 0;
 
-    tree* clone_tree(const tree* tree_to_clone) {
+    std::shared_ptr<tree> clone_tree(const std::shared_ptr<tree> tree_to_clone) {
         if (!tree_to_clone) {
             return nullptr;
         }
 
-        tree* result = new tree(tree_to_clone->value, tree_to_clone->order);
+        std::shared_ptr<tree> result = std::make_shared<tree>(tree(tree_to_clone->value, tree_to_clone->order));
 
         for (int i = 0; i < tree_to_clone->childrens.size(); ++i) {
             result->childrens.push_back(clone_tree(tree_to_clone->childrens[i]));
@@ -125,18 +124,18 @@ private:
         return result;
     }
 
-    void insert_singleton(tree *singleton) {
+    void insert_singleton(std::shared_ptr<tree> singleton) {
         if (!(trees.size() >= 2 && trees[0]->order == trees[1]->order)) {
             trees.push_front(singleton);
             return;
         }
 
-        tree *first = trees.front();
+        std::shared_ptr<tree> first = trees.front();
         trees.pop_front();
-        tree *second = trees.front();
+        std::shared_ptr<tree> second = trees.front();
         trees.pop_front();
 
-        tree *new_tree = merge(first, second);
+        std::shared_ptr<tree> new_tree = merge(first, second);
         if (singleton->value < new_tree->value) {
             std::swap(singleton->value, new_tree->value);
         }
@@ -145,7 +144,7 @@ private:
         trees.push_front(new_tree);
     }
 
-    tree* merge(tree *first, tree *second) {
+    std::shared_ptr<tree> merge(std::shared_ptr<tree> first, std::shared_ptr<tree> second) {
 
         if (second->value < first->value) {
             std::swap(first, second);
@@ -156,8 +155,8 @@ private:
         return first;
     }
 
-    void merge_heaps(std::deque<tree*> &first, std::deque<tree*> &second) {
-        std::deque<tree*> result;
+    void merge_heaps(std::deque<std::shared_ptr<tree>> &first, std::deque<std::shared_ptr<tree>> &second) {
+        std::deque<std::shared_ptr<tree>> result;
         while (!first.empty() && !second.empty()) {
             if (first.front()->order < second.front()->order) {
                 result.push_back(first.front());
@@ -175,10 +174,10 @@ private:
             result.push_back(second.front());
             second.pop_front();
         }
-        
+
 
         while (!result.empty()) {
-            std::deque<tree*> trees_with_same_order;
+            std::deque<std::shared_ptr<tree>> trees_with_same_order;
             trees_with_same_order.push_back(result.front());
             result.pop_front();
 
@@ -194,9 +193,9 @@ private:
             }
 
             while (!trees_with_same_order.empty()) {
-                tree *first_tree = trees_with_same_order.front();
+                std::shared_ptr<tree> first_tree = trees_with_same_order.front();
                 trees_with_same_order.pop_front();
-                tree *second_tree = trees_with_same_order.front();
+                std::shared_ptr<tree> second_tree = trees_with_same_order.front();
                 trees_with_same_order.pop_front();
 
                 first.push_front(merge(first_tree, second_tree));
@@ -444,12 +443,12 @@ class bpq {
 public:
     bpq() {}
     explicit bpq(const T value) {
-        root = new node();
+        root = std::make_shared<node>(node());
         root->value = value;
     }
 
     bpq(const T value, priority_queue<bpq> &queue) {
-        root = new node();
+        root = std::make_shared<node>(node());
         root->value = value;
         root->queue = queue;
     }
@@ -595,7 +594,7 @@ private:
         priority_queue<bpq> queue;
     };
 
-    node *root = nullptr;
+    std::shared_ptr<node> root = nullptr;
 };
 
 template<class T>
@@ -616,10 +615,23 @@ using brodal_priority_queue = bpq<T>;
 
 
 
-void test(bpq<int> &q1) {
+std::pair<int, int> test(bpq<int> &q1) {
+    clock_t t1 = 0, t2 = 0;
+
     while (!q1.empty()) {
+        clock_t begin, end;
+        begin = clock();
+        q1.top();
+        end = clock();
+        t1 += end - begin;
+
+        begin = clock();
         q1.pop();
+        end = clock();
+        t2 += end - begin;
     }
+
+    return std::make_pair(t1, t2);
 }
 void test(std::priority_queue<int, std::vector<int>, std::greater<int> > &q1) {
     while (!q1.empty()) {
@@ -758,26 +770,24 @@ std::vector<int> generate(const int n) {
 void testAll(const int n) {
 
 
-    std::ofstream cout("timing2.txt", std::ios::app);
+    std::ofstream cout("timing3.txt", std::ios::app);
 
     bpq<int> bpq;
 
     clock_t begin, end;
-
-
 
     // 1
     cout << "\ninsert1 " << n << "\n";
     begin = clock();
     insert2(bpq, n);
     end = clock();
-    cout << "skew_priority_queue: " << end - begin << '\n';
+    cout << "bpq: " << end - begin << '\n';
 
     cout << "\npop\n";
     begin = clock();
     test(bpq);
     end = clock();
-    cout << "skew_priority_queue: " << end - begin << '\n';
+    cout << "bpq: " << end - begin << '\n';
 
 
     std::cout << "test #1 - done\n";
@@ -787,14 +797,14 @@ void testAll(const int n) {
     begin = clock();
     insert3(bpq, n);
     end = clock();
-    cout << "skew_priority_queue: " << end - begin << '\n';
+    cout << "bpq: " << end - begin << '\n';
 
     cout << "\npop\n";
 
     begin = clock();
     test(bpq);
     end = clock();
-    cout << "skew_priority_queue: " << end - begin << '\n';
+    cout << "bpq: " << end - begin << '\n';
 
 
     std::cout << "test #2 - done\n";
@@ -805,14 +815,14 @@ void testAll(const int n) {
     begin = clock();
     insert4(bpq, n);
     end = clock();
-    cout << "skew_priority_queue: " << end - begin << '\n';
+    cout << "bpq: " << end - begin << '\n';
 
     cout << "\npop\n";
 
     begin = clock();
     test(bpq);
     end = clock();
-    cout << "skew_priority_queue: " << end - begin << '\n';
+    cout << "bpq: " << end - begin << '\n';
 
 
 
@@ -823,18 +833,65 @@ void testAll(const int n) {
     begin = clock();
     insert6(bpq, n);
     end = clock();
-    cout << "skew_priority_queue: " << end - begin << '\n';
+    cout << "bpq: " << end - begin << '\n';
 
     cout << "\npop\n";
     begin = clock();
     test(bpq);
     end = clock();
-    cout << "skew_priority_queue: " << end - begin << '\n';
+    cout << "bpq: " << end - begin << '\n';
     std::cout << "test #4 - done\n";
 
     cout.close();
 }
 
+
+void test_merge(int n) {
+
+    std::ofstream cout("timing3.txt", std::ios::app);
+    
+    clock_t begin, end;
+
+    bpq<int> q1;
+    bpq<int> q2;
+    cout << "\ninsert4 " << n << "\n";
+    begin = clock();
+    insert6(q1, n);
+    end = clock();
+    cout << "bpq: " << end - begin << '\n';
+
+    cout << "\ninsert4 " << n << "\n";
+    begin = clock();
+    insert6(q2, n);
+    end = clock();
+    cout << "bpq: " << end - begin << '\n';
+
+    cout << "\nmerge " << n << "\n";
+    begin = clock();
+    q1.merge(q2);
+    end = clock();
+    cout << "bpq: " << end - begin << '\n';
+
+
+    std::cout << "insert merge done\n";
+
+    cout << "\ntop" << n << "\n";
+    std::pair<int, int> res = test(q2);
+    cout << "bpq: " << res.first << '\n';
+    cout << "\npop" << n << "\n";
+    cout << "bpq: " << res.second << '\n';
+
+    std::cout << "first pop done\n";
+
+    cout << "\ntop" << n + n << "\n";
+    res = test(q1);
+    cout << "bpq: " << res.first << '\n';
+    cout << "\npop" << n + n << "\n";
+    cout << "bpq: " << res.second << '\n';
+
+    std::cout << "second pop done\n";
+
+}
 
 void console_test(int n) {
 
@@ -889,11 +946,19 @@ int main() {
     /*
     int s = 1000;
     for (int i = 0; i < 10; ++i, s += 1000) {
-        std::cout << "testing #" << i + 1 << '\n';
-        testAll(s);
+    std::cout << "testing #" << i + 1 << '\n';
+    testAll(s);
     }*/
 
-    console_test(10);
+    _CrtDumpMemoryLeaks();
+
+
+    
+    int s = 1000;
+    for (int i = 0; i < 10; ++i, s += 1000) {
+        test_merge(s);
+        std::cout << "test " << i + 1 << "done\n";
+    }
 
     return 0;
 }
