@@ -7,6 +7,8 @@
 #include <iomanip>
 #include <functional>
 #include <memory>
+#include <deque>
+
 #ifdef _DEBUG
 #include <crtdbg.h>
 #define _CRTDBG_MAP_ALLOC
@@ -19,12 +21,226 @@ class empty_exception : public std::exception {
     }
 } empty_exception;
 
+
+
+
+
+
+
+// Skew Binomial Heap
+// Used in implementation of priority queues
+// Insert worst-case time O(1)
+template<class T>
+class skew_binomial_heap {
+public:
+
+    skew_binomial_heap() {}
+
+    skew_binomial_heap(const skew_binomial_heap& rhs) {
+        for (int i = 0; i < rhs.trees.size(); ++i) {
+            trees.push_back(clone_tree(rhs.trees[i]));
+        }
+        elements_count = rhs.elements_count;
+    }
+
+
+    skew_binomial_heap<T>& operator= (const skew_binomial_heap& rhs) {
+        skew_binomial_heap copy = rhs;
+        swap(copy);
+        return *this;
+    }
+
+    void swap(skew_binomial_heap& rhs) {
+        std::swap(elements_count, rhs.elements_count);
+        trees.swap(rhs.trees);
+    }
+
+    int size() const {
+        return elements_count;
+    }
+    
+    bool empty() const {
+        return elements_count == 0;
+    }
+    
+    void push(const T &value) {
+        insert_singleton(new tree(value, 0));
+        ++elements_count;
+    }
+
+    T top() {
+        return trees[find_min_index()]->value;
+    }
+
+    void merge(skew_binomial_heap<T> &other) {
+        merge_heaps(trees, other.trees);
+        elements_count += other.elements_count;
+        other.elements_count = 0;
+    }
+
+    void pop() {
+        int index = find_min_index();
+        tree *tree_to_remove = trees[index];
+        trees.erase(trees.begin() + index);
+
+        merge_heaps(trees, tree_to_remove->childrens);
+
+        while (!tree_to_remove->singletons.empty()) {
+            insert_singleton(tree_to_remove->singletons.front());
+            tree_to_remove->singletons.pop_front();
+        }
+
+        --elements_count;
+        delete tree_to_remove;
+    }
+private:
+    struct tree {
+        int order;
+        std::deque<tree*> childrens;
+        std::deque<tree*> singletons;
+        T value;
+
+        tree(const T &value, int order) : value(value), order(order) {
+
+        }
+    };
+
+    std::deque<tree*> trees;
+    int elements_count = 0;
+
+    tree* clone_tree(const tree* tree_to_clone) {
+        if (!tree_to_clone) {
+            return nullptr;
+        }
+
+        tree* result = new tree(tree_to_clone->value, tree_to_clone->order);
+
+        for (int i = 0; i < tree_to_clone->childrens.size(); ++i) {
+            result->childrens.push_back(clone_tree(tree_to_clone->childrens[i]));
+        }
+        for (int i = 0; i < tree_to_clone->singletons.size(); ++i) {
+            result->singletons.push_back(clone_tree(tree_to_clone->singletons[i]));
+        }
+
+        return result;
+    }
+
+    void insert_singleton(tree *singleton) {
+        if (!(trees.size() >= 2 && trees[0]->order == trees[1]->order)) {
+            trees.push_front(singleton);
+            return;
+        }
+
+        tree *first = trees.front();
+        trees.pop_front();
+        tree *second = trees.front();
+        trees.pop_front();
+
+        tree *new_tree = merge(first, second);
+        if (singleton->value < new_tree->value) {
+            std::swap(singleton->value, new_tree->value);
+        }
+
+        new_tree->singletons.push_back(singleton);
+        trees.push_front(new_tree);
+    }
+
+    tree* merge(tree *first, tree *second) {
+
+        if (second->value < first->value) {
+            std::swap(first, second);
+        }
+
+        first->childrens.push_back(second);
+        ++first->order;
+        return first;
+    }
+
+    void merge_heaps(std::deque<tree*> &first, std::deque<tree*> &second) {
+        std::deque<tree*> result;
+        while (!first.empty() && !second.empty()) {
+            if (first.front()->order < second.front()->order) {
+                result.push_back(first.front());
+                first.pop_front();
+            } else {
+                result.push_back(second.front());
+                second.pop_front();
+            }
+        }
+        while (!first.empty()) {
+            result.push_back(first.front());
+            first.pop_front();
+        }
+        while (!second.empty()) {
+            result.push_back(second.front());
+            second.pop_front();
+        }
+        
+
+        while (!result.empty()) {
+            std::deque<tree*> trees_with_same_order;
+            trees_with_same_order.push_back(result.front());
+            result.pop_front();
+
+            while (!result.empty() &&
+                result.front()->order == trees_with_same_order.front()->order) {
+                trees_with_same_order.push_back(result.front());
+                result.pop_front();
+            }
+
+            if (trees_with_same_order.size() % 2 == 1) {
+                first.push_back(trees_with_same_order.front());
+                trees_with_same_order.pop_front();
+            }
+
+            while (!trees_with_same_order.empty()) {
+                tree *first_tree = trees_with_same_order.front();
+                trees_with_same_order.pop_front();
+                tree *second_tree = trees_with_same_order.front();
+                trees_with_same_order.pop_front();
+
+                first.push_front(merge(first_tree, second_tree));
+            }
+        }
+    }
+
+    int find_min_index() {
+        int index = 0;
+        for (int i = 1; i < trees.size(); ++i) {
+            if (trees[i]->value < trees[index]->value) {
+                index = i;
+            }
+        }
+        return index;
+    }
+};
+
+
+template<class T>
+using priority_queue = skew_binomial_heap<T>;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Binomial Heap
 // Used in implementation of priority queues
 template<class T>
 class binomial_heap {
 public:
     binomial_heap() {}
+
     // Find the minimum element in the heap.
     // Time efficiency O(log n).
     // Return T - minimum value.
@@ -34,7 +250,7 @@ public:
         }
 
         T min = root->value;
-        std::shared_ptr<node> current = root->sibling;
+        node *current = root->sibling;
         while (current) {
             if (current->value < min) {
                 min = current->value;
@@ -76,36 +292,31 @@ private:
     struct node {
         T value;
         int degree = 0;
-        std::shared_ptr<node> parent = nullptr;
-        std::shared_ptr<node> child = nullptr;
-        std::shared_ptr<node> sibling = nullptr;
-        ~node() {
-            parent = nullptr;
-            child = nullptr;
-            sibling = nullptr;
-        }
+        node *parent = nullptr;
+        node *child = nullptr;
+        node *sibling = nullptr;
     };
 
-    std::shared_ptr<node> root = nullptr;
+    node *root = nullptr;
 
     // Insert value into the node.
-    static std::shared_ptr<node> insert(std::shared_ptr<node> h1, T value) {
-        std::shared_ptr<node> new_root = std::make_shared<node>(node());
+    static node *insert(node *h1, T value) {
+        node *new_root = std::make_shared<node>(node());
         new_root->value = value;
         return union_heaps(h1, new_root);
     }
 
     // Merge two nodes and return the root.
-    static std::shared_ptr<node> merge(std::shared_ptr<node> h1, std::shared_ptr<node> h2) {
+    static node *merge(node *h1, node *h2) {
         if (!h1) {
             return h2;
         }
         if (!h2) {
             return h1;
         }
-        std::shared_ptr<node> new_root = nullptr;
-        std::shared_ptr<node> current_h1 = h1;
-        std::shared_ptr<node> current_h2 = h2;
+        node *new_root = nullptr;
+        node *current_h1 = h1;
+        node *current_h2 = h2;
 
         if (current_h1->degree <= current_h2->degree) {
             new_root = current_h1;
@@ -115,7 +326,7 @@ private:
             current_h2 = current_h2->sibling;
         }
 
-        std::shared_ptr<node> tail = new_root;
+        node *tail = new_root;
         while (current_h1 && current_h2)
         {
             if (current_h1->degree <= current_h2->degree) {
@@ -138,15 +349,15 @@ private:
     }
 
     // Union two different heaps into one and return the root.
-    static std::shared_ptr<node> union_heaps(std::shared_ptr<node> h1, std::shared_ptr<node> h2) {
-        std::shared_ptr<node> new_root = merge(h1, h2);
+    static node *union_heaps(node *h1, node *h2) {
+        node *new_root = merge(h1, h2);
         if (!new_root) {
             return nullptr;
         }
 
-        std::shared_ptr<node> prev = nullptr;
-        std::shared_ptr<node> next = new_root->sibling;
-        std::shared_ptr<node> current = new_root;
+        node *prev = nullptr;
+        node *next = new_root->sibling;
+        node *current = new_root;
         while (next)
         {
             if ((current->degree != next->degree) || (next->sibling
@@ -170,7 +381,7 @@ private:
         return new_root;
     }
 
-    static void link(std::shared_ptr<node> parent, std::shared_ptr<node> child) {
+    static void link(node *parent, node *child) {
         child->parent = parent;
         child->sibling = parent->child;
         parent->child = child;
@@ -179,15 +390,15 @@ private:
 
     // Extract the minimum element in the heap.
     // Return the minimum element and new root of the heap.
-    static std::pair<T, std::shared_ptr<node> > extract_min(std::shared_ptr<node> root) {
+    static std::pair<T, node *> extract_min(node *root) {
         if (!root) {
             throw empty_exception;
         }
         T min_value = root->value;
-        std::shared_ptr<node> min_node = root;
-        std::shared_ptr<node> min_prev = nullptr;
-        std::shared_ptr<node> current = root->sibling;
-        std::shared_ptr<node> prev = root;
+        node *min_node = root;
+        node *min_prev = nullptr;
+        node *current = root->sibling;
+        node *prev = root;
         while (current) {
             if (current->value < min_value) {
                 min_value = current->value;
@@ -197,7 +408,7 @@ private:
             prev = current;
             current = current->sibling;
         }
-        std::shared_ptr<node> new_root = root;
+        node *new_root = root;
         if (!min_prev) {
             // node to remove is root.
             new_root = min_node->sibling;
@@ -205,10 +416,10 @@ private:
             min_prev->sibling = min_node->sibling;
         }
 
-        std::shared_ptr<node> new_root2 = nullptr;
+        node *new_root2 = nullptr;
         current = min_node->child;
         while (current) {
-            std::shared_ptr<node> temp = current->sibling;
+            node *temp = current->sibling;
             current->sibling = new_root2;
             current->parent = nullptr;
             new_root2 = current;
@@ -220,7 +431,9 @@ private:
 };
 
 template<class T>
-using priority_queue = binomial_heap<T>;
+using priority_queue2 = binomial_heap<T>;
+
+
 
 
 // Brodal's and Okasaki's Priority Queue (bpq)
@@ -231,12 +444,12 @@ class bpq {
 public:
     bpq() {}
     explicit bpq(const T value) {
-        root = std::make_shared<node>(node());
+        root = new node();
         root->value = value;
     }
 
     bpq(const T value, priority_queue<bpq> &queue) {
-        root = std::make_shared<node>(node());
+        root = new node();
         root->value = value;
         root->queue = queue;
     }
@@ -259,27 +472,27 @@ public:
             return;
         }
         if (root->value < other.root->value) {
-            root->queue.insert(other);
+            root->queue.push(other);
             return;
         }
 
         const bpq copy = bpq(root->value, root->queue);
 
         root->queue = other.root->queue;
-        root->queue.insert(copy);
+        root->queue.push(copy);
         root->value = other.root->value;
     }
 
     // Insert the element into the bpq.
     // Time efficiency O(1).
-    void insert(const T value) {
+    void push(const T value) {
         merge(bpq(value));
     }
 
     // Find the minimum value in the bpq.
     // Time efficiency O(1).
     // Return T - minimum value.
-    T get_min() {
+    T top() {
         if (empty()) {
             throw empty_exception;
         }
@@ -289,7 +502,7 @@ public:
     // Find and delete the minimum value in the bpq.
     // Time efficiency O(log n).
     // Return T - minimum value, that was removed.
-    T extract_min() {
+    T pop() {
         if (empty()) {
             throw empty_exception;
         }
@@ -298,9 +511,11 @@ public:
             root = nullptr;
             return min_value;
         }
+
         priority_queue<bpq> new_queue(root->queue);
-        const bpq min_bpq = new_queue.extract_min();
-        new_queue.union_heaps(min_bpq.root->queue);
+        const bpq min_bpq = new_queue.top();
+        new_queue.pop();
+        new_queue.merge(min_bpq.root->queue);
         root->value = min_bpq.root->value;
         root->queue = new_queue;
         return min_value;
@@ -380,7 +595,7 @@ private:
         priority_queue<bpq> queue;
     };
 
-    std::shared_ptr<node> root = nullptr;
+    node *root = nullptr;
 };
 
 template<class T>
@@ -403,7 +618,7 @@ using brodal_priority_queue = bpq<T>;
 
 void test(bpq<int> &q1) {
     while (!q1.empty()) {
-        q1.extract_min();
+        q1.pop();
     }
 }
 void test(std::priority_queue<int, std::vector<int>, std::greater<int> > &q1) {
@@ -413,61 +628,61 @@ void test(std::priority_queue<int, std::vector<int>, std::greater<int> > &q1) {
 }
 
 void insert1(bpq<int> &q1) {
-    q1.insert(3);
-    q1.insert(2);
-    q1.insert(1);
-    q1.insert(4);
-    q1.insert(5);
-    q1.insert(0);
-    q1.insert(3);
-    q1.insert(2);
-    q1.insert(1);
-    q1.insert(4);
-    q1.insert(5);
-    q1.insert(0);
-    q1.insert(3);
-    q1.insert(2);
-    q1.insert(1);
-    q1.insert(4);
-    q1.insert(5);
-    q1.insert(0);
-    q1.insert(3);
-    q1.insert(2);
-    q1.insert(1);
-    q1.insert(4);
-    q1.insert(5);
-    q1.insert(0);
-    q1.insert(-1);
-    q1.insert(-10000000);
-    q1.insert(-20);
-    q1.insert(40);
-    q1.insert(50);
-    q1.insert(45);
+    q1.push(3);
+    q1.push(2);
+    q1.push(1);
+    q1.push(4);
+    q1.push(5);
+    q1.push(0);
+    q1.push(3);
+    q1.push(2);
+    q1.push(1);
+    q1.push(4);
+    q1.push(5);
+    q1.push(0);
+    q1.push(3);
+    q1.push(2);
+    q1.push(1);
+    q1.push(4);
+    q1.push(5);
+    q1.push(0);
+    q1.push(3);
+    q1.push(2);
+    q1.push(1);
+    q1.push(4);
+    q1.push(5);
+    q1.push(0);
+    q1.push(-1);
+    q1.push(-10000000);
+    q1.push(-20);
+    q1.push(40);
+    q1.push(50);
+    q1.push(45);
 }
 void insert2(bpq<int> &q1, const int n) {
     for (int i = 0; i < n; ++i) {
-        q1.insert(0);
+        q1.push(0);
     }
 }
 void insert3(bpq<int> &q1, const int n) {
     for (int i = 0; i < n; ++i) {
-        q1.insert(i);
+        q1.push(i);
     }
 }
 void insert4(bpq<int> &q1, const int n) {
     for (int i = 0; i < n; ++i) {
-        q1.insert(-i);
+        q1.push(-i);
     }
 }
 void insert5(bpq<int> &q1, std::vector<int> &numbers) {
     for (int i = 0; i < numbers.size(); ++i) {
-        q1.insert(numbers[i]);
+        q1.push(numbers[i]);
     }
 }
 
 void insert6(bpq<int> &q1, const int n) {
     for (int i = 0; i < n; ++i) {
-        q1.insert(rand());
+        q1.push(rand());
     }
 }
 
@@ -543,7 +758,7 @@ std::vector<int> generate(const int n) {
 void testAll(const int n) {
 
 
-    std::ofstream cout("timing.txt", std::ios::app);
+    std::ofstream cout("timing2.txt", std::ios::app);
 
     bpq<int> bpq;
 
@@ -551,128 +766,134 @@ void testAll(const int n) {
 
 
 
-    // 2
-    cout << "\ninsert2 " << n << "\n";
-    /*begin = clock();
-    insert2(queue, 1000000);
-    end = clock();
-    cout << "pq: " << end - begin << '\n';*/
+    // 1
+    cout << "\ninsert1 " << n << "\n";
     begin = clock();
     insert2(bpq, n);
     end = clock();
-    cout << "bpq: " << end - begin << '\n';
+    cout << "skew_priority_queue: " << end - begin << '\n';
 
-    cout << "\nextract_min\n";/*
-                              begin = clock();
-                              test(queue);
-                              end = clock();
-                              cout << "pq: " << end - begin << '\n';*/
+    cout << "\npop\n";
     begin = clock();
     test(bpq);
     end = clock();
-    cout << "bpq: " << end - begin << '\n';
+    cout << "skew_priority_queue: " << end - begin << '\n';
+
+
+    std::cout << "test #1 - done\n";
+
+    // 2
+    cout << "\ninsert2 " << n << "\n";
+    begin = clock();
+    insert3(bpq, n);
+    end = clock();
+    cout << "skew_priority_queue: " << end - begin << '\n';
+
+    cout << "\npop\n";
+
+    begin = clock();
+    test(bpq);
+    end = clock();
+    cout << "skew_priority_queue: " << end - begin << '\n';
 
 
     std::cout << "test #2 - done\n";
 
-    // 3
-    cout << "\ninsert3 " << n << "\n";/*
-                                  begin = clock();
-                                  insert3(queue, 1000000);
-                                  end = clock();
-                                  cout << "pq: " << end - begin << '\n';*/
-    begin = clock();
-    insert3(bpq, n);
-    end = clock();
-    cout << "bpq: " << end - begin << '\n';
 
-    cout << "\nextract_min\n";/*
-                              begin = clock();
-                              test(queue);
-                              end = clock();
-                              cout << "pq: " << end - begin << '\n';*/
+    // 3
+    cout << "\ninsert3 " << n << "\n";
+    begin = clock();
+    insert4(bpq, n);
+    end = clock();
+    cout << "skew_priority_queue: " << end - begin << '\n';
+
+    cout << "\npop\n";
+
     begin = clock();
     test(bpq);
     end = clock();
-    cout << "bpq: " << end - begin << '\n';
+    cout << "skew_priority_queue: " << end - begin << '\n';
+
 
 
     std::cout << "test #3 - done\n";
 
-
     // 4
-    cout << "\ninsert4 " << n << "\n";/*
-                                  begin = clock();
-                                  insert4(queue, 1000000);
-                                  end = clock();
-                                  cout << "pq: " << end - begin << '\n';*/
-    begin = clock();
-    insert4(bpq, n);
-    end = clock();
-    cout << "bpq: " << end - begin << '\n';
-
-    cout << "\nextract_min\n";/*
-                              begin = clock();
-                              test(queue);
-                              end = clock();
-                              cout << "pq: " << end - begin << '\n';*/
-    begin = clock();
-    test(bpq);
-    end = clock();
-    cout << "bpq: " << end - begin << '\n';
-
-
-
-    std::cout << "test #4 - done\n";
-
-    // 5
-    cout << "\ninsert5 " << n << "\n";
-    /*
-    begin = clock();
-    insert4(queue, 1000000);
-    end = clock();
-    cout << "pq: " << end - begin << '\n';*/
+    cout << "\ninsert4 " << n << "\n";
     begin = clock();
     insert6(bpq, n);
     end = clock();
-    cout << "bpq: " << end - begin << '\n';
+    cout << "skew_priority_queue: " << end - begin << '\n';
 
-    cout << "\nextract_min\n";
-    /*
-    begin = clock();
-    test(queue);
-    end = clock();
-    cout << "pq: " << end - begin << '\n';*/
+    cout << "\npop\n";
     begin = clock();
     test(bpq);
     end = clock();
-    cout << "bpq: " << end - begin << '\n';
-
-
-
-    std::cout << "test #5 - done\n";
+    cout << "skew_priority_queue: " << end - begin << '\n';
+    std::cout << "test #4 - done\n";
 
     cout.close();
 }
 
 
-void foo() {
+void console_test(int n) {
 
-    binomial_heap<int> bh;
-    bh.insert(1);
+
+    bpq<int> bpq;
+    std::cout << "\ninsert2 " << n << "\n";
+    insert2(bpq, n);
+
+    std::cout << "\npop\n";
+    while (!bpq.empty()) {
+        std::cout << bpq.top() << " ";
+        bpq.pop();
+    }
+    std::cout << '\n';
+    std::cout << "\ninsert3 " << n << "\n";
+    insert3(bpq, n);
+
+    std::cout << "\npop\n";
+    while (!bpq.empty()) {
+        std::cout << bpq.top() << " ";
+        bpq.pop();
+    }
+    std::cout << '\n';
+
+    std::cout << "\ninsert4 " << n << "\n";
+    insert4(bpq, n);
+
+    std::cout << "\npop\n";
+    while (!bpq.empty()) {
+        std::cout << bpq.top() << " ";
+        bpq.pop();
+    }
+    std::cout << '\n';
+
+
+    std::cout << "\ninsert6 " << n << "\n";
+    insert6(bpq, n);
+
+    std::cout << "\npop\n";
+    while (!bpq.empty()) {
+        std::cout << bpq.top() << " ";
+        bpq.pop();
+    }
+    std::cout << '\n';
 }
+
+
+
 
 int main() {
 
-    //std::cout << "testing #1\n";
-    //testAll(1000000);
-    //std::cout << "testing #2\n";
-    //testAll(2000000);
-    std::cout << "testing #3\n";
-    testAll(100);
-    _CrtDumpMemoryLeaks();
-    //std::cout << "testing #4\n";
-    //testAll(4000000);
+    /*
+    int s = 1000;
+    for (int i = 0; i < 10; ++i, s += 1000) {
+        std::cout << "testing #" << i + 1 << '\n';
+        testAll(s);
+    }*/
+
+    console_test(10);
 
     return 0;
 }
