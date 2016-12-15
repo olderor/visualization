@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		287601AD1E031596006BFC7F /* Deque.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287601AC1E031596006BFC7F /* Deque.swift */; };
+		287601B01E03262C006BFC7F /* SkewBinomialHeap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287601AF1E03262C006BFC7F /* SkewBinomialHeap.swift */; };
+		287601B21E0326CC006BFC7F /* BrodalPriorityQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287601B11E0326CC006BFC7F /* BrodalPriorityQueue.swift */; };
 		28F43BF91DE17EC800BD633C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F43BF81DE17EC800BD633C /* AppDelegate.swift */; };
 		28F43BFB1DE17EC800BD633C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F43BFA1DE17EC800BD633C /* ViewController.swift */; };
 		28F43BFE1DE17EC800BD633C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28F43BFC1DE17EC800BD633C /* Main.storyboard */; };
@@ -15,6 +18,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		287601AC1E031596006BFC7F /* Deque.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deque.swift; sourceTree = "<group>"; };
+		287601AE1E0315F0006BFC7F /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
+		287601AF1E03262C006BFC7F /* SkewBinomialHeap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SkewBinomialHeap.swift; sourceTree = "<group>"; };
+		287601B11E0326CC006BFC7F /* BrodalPriorityQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrodalPriorityQueue.swift; sourceTree = "<group>"; };
 		28F43BF51DE17EC800BD633C /* forest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = forest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28F43BF81DE17EC800BD633C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		28F43BFA1DE17EC800BD633C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -60,6 +67,10 @@
 				28F43BFF1DE17EC800BD633C /* Assets.xcassets */,
 				28F43C011DE17EC800BD633C /* LaunchScreen.storyboard */,
 				28F43C041DE17EC800BD633C /* Info.plist */,
+				287601AC1E031596006BFC7F /* Deque.swift */,
+				287601AE1E0315F0006BFC7F /* MyPlayground.playground */,
+				287601AF1E03262C006BFC7F /* SkewBinomialHeap.swift */,
+				287601B11E0326CC006BFC7F /* BrodalPriorityQueue.swift */,
 			);
 			path = forest;
 			sourceTree = "<group>";
@@ -137,8 +148,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				287601B01E03262C006BFC7F /* SkewBinomialHeap.swift in Sources */,
 				28F43BFB1DE17EC800BD633C /* ViewController.swift in Sources */,
+				287601B21E0326CC006BFC7F /* BrodalPriorityQueue.swift in Sources */,
 				28F43BF91DE17EC800BD633C /* AppDelegate.swift in Sources */,
+				287601AD1E031596006BFC7F /* Deque.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,6 +277,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = EPN9E85A8Z;
 				INFOPLIST_FILE = forest/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.olderor.forest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -276,6 +291,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = EPN9E85A8Z;
 				INFOPLIST_FILE = forest/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.olderor.forest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -302,6 +318,7 @@
 				28F43C091DE17EC800BD633C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
