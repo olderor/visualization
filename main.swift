@@ -1,196 +1,188 @@
 //: Playground - noun: a place where people can play
-
 import Foundation
 
-enum StructError: Error {
-    case outOfElements
-}
-
 class HeapNode<Element> {
-    var value: Element
-    var degree: Int
-    var parent: HeapNode<Element>?
-    var child: HeapNode<Element>?
-    var sibling: HeapNode<Element>?
+    public var order = 0
+    public var childrens = Deque<HeapNode>()
+    public var singletons = Deque<HeapNode>()
+    public var value: Element
     
-    init(value: Element, degree: Int, parent: HeapNode<Element>?,
-         child: HeapNode<Element>?, sibling: HeapNode<Element>?) {
+    init(value: Element) {
         self.value = value
-        self.degree = degree
-        self.parent = parent
-        self.child = child
-        self.sibling = sibling
+    }
+    
+    init (value: Element, order: Int) {
+        self.value = value
+        self.order = order
     }
 }
 
-class BinomialHeap<Element: Comparable> {
+class SkewBinomialHeap<Element: Comparable> {
     
-    private var root: HeapNode<Element>?
+    private var trees = Deque<HeapNode<Element>>()
+    private var elementsCount = 0
     
-    var empty: Bool {
-        return root == nil
+    init() {
+        
     }
     
-    var minimum: Element? {
-        if empty {
-            return nil
+    var first: Element? {
+        return trees[findMinIndex()].value
+    }
+    
+    private func cloneTree(tree: HeapNode<Element>) -> HeapNode<Element> {
+        
+        let result = HeapNode(value: tree.value, order: tree.order)
+        
+        for child in tree.childrens {
+            result.childrens.append(child)
         }
-        var min = root!.value
-        var currentNode = root!.sibling
-        while currentNode != nil {
-            if currentNode!.value < min {
-                min = currentNode!.value
+        
+        for singleton in tree.singletons {
+            result.singletons.append(singleton)
+        }
+        
+        return result
+    }
+    
+    init(other: SkewBinomialHeap<Element>) {
+        for tree in other.trees {
+            trees.append(cloneTree(tree: tree))
+        }
+        elementsCount = other.elementsCount
+    }
+    
+    var isEmpty: Bool {
+        return elementsCount == 0
+    }
+    
+    var size: Int {
+        return elementsCount
+    }
+    
+    private func merge(
+        first: HeapNode<Element>?,
+        second: HeapNode<Element>?) -> HeapNode<Element>? {
+        
+        if first == nil {
+            return second
+        }
+        if second == nil {
+            return first
+        }
+        
+        var first = first!
+        var second = second!
+        if second.value < first.value {
+            swap(&first, &second)
+        }
+        first.childrens.append(second)
+        first.order += 1
+        return first
+    }
+    
+    private func insertSingleton(singleton: HeapNode<Element>) {
+        if !(trees.count >= 2 && trees[0].order == trees[1].order) {
+            trees.prepend(singleton)
+            return
+        }
+        let first = trees.removeFirst()
+        let second = trees.removeFirst()
+        
+        let newTree = merge(first: first, second: second)!
+        if singleton.value < newTree.value {
+            swap(&singleton.value, &newTree.value)
+        }
+        
+        newTree.singletons.append(singleton)
+        trees.prepend(newTree)
+    }
+    
+    func push(element: Element) {
+        insertSingleton(singleton: HeapNode(value: element))
+        elementsCount += 1
+    }
+    
+    private func findMinIndex() -> Int {
+        var index = 0
+        for i in 1..<trees.count {
+            if trees[i].value < trees[index].value {
+                index = i
             }
-            currentNode = currentNode!.sibling
         }
-        return min
+        return index
     }
     
-    func insert(element: Element) {
-        root = BinomialHeap.insert(node: root, element: element)
-    }
-    
-    func merge(otherHeap: BinomialHeap) {
-        root = BinomialHeap.union(firstNode: root, secondNode: otherHeap.root)
-    }
-    
-    func extractMin() -> Element? {
-        if empty {
-            return nil
-        }
-        let result = BinomialHeap.extractMin(root: root!)
-        root = result.newRoot
-        return result.minElement
-    }
-    
-    private static func merge(firstNode: HeapNode<Element>!, secondNode: HeapNode<Element>!) -> HeapNode<Element>? {
-        
-        if firstNode == nil {
-            return secondNode
-        }
-        
-        if secondNode == nil {
-            return firstNode
-        }
-        
-        var newRoot: HeapNode<Element>!
-        var currentFirst = firstNode
-        var currentSecond = secondNode
-        
-        if currentFirst!.degree <= currentSecond!.degree {
-            newRoot = currentFirst
-            currentFirst = currentFirst!.sibling
-        } else {
-            newRoot = currentSecond
-            currentSecond = currentSecond!.sibling
-        }
-        
-        var tail = newRoot!
-        while currentFirst != nil && currentSecond != nil {
-            if currentFirst!.degree <= currentSecond!.degree {
-                tail.sibling = currentFirst!
-                currentFirst = currentFirst!.sibling
+    private func mergeHeaps(
+        first: Deque<HeapNode<Element>>,
+        second: Deque<HeapNode<Element>>) {
+        var first = first
+        var second = second
+        var result = Deque<HeapNode<Element>>()
+        while !first.isEmpty && !second.isEmpty {
+            if first.first!.order < second.first!.order {
+                result.append(first.removeFirst())
             } else {
-                tail.sibling = currentSecond
-                currentSecond = currentSecond!.sibling
+                result.append(second.removeFirst())
             }
-            tail = tail.sibling!
         }
         
-        if currentFirst != nil {
-            tail.sibling = currentFirst
-        } else {
-            tail.sibling = currentSecond
+        while !first.isEmpty {
+            result.append(first.removeFirst())
+        }
+        while !second.isEmpty {
+            result.append(second.removeFirst())
         }
         
-        return newRoot
+        while !result.isEmpty {
+            var treesWithSameOrder = Deque<HeapNode<Element>>()
+            treesWithSameOrder.append(result.first!)
+            result.removeFirst()
+            
+            while !result.isEmpty &&
+                result.first!.order == treesWithSameOrder.first!.order {
+                    treesWithSameOrder.append(result.first!)
+                    result.removeFirst()
+            }
+            
+            if treesWithSameOrder.count % 2 == 1 {
+                first.append(treesWithSameOrder.first!)
+                treesWithSameOrder.removeFirst()
+            }
+            
+            while !treesWithSameOrder.isEmpty {
+                let firstTree = treesWithSameOrder.removeFirst()
+                let secondTree = treesWithSameOrder.removeFirst()
+                first.append(merge(first: firstTree, second: secondTree)!)
+            }
+        }
     }
     
-    private static func link(parent: HeapNode<Element>, child: HeapNode<Element>) {
-        child.parent = parent
-        child.sibling = parent.child
-        parent.child = child
-        parent.degree += 1
-    }
-    
-    private static func union(firstNode: HeapNode<Element>?, secondNode:
-        HeapNode<Element>?) -> HeapNode<Element>? {
-        var newRoot = merge(firstNode: firstNode, secondNode: secondNode)
-        if newRoot == nil {
-            return nil
+    func pop() {
+        
+        if isEmpty {
+            return
         }
         
-        var currentNode = newRoot!
-        var previousNode: HeapNode<Element>?
-        var nextNode = currentNode.sibling
+        let index = findMinIndex()
+        let treeToRemove = trees[index]
+        trees.remove(at: index)
+        mergeHeaps(first: trees, second: treeToRemove.childrens)
         
-        while nextNode != nil {
-            if currentNode.degree != nextNode!.degree ||
-                nextNode!.sibling != nil &&
-                nextNode!.sibling!.degree == currentNode.degree {
-                previousNode = currentNode
-                currentNode = nextNode!
-            } else if currentNode.value <= nextNode!.value {
-                currentNode.sibling = nextNode!.sibling
-                link(parent: currentNode, child: nextNode!)
-            } else {
-                
-                if previousNode != nil {
-                    previousNode!.sibling = nextNode
-                } else {
-                    newRoot = nextNode
-                }
-                link(parent: nextNode!, child: currentNode)
-                currentNode = nextNode!
-            }
-            nextNode = currentNode.sibling
+        while !treeToRemove.singletons.isEmpty {
+            insertSingleton(singleton: treeToRemove.singletons.first!)
+            treeToRemove.singletons.removeFirst()
         }
-        return newRoot
+        
+        elementsCount -= 1
     }
     
-    private static func insert(node: HeapNode<Element>?, element: Element) -> HeapNode<Element>? {
-        let elementNode = HeapNode(value: element, degree: 0, parent: nil, child: nil, sibling: nil)
-        return union(firstNode: node, secondNode: elementNode)
+    func merge(other: SkewBinomialHeap<Element>) {
+        mergeHeaps(first: trees, second: other.trees)
+        elementsCount += other.elementsCount
+        other.elementsCount = 0
     }
     
-    private static func extractMin(root: HeapNode<Element>) ->
-        (minElement: Element, newRoot: HeapNode<Element>?) {
-            var minValue = root.value
-            var minNode = root
-            var minPreviousNode: HeapNode<Element>!
-            var current = root.sibling
-            var previous = root
-            
-            while current != nil {
-                if current!.value < minValue {
-                    minValue = current!.value
-                    minNode = current!
-                    minPreviousNode = previous
-                }
-                previous = current!
-                current = current!.sibling
-            }
-            
-            var newRoot: HeapNode<Element>? = root
-            if minPreviousNode == nil {
-                newRoot = minNode.sibling
-            } else {
-                minPreviousNode.sibling = minNode.sibling
-            }
-            
-            
-            var newRoot2: HeapNode<Element>?
-            current = minNode.child
-            while current != nil {
-                let tempNode = current!.sibling
-                current!.sibling = newRoot2
-                current!.parent = nil
-                newRoot2 = current
-                current = tempNode
-            }
-            
-            return (minElement: minValue, newRoot: union(firstNode: newRoot2, secondNode: newRoot))
-    }
 }
 
 
@@ -205,14 +197,14 @@ class BinomialHeap<Element: Comparable> {
 
 class BPQNode<Element: Comparable> {
     var value: Element
-    var queue: BinomialHeap<BrodalPriorityQueue<Element>>
+    var queue: SkewBinomialHeap<BrodalPriorityQueue<Element>>
     
     init(value: Element) {
         self.value = value
-        queue = BinomialHeap<BrodalPriorityQueue<Element>>()
+        queue = SkewBinomialHeap<BrodalPriorityQueue<Element>>()
     }
     
-    init(value: Element, queue: BinomialHeap<BrodalPriorityQueue<Element>>) {
+    init(value: Element, queue: SkewBinomialHeap<BrodalPriorityQueue<Element>>) {
         self.value = value
         self.queue = queue
     }
@@ -222,48 +214,50 @@ class BrodalPriorityQueue<Element: Comparable> : Comparable {
     
     private var root: BPQNode<Element>?
     
-    var empty: Bool {
+    var isEmpty: Bool {
         return root == nil
-    }
-    
-    var minimum: Element? {
-        if empty {
-            return nil
-        }
-        return root!.value
     }
     
     //MARK: - Initialization
     
     init() {
-    
+        
     }
     
     init(value: Element) {
         root = BPQNode(value: value)
     }
     
-    init(value: Element, queue: BinomialHeap<BrodalPriorityQueue<Element>>) {
+    private init(value: Element,
+                 queue: SkewBinomialHeap<BrodalPriorityQueue<Element>>) {
         root = BPQNode(value: value, queue: queue)
     }
     
+    var first: Element? {
+        if isEmpty {
+            return nil
+        }
+        
+        return root!.value
+    }
+    
     func merge(other: BrodalPriorityQueue) {
-        if empty {
+        if isEmpty {
             root = other.root
             return
         }
-        if other.empty {
+        if other.isEmpty {
             return
         }
         
         if root!.value < other.root!.value {
-            root!.queue.insert(element: other)
+            root!.queue.push(element: other)
             return
         }
         
         let selfCopy = BrodalPriorityQueue<Element>(value: root!.value, queue: root!.queue)
         root!.queue = other.root!.queue
-        root!.queue.insert(element: selfCopy)
+        root!.queue.push(element: selfCopy)
         root!.value = other.root!.value
     }
     
@@ -272,21 +266,19 @@ class BrodalPriorityQueue<Element: Comparable> : Comparable {
     }
     
     func extractMin() -> Element? {
-        if empty {
+        if isEmpty {
             return nil
         }
         
         let minElement = root!.value
-        if root!.queue.empty {
+        if root!.queue.isEmpty {
             root = nil
             return minElement
         }
-        
-        if let minRoot = root!.queue.extractMin()?.root {
-            root!.queue.merge(otherHeap: minRoot.queue)
-            root!.value = minRoot.value
-        }
-        
+        let minBpq = root!.queue.first!
+        root!.queue.pop()
+        root!.queue.merge(other: minBpq.root!.queue)
+        root!.value = minBpq.root!.value
         return minElement
     }
     
@@ -405,53 +397,113 @@ func insert3(queue: BrodalPriorityQueue<Int>, size: Int) {
 
 func insert4(queue: BrodalPriorityQueue<UInt32>, size: Int) {
     for _ in 0..<size {
-        queue.insert(element: arc4random())
+        let a = arc4random()
+        queue.insert(element: a)
     }
+}
+
+func insert4(queue: Deque<UInt32>, size: Int) -> Deque<UInt32> {
+    var queue = queue
+    for _ in 0..<size {
+        let a = arc4random()
+        if a % 2 == 0 {
+            queue.append(0)
+        } else {
+            queue.prepend(1)
+        }
+    }
+    return queue
 }
 
 func extractMins<Element>(queue: BrodalPriorityQueue<Element>) {
-    while !queue.empty {
-        queue.extractMin()!
+    var counter = 0
+    while !queue.isEmpty {
+        print(queue.extractMin()!)
+        counter += 1
     }
+    print("at all \(counter)")
 }
 
-func test1() {
-    let queue = BrodalPriorityQueue<Int>()
-    insert1(queue: queue, size: 1000)
-    extractMins(queue: queue)
-    print("done #1")
-}
-func test2() {
-    let queue = BrodalPriorityQueue<Int>()
-    insert2(queue: queue, size: 1000)
-    extractMins(queue: queue)
-    print("done #2")
-}
-func test3() {
-    let queue = BrodalPriorityQueue<Int>()
-    insert3(queue: queue, size: 1000)
-    extractMins(queue: queue)
-    print("done #3")
-}
-func test4() {
-    let queue = BrodalPriorityQueue<UInt32>()
-    insert4(queue: queue, size: 1000)
-    extractMins(queue: queue)
-    print("done #4")
-}
 
-func getTime(closure: () -> ()) {
+
+func getTime(closure: (Int) -> (), size: Int) {
     let start = DispatchTime.now()
-    closure()
+    closure(size)
     let end = DispatchTime.now()
     let interval = end.uptimeNanoseconds - start.uptimeNanoseconds
     print("elapsed within \(interval.beautifulString) nanosecs")
 }
 
-getTime(closure: test1)
-getTime(closure: test2)
-getTime(closure: test3)
-getTime(closure: test4)
+func test1(size: Int) {
+    let queue = BrodalPriorityQueue<Int>()
+    
+    var start = DispatchTime.now()
+    insert1(queue: queue, size: size)
+    var end = DispatchTime.now()
+    var interval = end.uptimeNanoseconds - start.uptimeNanoseconds
+    print("elapsed within \(interval.beautifulString) nanosecs")
+    
+    
+    start = DispatchTime.now()
+    extractMins(queue: queue)
+    end = DispatchTime.now()
+    interval = end.uptimeNanoseconds - start.uptimeNanoseconds
+    print("elapsed within \(interval.beautifulString) nanosecs")
+    
+    print("done #1")
+}
+func test2(size: Int) {
+    let queue = BrodalPriorityQueue<Int>()
+    
+    var start = DispatchTime.now()
+    insert2(queue: queue, size: size)
+    var end = DispatchTime.now()
+    var interval = end.uptimeNanoseconds - start.uptimeNanoseconds
+    print("elapsed within \(interval.beautifulString) nanosecs")
+    
+    
+    start = DispatchTime.now()
+    extractMins(queue: queue)
+    end = DispatchTime.now()
+    interval = end.uptimeNanoseconds - start.uptimeNanoseconds
+    print("elapsed within \(interval.beautifulString) nanosecs")
+    
+    print("done #2")
+}
+func test3(size: Int) {
+    let queue = BrodalPriorityQueue<Int>()
+    
+    var start = DispatchTime.now()
+    insert3(queue: queue, size: size)
+    var end = DispatchTime.now()
+    var interval = end.uptimeNanoseconds - start.uptimeNanoseconds
+    print("elapsed within \(interval.beautifulString) nanosecs")
+    
+    
+    start = DispatchTime.now()
+    extractMins(queue: queue)
+    end = DispatchTime.now()
+    interval = end.uptimeNanoseconds - start.uptimeNanoseconds
+    print("elapsed within \(interval.beautifulString) nanosecs")
+    
+    print("done #3")
+}
 
-
-
+func test4(size: Int) {
+    let queue = BrodalPriorityQueue<UInt32>()
+    
+    var start = DispatchTime.now()
+    insert4(queue: queue, size: size)
+    var end = DispatchTime.now()
+    var interval = end.uptimeNanoseconds - start.uptimeNanoseconds
+    print("elapsed within \(interval.beautifulString) nanosecs")
+    
+    
+    start = DispatchTime.now()
+    extractMins(queue: queue)
+    end = DispatchTime.now()
+    interval = end.uptimeNanoseconds - start.uptimeNanoseconds
+    print("elapsed within \(interval.beautifulString) nanosecs")
+    
+    print("done #4")
+}
