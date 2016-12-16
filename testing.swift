@@ -363,18 +363,18 @@ extension UInt64 {
 
 
 func insert0(queue: BrodalPriorityQueue<Int>) {
-    queue.insert(element: 3);
-    queue.insert(element: 2);
-    queue.insert(element: 1);
-    queue.insert(element: 4);
-    queue.insert(element: 5);
-    queue.insert(element: 0);
-    queue.insert(element: -1);
-    queue.insert(element: -100);
-    queue.insert(element: -20);
-    queue.insert(element: 40);
-    queue.insert(element: 50);
-    queue.insert(element: 45);
+    queue.insert(element: 3)
+    queue.insert(element: 2)
+    queue.insert(element: 1)
+    queue.insert(element: 4)
+    queue.insert(element: 5)
+    queue.insert(element: 0)
+    queue.insert(element: -1)
+    queue.insert(element: -100)
+    queue.insert(element: -20)
+    queue.insert(element: 40)
+    queue.insert(element: 50)
+    queue.insert(element: 45)
 }
 
 func insert1(queue: BrodalPriorityQueue<Int>, size: Int) {
