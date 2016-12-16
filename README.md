@@ -5,6 +5,6 @@ you can test structure using xcode with playground available [here](forest/MyPla
 
 ```swift
 var queue = BrodalPriorityQueue<Int>() // create new queue of integer type.
-queue.insert(1) // add number to the queue.
+queue.insert(element: 3) // add number to the queue.
 print(queue.extractMin()) // retrieve and delete the minimum element.
 ```
