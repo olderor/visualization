@@ -418,7 +418,7 @@ func insert4(queue: Deque<UInt32>, size: Int) -> Deque<UInt32> {
 func extractMins<Element>(queue: BrodalPriorityQueue<Element>) {
     var counter = 0
     while !queue.isEmpty {
-        print(queue.extractMin()!)
+        queue.extractMin()
         counter += 1
     }
     print("at all \(counter)")
@@ -508,3 +508,5 @@ func test4(size: Int) {
     print("done #4")
 }
 
+
+test4(size: 100)
