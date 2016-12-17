@@ -7,9 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2827BCDD1E053D2E00B59799 /* AnimationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2827BCDC1E053D2E00B59799 /* AnimationManager.swift */; };
 		287601AD1E031596006BFC7F /* Deque.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287601AC1E031596006BFC7F /* Deque.swift */; };
 		287601B01E03262C006BFC7F /* SkewBinomialHeap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287601AF1E03262C006BFC7F /* SkewBinomialHeap.swift */; };
 		287601B21E0326CC006BFC7F /* BrodalPriorityQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287601B11E0326CC006BFC7F /* BrodalPriorityQueue.swift */; };
+		287601B61E033A19006BFC7F /* SkewBinomialHeapWithAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287601B51E033A19006BFC7F /* SkewBinomialHeapWithAnimation.swift */; };
 		28F43BF91DE17EC800BD633C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F43BF81DE17EC800BD633C /* AppDelegate.swift */; };
 		28F43BFB1DE17EC800BD633C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F43BFA1DE17EC800BD633C /* ViewController.swift */; };
 		28F43BFE1DE17EC800BD633C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28F43BFC1DE17EC800BD633C /* Main.storyboard */; };
@@ -18,10 +20,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2827BCDC1E053D2E00B59799 /* AnimationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimationManager.swift; sourceTree = "<group>"; };
 		287601AC1E031596006BFC7F /* Deque.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deque.swift; sourceTree = "<group>"; };
 		287601AE1E0315F0006BFC7F /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
 		287601AF1E03262C006BFC7F /* SkewBinomialHeap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SkewBinomialHeap.swift; sourceTree = "<group>"; };
 		287601B11E0326CC006BFC7F /* BrodalPriorityQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrodalPriorityQueue.swift; sourceTree = "<group>"; };
+		287601B51E033A19006BFC7F /* SkewBinomialHeapWithAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SkewBinomialHeapWithAnimation.swift; sourceTree = "<group>"; };
 		28F43BF51DE17EC800BD633C /* forest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = forest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28F43BF81DE17EC800BD633C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		28F43BFA1DE17EC800BD633C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -71,6 +75,8 @@
 				287601AE1E0315F0006BFC7F /* MyPlayground.playground */,
 				287601AF1E03262C006BFC7F /* SkewBinomialHeap.swift */,
 				287601B11E0326CC006BFC7F /* BrodalPriorityQueue.swift */,
+				287601B51E033A19006BFC7F /* SkewBinomialHeapWithAnimation.swift */,
+				2827BCDC1E053D2E00B59799 /* AnimationManager.swift */,
 			);
 			path = forest;
 			sourceTree = "<group>";
@@ -150,6 +156,8 @@
 			files = (
 				287601B01E03262C006BFC7F /* SkewBinomialHeap.swift in Sources */,
 				28F43BFB1DE17EC800BD633C /* ViewController.swift in Sources */,
+				287601B61E033A19006BFC7F /* SkewBinomialHeapWithAnimation.swift in Sources */,
+				2827BCDD1E053D2E00B59799 /* AnimationManager.swift in Sources */,
 				287601B21E0326CC006BFC7F /* BrodalPriorityQueue.swift in Sources */,
 				28F43BF91DE17EC800BD633C /* AppDelegate.swift in Sources */,
 				287601AD1E031596006BFC7F /* Deque.swift in Sources */,
