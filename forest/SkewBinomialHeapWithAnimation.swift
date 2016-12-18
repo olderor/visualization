@@ -11,8 +11,8 @@ import Foundation
 
 var mainView: UIView!
 
-let nodeOffset: CGFloat = 10
-let treeOffset: CGFloat = 40
+let nodeOffset: CGFloat = 5
+let treeOffset: CGFloat = 10
 let size: CGFloat = 50
 var nodeSizeDifference: CGFloat {
     return nodeOffset + size
@@ -24,8 +24,6 @@ var treeSizeDifference: CGFloat {
 class Node {
     var view: UIView!
     var label: UILabel!
-    
-    var text: String!
     
     var frame: CGRect!
     
@@ -40,6 +38,7 @@ class Node {
     
     func changeBackground(color: UIColor) {
         AnimationManager.addAnimation(animation: {
+            print("changeBackground: " + self.label.text!)
             self.label.layer.backgroundColor = color.cgColor
             sleep(0)
         }, completion: nil, type: .animation)
@@ -82,6 +81,7 @@ class Node {
         view = UIView(frame: frame)
         label = UILabel(frame: CGRect(x: 0, y: 0, width: size, height: size))
         label.text = text
+        label.font = label.font.withSize(10)
         label.textAlignment = .center
         label.layer.backgroundColor = UIColor.green.cgColor
         label.layer.cornerRadius = size / 2
@@ -237,7 +237,6 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
     
     var first: Element? {
         let tree = trees[findMinIndex()]
-        tree.pulse()
         return tree.value
     }
     
@@ -392,10 +391,11 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
         for i in 1..<trees.count {
             trees[i].select()
             if trees[i].value < trees[index].value {
-                index = i
                 trees[index].deselect()
+                index = i
                 trees[i].deselect()
                 trees[i].pulse()
+                trees[i].select()
             } else {
                 trees[i].deselect()
             }

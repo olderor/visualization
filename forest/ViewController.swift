@@ -18,11 +18,14 @@ class ViewController: UIViewController {
         print("done")
         
         let skewHeap = SkewBinomialHeapAnimation<Int>()
-        for i in 0..<200 {
-            skewHeap.push(element: i)
-            print("push \(i)")
+        for _ in 0..<20 {
+            let element = Int(arc4random() % 100)
+            skewHeap.push(element: element)
+            print("push \(element)")
         }
+        print(skewHeap.first)
         AnimationManager.playAnimation()
+        
     }
 
     override func didReceiveMemoryWarning() {
