@@ -11,38 +11,198 @@ import Foundation
 
 var mainView: UIView!
 
+let nodeOffset: CGFloat = 10
+let treeOffset: CGFloat = 40
+let size: CGFloat = 50
+var nodeSizeDifference: CGFloat {
+    return nodeOffset + size
+}
+var treeSizeDifference: CGFloat {
+    return treeOffset + size
+}
+
 class Node {
-    var view: UILabel!
+    var view: UIView!
+    var label: UILabel!
+    
     var text: String!
     
     var frame: CGRect!
     
     func pulse() {
-        if view == nil {
-            return
-        }
-        AnimationManager.addAnimation(animation: {
-            self.view.backgroundColor = UIColor.yellow
-            sleep(0)
-            }, completion: { (finished: Bool) -> Void in self.deselect() })
+        select()
+        deselect()
     }
     
     func select() {
-        changeBackground(color: UIColor.yellow)
+        changeBackground(color: .yellow)
     }
     
     func changeBackground(color: UIColor) {
-        if view == nil {
-            return
-        }
         AnimationManager.addAnimation(animation: {
-            self.view.backgroundColor = color
+            self.label.layer.backgroundColor = color.cgColor
             sleep(0)
-            }, completion: nil)
+        }, completion: nil, type: .animation)
     }
     
     func deselect() {
-        changeBackground(color: UIColor.white)
+        changeBackground(color: .white)
+    }
+    
+    func disapear() {
+        AnimationManager.addAnimation(animation: {
+            self.view.removeFromSuperview()
+            sleep(0)
+            }, completion: nil, type: .transition)
+    }
+    
+    func move(difX: CGFloat, difY: CGFloat) {
+        frame.origin.x = frame.origin.x + difX
+        frame.origin.y = frame.origin.y + difY
+        
+        AnimationManager.addAnimation(animation: {
+            self.view.frame.origin.x = self.view.frame.origin.x + difX
+            self.view.frame.origin.y = self.view.frame.origin.y + difY
+            sleep(0)
+            }, completion: nil, type: .animation)
+    }
+    
+    func getMovesBlock(difX: CGFloat, difY: CGFloat) -> () -> Void {
+        frame.origin.x = frame.origin.x + difX
+        frame.origin.y = frame.origin.y + difY
+        
+        return {
+            self.view.frame.origin.x = self.view.frame.origin.x + difX
+            self.view.frame.origin.y = self.view.frame.origin.y + difY
+        }
+    }
+    
+    func createNode(text: String) {
+        frame = CGRect(x: nodeOffset, y: nodeOffset + 20, width: size, height: size)
+        view = UIView(frame: frame)
+        label = UILabel(frame: CGRect(x: 0, y: 0, width: size, height: size))
+        label.text = text
+        label.textAlignment = .center
+        label.layer.backgroundColor = UIColor.green.cgColor
+        label.layer.cornerRadius = size / 2
+        label.layer.masksToBounds = true
+        label.layer.borderColor = UIColor.black.cgColor
+        label.layer.borderWidth = 2
+        view.addSubview(label)
+        
+        AnimationManager.addAnimation(animation: {
+            print("insertSingleton: addSubview")
+            
+            mainView.addSubview(self.view)
+            
+            print("done")
+            sleep(0)
+        }, completion: nil, type: .transition)
+    }
+    
+    func swapNodes(other: Node) {
+        let difX = other.frame.origin.x - frame.origin.x
+        let difY = other.frame.origin.y - frame.origin.y
+        
+        var animations = [() -> Void]()
+        animations.append(getMovesBlock(difX: difX, difY: difY))
+        animations.append(other.getMovesBlock(difX: -difX, difY: -difY))
+        AnimationManager.addAnimation(animation: {
+            print("swap trees: \(difX) \(difY)")
+            for animation in animations {
+                animation()
+            }
+            print("done")
+            sleep(0)
+        }, completion: nil, type: .animation)
+    }
+    
+    func connectNodes(to: CGPoint) {
+        let path = UIBezierPath()
+        
+        path.move(to: CGPoint(x: view.frame.width - size / 2, y: size / 2))
+        print("connecting: x: \(view.frame.width - size / 2), y: \(size / 2)")
+        path.addQuadCurve(to: to, controlPoint: CGPoint(x: to.x, y: size / 2))
+        print("connecting to x: \(to.x), y: \(to.y)")
+        
+        let layer = CAShapeLayer()
+        layer.strokeColor = UIColor.black.cgColor
+        layer.fillColor = nil
+        layer.path = path.cgPath
+        layer.lineWidth = 2
+        layer.zPosition = -1
+        view.layer.addSublayer(layer)
+    }
+    
+    func appendToZeroOrderNode(node: Node) {
+        frame.size.height += nodeSizeDifference
+        
+        AnimationManager.addAnimation(animation: {
+            print("change view parent 0 order")
+            self.view.removeFromSuperview()
+            node.view.removeFromSuperview()
+            
+            let newFrame = CGRect(
+                x: self.view.frame.origin.x,
+                y: self.view.frame.origin.y,
+                width: self.view.frame.size.width,
+                height: self.view.frame.size.height + nodeSizeDifference)
+            
+            self.view.frame.origin.x = 0
+            self.view.frame.origin.y = 0
+            
+            node.view.frame.origin.x = 0
+            node.view.frame.origin.y = nodeSizeDifference
+            
+            let newView = UIView(frame: newFrame)
+            newView.addSubview(self.view)
+            newView.addSubview(node.view)
+            mainView.addSubview(newView)
+            self.view = newView
+            let x = node.view.frame.origin.x + node.view.frame.size.width - size / 2
+            let y = node.view.frame.origin.y + size / 2
+            self.connectNodes(to: CGPoint(x: x, y: y))
+            
+            print("done")
+            sleep(0)
+            }, completion: nil, type: .none)
+    }
+    
+    func appendNode(node: Node) {
+        
+        frame.size.width += node.frame.size.width + nodeOffset
+        frame.origin.x -= node.frame.size.width + nodeOffset
+        frame.size.height = node.frame.size.height + nodeSizeDifference
+        
+        AnimationManager.addAnimation(animation: {
+            print("change view parent")
+            self.view.removeFromSuperview()
+            node.view.removeFromSuperview()
+            
+            let newFrame = CGRect(
+                x: self.view.frame.origin.x - (node.frame.size.width + nodeOffset),
+                y: self.view.frame.origin.y,
+                width: self.view.frame.size.width + nodeOffset + node.view.frame.size.width,
+                height: node.view.frame.size.height + nodeSizeDifference)
+            
+            self.view.frame.origin.x = node.view.frame.size.width + nodeOffset
+            self.view.frame.origin.y = 0
+            
+            node.view.frame.origin.x = 0
+            node.view.frame.origin.y = nodeSizeDifference
+            
+            let newView = UIView(frame: newFrame)
+            newView.addSubview(self.view)
+            newView.addSubview(node.view)
+            mainView.addSubview(newView)
+            self.view = newView
+            let x = node.view.frame.origin.x + node.view.frame.size.width - size / 2
+            let y = node.view.frame.origin.y + size / 2
+            self.connectNodes(to: CGPoint(x: x, y: y))
+            
+            print("done")
+            sleep(0)
+        }, completion: nil, type: .none)
     }
 }
 
@@ -61,30 +221,8 @@ class HeapNodeAnimation<Element> : Node {
         self.order = order
     }
     
-    func move(difX: CGFloat, difY: CGFloat) -> [() -> Void] {
-        
-        var moves = [() -> Void]()
-        let newX = self.frame.origin.x + difX
-        let newY = self.frame.origin.y + difY
-        self.frame.origin.x = newX
-        self.frame.origin.y = newY
-        
-        moves.append({
-            print("move tree to \(newX) + \(newY) ")
-            self.view.frame.origin.x = newX
-            self.view.frame.origin.y = newY
-            print("done")
-        })
-        
-        for tree in childrens {
-            moves.append(contentsOf: tree.move(difX: difX, difY: difY))
-        }
-        
-        for tree in singletons {
-            moves.append(contentsOf: tree.move(difX: difX, difY: difY))
-        }
-        
-        return moves
+    func createNode() {
+        createNode(text: String(describing: value))
     }
 }
 
@@ -146,137 +284,101 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
         
         var first = first!
         var second = second!
-        if second.value < first.value {
+        if second.value > first.value {
             swap(&first, &second)
-            
-            let difX = second.frame.origin.x - first.frame.origin.x
-            let difY = second.frame.origin.y - first.frame.origin.y
-            var animations = second.move(difX: -difX, difY: -difY)
-            animations.append(contentsOf: first.move(difX: difX, difY: difY))
-            AnimationManager.addAnimation(animation: {
-                print("merge: swap frames")
-                for animation in animations {
-                    animation()
-                }
-                print("done")
-                sleep(0)
-            }, completion: nil)
+            // swap frames.
+            first.swapNodes(other: second)
         }
-        first.childrens.append(second)
         
-        let animations = second.move(difX: -50, difY: 50)
-        AnimationManager.addAnimation(animation: {
-            print("merge: move second")
-            for animation in animations {
-                animation()
-            }
-            print("done")
-            sleep(0)
-        }, completion: nil)
-        first.order += 1
-        return first
+        second.childrens.append(first)
+        second.order += 1
+        
+        first.move(difX: 0, difY: nodeSizeDifference)
+        
+        // special case for merging nodes with 0 order.
+        if second.order == 1 {
+            second.move(difX: -nodeSizeDifference + nodeSizeDifference - treeSizeDifference, difY: 0)
+            
+            first.deselect()
+            second.deselect()
+            second.appendToZeroOrderNode(node: first)
+            second.pulse()
+            moveTrees(difX: -treeSizeDifference, difY: 0)
+        } else {
+            second.move(difX: nodeSizeDifference - treeSizeDifference, difY: 0)
+            first.deselect()
+            second.deselect()
+            second.appendNode(node: first)
+            second.pulse()
+            moveTrees(difX: nodeSizeDifference - treeSizeDifference, difY: 0)
+        }
+        
+        return second
     }
     
-    private func moveTrees(difX: CGFloat, difY: CGFloat) -> [() -> Void] {
+    private func moveTrees(difX: CGFloat, difY: CGFloat) {
         var animations = [() -> Void]()
         for tree in self.trees {
-            animations.append(contentsOf: tree.move(difX: difX, difY: difY))
+            animations.append(tree.getMovesBlock(difX: difX, difY: difY))
         }
-        return animations
-    }
-    
-    
-    private func insertSingleton(singleton: HeapNodeAnimation<Element>) {
-        singleton.frame = CGRect(x: 25, y: 25, width: 40, height: 40)
-        singleton.view = UILabel(frame: CGRect(x: 25, y: 25, width: 40, height: 40))
-        singleton.view.text = String(describing: singleton.value)
-        
-        
-        var animations = moveTrees(difX: 50, difY: 0)
         AnimationManager.addAnimation(animation: {
             var counter = 0
-            print("insertSingleton: for tree in self.trees 50")
+            print("moveTrees: \(difX) \(difY)")
             for animation in animations {
                 animation()
                 counter += 1
             }
             print("done \(counter)")
             sleep(0)
-        }, completion: nil)
+        }, completion: nil, type: .animation)
+    }
+    
+    
+    private func insertSingleton(singleton: HeapNodeAnimation<Element>) {
         
-        AnimationManager.addAnimation(animation: {
-            print("insertSingleton: addSubview")
-            singleton.view.backgroundColor = UIColor.green
-            mainView.addSubview(singleton.view)
-            print("done")
-            sleep(0)
-        }, completion: nil)
+        // move trees to get free space for new element.
+        moveTrees(difX: treeSizeDifference, difY: 0)
+        
+        // add new element to the view.
+        singleton.createNode()
+        
         
         if !(trees.count >= 2 && trees[0].order == trees[1].order) {
-            
             trees.prepend(singleton)
+            
+            // animation complete.
             singleton.deselect()
             return
         }
         
+        
+        
         let first = trees.removeFirst()
         let second = trees.removeFirst()
         
+        // prepear for merging.
         first.select()
         second.select()
         
         let newTree = merge(first: first, second: second)!
         
-        
-        animations = moveTrees(difX: -50, difY: 0)
-        AnimationManager.addAnimation(animation: {
-            print("insertSingleton: tree in self.trees -50")
-            for animation in animations {
-                animation()
-            }
-            print("done")
-            sleep(0)
-        }, completion: nil)
-        
-        
         if singleton.value < newTree.value {
             swap(&singleton.value, &newTree.value)
             AnimationManager.addAnimation(animation: {
-                swap(&singleton.view.text, &newTree.view.text)
+                swap(&singleton.label.text, &newTree.label.text)
                 print("done")
                 sleep(0)
-            }, completion: nil)
+            }, completion: nil, type: .animation)
         }
         
-        animations = singleton.move(difX: 0, difY: 50)
-        AnimationManager.addAnimation(animation: {
-            print("insertSingleton: y += 50")
-            for animation in animations {
-                animation()
-            }
-            print("done")
-            sleep(0)
-        }, completion: nil)
         newTree.singletons.append(singleton)
-        /*
-        animations = moveTrees(difX: 50, difY: 0)
-        animations.append({
-            newTree.view.frame = CGRect(x: 25, y: 25, width: 40, height: 40)
-        })
-        AnimationManager.addAnimation(animation: {
-            print("insertSingleton: for tree in self.trees 50")
-            print("and insertSingleton: newTree frame")
-            for animation in animations {
-                animation()
-            }
-            print("done")
-            sleep(0)
-        }, completion: nil)*/
+        
+        // remove from view, now it's stored in the newTree.
+        singleton.deselect()
+        singleton.disapear()
         
         trees.prepend(newTree)
-        first.deselect()
-        second.deselect()
-        singleton.deselect()
+        moveTrees(difX: -treeSizeDifference, difY: 0)
     }
     
     func push(element: Element) {

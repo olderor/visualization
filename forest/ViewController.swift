@@ -14,12 +14,11 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         mainView = self.view
-        mainView.backgroundColor = UIColor.blue
         
         print("done")
         
         let skewHeap = SkewBinomialHeapAnimation<Int>()
-        for i in 0..<2047 {
+        for i in 0..<200 {
             skewHeap.push(element: i)
             print("push \(i)")
         }

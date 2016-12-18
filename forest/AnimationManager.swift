@@ -8,15 +8,63 @@
 
 import UIKit
 
+enum AnimationType {
+    case animation, transition, none
+}
+
 class Animation {
     var animation: () -> Swift.Void
     var completion: ((Bool) -> Swift.Void)?
     var duration: TimeInterval
+    var type: AnimationType
     
-    init(animation: @escaping () -> Swift.Void, completion: ((Bool) -> Swift.Void)?, duration: TimeInterval) {
+    init(animation: @escaping () -> Swift.Void,
+         completion: ((Bool) -> Swift.Void)?,
+         duration: TimeInterval,
+         type: AnimationType) {
         self.animation = animation
         self.completion = completion
         self.duration = duration
+        self.type = type
+    }
+    
+    func play(onComplete: (() -> Swift.Void)?) {
+        switch type {
+        case .transition:
+            UIView.transition(with: mainView,
+                              duration: duration,
+                              options: UIViewAnimationOptions.transitionCrossDissolve,
+                              animations: animation,
+                              completion: { (finished: Bool) -> Void in
+                                if self.completion != nil {
+                                    self.completion!(finished)
+                                }
+                                if onComplete != nil {
+                                    onComplete!()
+                                }
+            })
+            break
+        case .none:
+            animation()
+            if completion != nil {
+                completion!(true)
+            }
+            if onComplete != nil {
+                onComplete!()
+            }
+        default:
+            UIView.animate(withDuration: duration,
+                           animations: animation,
+                           completion: { (finished: Bool) -> Void in
+                            if self.completion != nil {
+                                self.completion!(finished)
+                            }
+                            if onComplete != nil {
+                                onComplete!()
+                            }
+            })
+            break
+        }
     }
 }
 
@@ -24,18 +72,18 @@ class AnimationManager {
     
     static private var animations = Deque<Animation>()
     
-    static var defaultDelay: TimeInterval = 0.01
+    static var defaultDuration: TimeInterval = 0.02
     
     static func addAnimation(animation: Animation) {
         animations.append(animation)
     }
     
-    static func addAnimation(animation: @escaping () -> Swift.Void, completion: ((Bool) -> Swift.Void)?) {
-        addAnimation(animation: animation, completion: completion, duration: defaultDelay)
+    static func addAnimation(animation: @escaping () -> Swift.Void, completion: ((Bool) -> Swift.Void)?, type: AnimationType) {
+        addAnimation(animation: animation, completion: completion, duration: defaultDuration, type: type)
     }
     
-    static func addAnimation(animation: @escaping () -> Swift.Void, completion: ((Bool) -> Swift.Void)?, duration: TimeInterval) {
-        addAnimation(animation: Animation(animation: animation, completion: completion, duration: duration))
+    static func addAnimation(animation: @escaping () -> Swift.Void, completion: ((Bool) -> Swift.Void)?, duration: TimeInterval, type: AnimationType) {
+        addAnimation(animation: Animation(animation: animation, completion: completion, duration: duration, type: type))
     }
     
     
@@ -44,13 +92,6 @@ class AnimationManager {
             return
         }
         let animation = animations.removeFirst()
-        UIView.animate(withDuration: animation.duration,
-                       animations: animation.animation,
-                       completion: { (finished: Bool) -> Void in
-                        if animation.completion != nil {
-                            animation.completion!(finished)
-                        }
-                        playAnimation()
-        })
+        animation.play(onComplete: playAnimation)
     }
 }
