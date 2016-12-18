@@ -52,6 +52,7 @@ class Animation {
             if onComplete != nil {
                 onComplete!()
             }
+            break
         default:
             UIView.animate(withDuration: duration,
                            animations: animation,
@@ -72,7 +73,9 @@ class AnimationManager {
     
     static private var animations = Deque<Animation>()
     
-    static var defaultDuration: TimeInterval = 0.02
+    static var defaultDuration: TimeInterval = 0.3
+    
+    static private(set) var isRunning = false
     
     static func addAnimation(animation: Animation) {
         animations.append(animation)
@@ -88,7 +91,9 @@ class AnimationManager {
     
     
     static func playAnimation() {
+        isRunning = true
         if animations.isEmpty {
+            isRunning = false
             return
         }
         let animation = animations.removeFirst()
