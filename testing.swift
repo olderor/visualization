@@ -871,10 +871,19 @@ func insert4(queue: Deque<UInt32>, size: Int) -> Deque<UInt32> {
     return queue
 }
 
-func extractMins<Element>(queue: BrodalPriorityQueue<Element>) {
+func extractMins<Element: Comparable>(queue: BrodalPriorityQueue<Element>) {
     var counter = 0
+    var last: Element!
     while !queue.isEmpty {
-        print(queue.extractMin())
+        let element = queue.extractMin()!
+        print(element)
+        if last == nil {
+            last = element
+        }
+        if last > element {
+            print("error at the \(counter)")
+            return
+        }
         counter += 1
     }
     print("at all \(counter)")
