@@ -7,6 +7,7 @@ You can test structure using Xcode with playground available [here](forest/MyPla
 All you need is to download 'MyPlayground.playground' to your local pc and open it using Xcode.</br>
 Or you can try to use [swift online compiler](https://www.google.com/search?q=swift+online+compiler) by copy-pasting into it [code from here](forest/MyPlayground.playground/Contents.swift). (warning, this may not work as expected)
 ```swift
+// type your code at the end of the file containing source code.
 // create new queue of integer type.
 var queue = BrodalPriorityQueue<Int>()
 
