@@ -11,10 +11,11 @@ import Foundation
 
 var mainView: UIView!
 
-let nodeOffset: CGFloat = 2
-let treeOffset: CGFloat = 5
-let size: CGFloat = 20
+let nodeOffset: CGFloat = 10
+let treeOffset: CGFloat = 25
+let size: CGFloat = 50
 let lineWidth: CGFloat = 2
+let fontSize: CGFloat = 20
 
 var nodeSizeDifference: CGFloat {
     return nodeOffset + size
@@ -98,7 +99,7 @@ class Node {
         view = UIView(frame: frame)
         label = UILabel(frame: CGRect(x: 0, y: 0, width: size, height: size))
         label.text = text
-        label.font = label.font.withSize(10)
+        label.font = label.font.withSize(fontSize)
         label.textAlignment = .center
         label.layer.backgroundColor = UIColor.green.cgColor
         label.layer.cornerRadius = size / 2
