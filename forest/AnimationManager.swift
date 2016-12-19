@@ -32,7 +32,7 @@ class Animation {
         switch type {
         case .transition:
             UIView.transition(with: mainView,
-                              duration: duration,
+                              duration: AnimationManager.defaultDuration,
                               options: UIViewAnimationOptions.transitionCrossDissolve,
                               animations: animation,
                               completion: { (finished: Bool) -> Void in
@@ -54,7 +54,7 @@ class Animation {
             }
             break
         default:
-            UIView.animate(withDuration: duration,
+            UIView.animate(withDuration: AnimationManager.defaultDuration,
                            animations: animation,
                            completion: { (finished: Bool) -> Void in
                             if self.completion != nil {
@@ -73,7 +73,7 @@ class AnimationManager {
     
     static private var animations = Deque<Animation>()
     
-    static var defaultDuration: TimeInterval = 0.0001
+    static var defaultDuration: TimeInterval = 0.2
     
     static private(set) var isRunning = false
     

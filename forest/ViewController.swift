@@ -10,9 +10,9 @@ import UIKit
 
 class ViewController: UIViewController, UIScrollViewDelegate {
     
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return mainView
-    }
+    @IBOutlet var speedView: SpeedView!
+    
+    // MARK:- UIViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,7 +27,7 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         scrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0).isActive = true
         scrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 0).isActive = true
         scrollView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 20).isActive = true
-        scrollView.heightAnchor.constraint(equalTo: self.view.heightAnchor, constant: 0).isActive = true
+        scrollView.bottomAnchor.constraint(equalTo: speedView.topAnchor, constant: 0).isActive = true
         
         
         
@@ -39,10 +39,9 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         mainView = subView
         
         
-        print("done")
         
         let skewHeap = SkewBinomialHeapAnimation<Int>()
-        for _ in 0..<40 {
+        for _ in 0..<1024 {
             let element = Int(arc4random() % 100)
             skewHeap.push(element: element)
             print("push \(element)")
@@ -56,6 +55,15 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    
+    
+    // MARK:- UIScrollViewDelegate
+    
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return mainView
+    }
+    
 
 
 }

@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -16,11 +17,51 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rx5-GD-o6f" customClass="SpeedView" customModule="forest" customModuleProvider="target">
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Speed 0.5" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mUb-BO-8ZO">
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="20" minValue="1" maxValue="200" translatesAutoresizingMaskIntoConstraints="NO" id="9Mv-hQ-ytw">
+                                        <connections>
+                                            <action selector="sliderValueChangedWithSender:" destination="rx5-GD-o6f" eventType="valueChanged" id="Iu0-Tf-AkC"/>
+                                        </connections>
+                                    </slider>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="mUb-BO-8ZO" secondAttribute="trailing" id="3xV-2d-5cK"/>
+                                    <constraint firstItem="9Mv-hQ-ytw" firstAttribute="top" secondItem="mUb-BO-8ZO" secondAttribute="bottom" constant="8" id="DX7-q9-XWg"/>
+                                    <constraint firstItem="mUb-BO-8ZO" firstAttribute="leading" secondItem="rx5-GD-o6f" secondAttribute="leading" id="bBR-X8-wdz"/>
+                                    <constraint firstAttribute="height" constant="77" id="gfR-MI-Bjr"/>
+                                    <constraint firstAttribute="trailing" secondItem="9Mv-hQ-ytw" secondAttribute="trailing" id="llZ-YW-RTS"/>
+                                    <constraint firstItem="9Mv-hQ-ytw" firstAttribute="leading" secondItem="rx5-GD-o6f" secondAttribute="leading" id="mx3-Aw-qEP"/>
+                                    <constraint firstAttribute="bottom" secondItem="9Mv-hQ-ytw" secondAttribute="bottom" constant="10" id="q8M-XZ-67f"/>
+                                    <constraint firstItem="9Mv-hQ-ytw" firstAttribute="top" secondItem="mUb-BO-8ZO" secondAttribute="bottom" constant="8" id="rAN-84-p92"/>
+                                    <constraint firstItem="mUb-BO-8ZO" firstAttribute="top" secondItem="rx5-GD-o6f" secondAttribute="top" constant="8" id="yCy-Ul-gzA"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="label" destination="mUb-BO-8ZO" id="k9K-4w-vRf"/>
+                                    <outlet property="slider" destination="9Mv-hQ-ytw" id="aNH-4Z-D2L"/>
+                                </connections>
+                            </view>
+                        </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="rx5-GD-o6f" secondAttribute="bottom" constant="8" id="25W-TN-ggt"/>
+                            <constraint firstItem="rx5-GD-o6f" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="QZk-p0-lw8"/>
+                            <constraint firstItem="rx5-GD-o6f" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="tYw-uQ-36f"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="speedView" destination="rx5-GD-o6f" id="ZGG-qe-rQE"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="32.799999999999997" y="45.42728635682159"/>
         </scene>
     </scenes>
 </document>
