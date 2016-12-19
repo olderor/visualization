@@ -24,13 +24,13 @@ print(queue.first)
 // now queue doesn't contain 42, queue is empty.
 print(queue.extractMin())
 ```
-
+Or
 ```swift
-// find this line in the code
-let input = "a 42 b a 42 a 43 a 44 b b b"
+// type line in the code
+run(input: "1 2 3 4 5 q 4 3 5 q 2 3 4 q q q q q q q q q q")
 // change the value of input:
-// a 42 - insert element 42 in the queue
-// b - extract minimum element from the queue
+// number - to add number to the queue
+// q - extract minimum element from the queue
 // all commands should be separated by spaces ' '
 ```
 
