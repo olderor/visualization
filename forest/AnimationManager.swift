@@ -73,7 +73,7 @@ class AnimationManager {
     
     static private var animations = Deque<Animation>()
     
-    static var defaultDuration: TimeInterval = 0.05
+    static var defaultDuration: TimeInterval = 0.0001
     
     static private(set) var isRunning = false
     

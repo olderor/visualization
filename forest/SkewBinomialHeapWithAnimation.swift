@@ -9,7 +9,8 @@
 import UIKit
 import Foundation
 
-var mainView: UIScrollView!
+var mainScrollView: UIScrollView!
+var mainView: UIView!
 
 let nodeOffset: CGFloat = 10
 let treeOffset: CGFloat = 25
@@ -81,9 +82,9 @@ class Node {
             self.view.frame.origin.x = self.view.frame.origin.x + difX
             self.view.frame.origin.y = self.view.frame.origin.y + difY
             
-            mainView.contentSize = CGSize(
-                width: max(mainView.frame.size.width, self.view.frame.origin.x + self.view.frame.size.width + treeOffset),
-                height: max(mainView.frame.size.height, self.view.frame.origin.y + self.view.frame.size.height + treeOffset))
+            mainView.frame.size.width = max(mainView.frame.size.width, self.view.frame.origin.x + self.view.frame.size.width + treeOffset)
+            mainView.frame.size.height = max(mainView.frame.size.height, self.view.frame.origin.y + self.view.frame.size.height + treeOffset)
+            mainScrollView.contentSize = CGSize(width: mainView.frame.size.width, height: mainView.frame.size.height)
         }, completion: nil, type: .animation)
     }
     
@@ -94,9 +95,10 @@ class Node {
         return {
             self.view.frame.origin.x = self.view.frame.origin.x + difX
             self.view.frame.origin.y = self.view.frame.origin.y + difY
-            mainView.contentSize = CGSize(
-                width: max(mainView.frame.size.width, self.view.frame.origin.x + self.view.frame.size.width + treeOffset),
-                height: max(mainView.frame.size.height, self.view.frame.origin.y + self.view.frame.size.height + treeOffset))
+            
+            mainView.frame.size.width = max(mainView.frame.size.width, self.view.frame.origin.x + self.view.frame.size.width + treeOffset)
+            mainView.frame.size.height = max(mainView.frame.size.height, self.view.frame.origin.y + self.view.frame.size.height + treeOffset)
+            mainScrollView.contentSize = CGSize(width: mainView.frame.size.width, height: mainView.frame.size.height)
         }
     }
     
@@ -183,9 +185,11 @@ class Node {
             newView.addSubview(self.view)
             newView.addSubview(node.view)
             mainView.addSubview(newView)
-            mainView.contentSize = CGSize(
-                width: max(mainView.frame.size.width, newView.frame.origin.x + newView.frame.size.width + treeOffset),
-                height: max(mainView.frame.size.height, newView.frame.origin.y + newView.frame.size.height + treeOffset))
+            
+            mainView.frame.size.width = max(mainView.frame.size.width, newView.frame.origin.x + newView.frame.size.width + treeOffset)
+            mainView.frame.size.height = max(mainView.frame.size.height, newView.frame.origin.y + newView.frame.size.height + treeOffset)
+            mainScrollView.contentSize = CGSize(width: mainView.frame.size.width, height: mainView.frame.size.height)
+            
             self.view = newView
             
             self.connectNodes(from: CGPoint(x: self.root.x, y: self.root.y), to: CGPoint(x: node.root.x, y: node.root.y))
@@ -217,9 +221,11 @@ class Node {
             newView.addSubview(self.view)
             newView.addSubview(node.view)
             mainView.addSubview(newView)
-            mainView.contentSize = CGSize(
-                width: max(mainView.frame.size.width, newView.frame.origin.x + newView.frame.size.width),
-                height: max(mainView.frame.size.height, newView.frame.origin.y + newView.frame.size.height))
+            
+            mainView.frame.size.width = max(mainView.frame.size.width, newView.frame.origin.x + newView.frame.size.width + treeOffset)
+            mainView.frame.size.height = max(mainView.frame.size.height, newView.frame.origin.y + newView.frame.size.height + treeOffset)
+            mainScrollView.contentSize = CGSize(width: mainView.frame.size.width, height: mainView.frame.size.height)
+            
             self.view = newView
             
             self.connectNodes(from: CGPoint(x: self.root.x, y: self.root.y), to: CGPoint(x: node.root.x, y: node.root.y), isDashed: true)
@@ -254,9 +260,11 @@ class Node {
             newView.addSubview(self.view)
             newView.addSubview(node.view)
             mainView.addSubview(newView)
-            mainView.contentSize = CGSize(
-                width: max(mainView.frame.size.width, newView.frame.origin.x + newView.frame.size.width),
-                height: max(mainView.frame.size.height, newView.frame.origin.y + newView.frame.size.height))
+            
+            mainView.frame.size.width = max(mainView.frame.size.width, newView.frame.origin.x + newView.frame.size.width + treeOffset)
+            mainView.frame.size.height = max(mainView.frame.size.height, newView.frame.origin.y + newView.frame.size.height + treeOffset)
+            mainScrollView.contentSize = CGSize(width: mainView.frame.size.width, height: mainView.frame.size.height)
+            
             self.view = newView
             
             
