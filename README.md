@@ -25,6 +25,14 @@ print(queue.first)
 print(queue.extractMin())
 ```
 
+```swift
+// find this line in the code
+let input = "a 42 b a 42 a 43 a 44 b b b"
+// change the value of input:
+// a 42 - insert element 42 in the queue
+// b - extract minimum element from the queue
+```
+
 Also you can use custom tests by runing functions:
 ```swift
 // testing functions.
@@ -50,6 +58,8 @@ test3(size: 100) // test #3 for 100 elements.
 // new element is generated each time, element has type of UInt32.
 test4(size: 100) // test #4 for 100 elements.
 ```
+
+
 You can find test version of presentation [here](docs/show.pptx).
 Some other testing data and diagrams can be found [here](docs).
 
