@@ -3,9 +3,9 @@ Visualize data structures (Skew Binomial Heap and Brodal-Okasaki Priority Queue)
 
 <img src="http://i.imgur.com/e5R2P7U.jpg" />
 
-You can test structure using Xcode with playground available [here](forest/MyPlayground.playground)</br>
+You can test structure using Xcode with playground available [here](forest/MyPlayground.playground).</br>
 All you need is to download MyPlayground.playground to your local pc and open it using Xcode.</br>
-Or you can try to use [swift online compiler](https://www.google.com/search?q=swift+online+compiler) by copy-pasting into it code [from here](forest/MyPlayground.playground/Contents.swift) (warning, this may not work as expected)
+Or you can try to use [swift online compiler](https://www.google.com/search?q=swift+online+compiler) by copy-pasting into it code [from here](forest/MyPlayground.playground/Contents.swift). (warning, this may not work as expected)
 ```swift
 // create new queue of integer type.
 var queue = BrodalPriorityQueue<Int>()
@@ -45,6 +45,14 @@ test2(size: 100) // test #2 for 100 elements.
 test3(size: 100) // test #3 for 100 elements.
 
 // test #4
-// this test inserts random elements (new element is generated each time, element has type of UInt32) 'size' times.
+// this test inserts random elements 'size' times.
+// new element is generated each time, element has type of UInt32.
 test4(size: 100) // test #4 for 100 elements.
 ```
+You can find test version of presentation [here](docs/show.pptx).
+Some other testing data and diagrams can be found [here](docs).
+
+
+
+Created by olderor.
+Copyright © 2016 olderor. All rights reserved.
