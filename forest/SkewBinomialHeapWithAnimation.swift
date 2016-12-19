@@ -271,40 +271,6 @@ class Node {
             self.connectNodes(from: CGPoint(x: self.root.x, y: self.root.y), to: CGPoint(x: node.root.x, y: node.root.y))
         }, completion: nil, type: .none)
     }
-    
-    func removeRoot() {
-        // to do
-        /*
-        AnimationManager.addAnimation(animation: {
-            print("change view parent")
-            self.view.removeFromSuperview()
-            node.view.removeFromSuperview()
-            
-            let newFrame = CGRect(
-                x: self.view.frame.origin.x - (node.frame.size.width + nodeOffset),
-                y: self.view.frame.origin.y,
-                width: self.view.frame.size.width + nodeOffset + node.view.frame.size.width,
-                height: node.view.frame.size.height + nodeSizeDifference)
-            
-            self.view.frame.origin.x = node.view.frame.size.width + nodeOffset
-            self.view.frame.origin.y = 0
-            
-            node.view.frame.origin.x = 0
-            node.view.frame.origin.y = nodeSizeDifference
-            
-            let newView = UIView(frame: newFrame)
-            newView.addSubview(self.view)
-            newView.addSubview(node.view)
-            mainView.addSubview(newView)
-            self.view = newView
-            let x = node.view.frame.origin.x + node.view.frame.size.width - size / 2
-            let y = node.view.frame.origin.y + size / 2
-            self.connectNodes(to: CGPoint(x: x, y: y))
-            
-            print("done")
-            sleep(0)
-            }, completion: nil, type: .none)*/
-    }
 }
 
 class HeapNodeAnimation<Element> : Node {
@@ -324,6 +290,20 @@ class HeapNodeAnimation<Element> : Node {
     
     func createNode() {
         createNode(text: String(describing: value))
+    }
+    
+    func removeRoot() {
+        // to do
+        AnimationManager.addAnimation(animation: {
+            self.view.removeFromSuperview()
+            
+            for view in self.view.subviews {
+                view.removeFromSuperview()
+                view.frame.origin.x += self.view.frame.origin.x
+                view.frame.origin.y += self.view.frame.origin.y
+                mainView.addSubview(view)
+            }
+        }, completion: nil, type: .transition)
     }
 }
 
@@ -549,6 +529,9 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
         let treeToRemove = trees[index]
         treeToRemove.changeBackground(color: .red)
         trees.remove(at: index)
+        
+        treeToRemove.removeRoot()
+        return
         mergeHeaps(first: trees, second: treeToRemove.childrens)
         
         while !treeToRemove.singletons.isEmpty {
