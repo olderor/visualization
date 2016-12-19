@@ -1,10 +1,5 @@
 //
 //  Deque.swift
-//  forest
-//
-//  Created by olderor on 15.12.16.
-//  Copyright © 2016 olderor. All rights reserved.
-//
 
 import Foundation
 
@@ -452,13 +447,11 @@ final class DequeBuffer<T> {
     }
 }
 
-// Private reimplementation of function with same name from stdlib/public/core/BuiltIn.swift
 func roundUp(_ offset: UInt, toAlignment alignment: Int) -> UInt {
     let x = offset + UInt(bitPattern: alignment) &- 1
     return x & ~(UInt(bitPattern: alignment) &- 1)
 }
 
-// Private reimplementation of definition from stdlib/public/SwiftShims/HeapObject.h
 struct HeapObject {
     let metadata: Int = 0
     let strongRefCount: UInt32 = 0
