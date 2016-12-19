@@ -55,5 +55,5 @@ Some other testing data and diagrams can be found [here](docs).
 
 
 
-Created by olderor.
+Created by olderor.</br>
 Copyright © 2016 olderor. All rights reserved.
