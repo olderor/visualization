@@ -11,9 +11,9 @@ import Foundation
 
 var mainView: UIView!
 
-let nodeOffset: CGFloat = 15
-let treeOffset: CGFloat = 30
-let size: CGFloat = 50
+let nodeOffset: CGFloat = 2
+let treeOffset: CGFloat = 5
+let size: CGFloat = 20
 let lineWidth: CGFloat = 2
 
 var nodeSizeDifference: CGFloat {
@@ -30,6 +30,22 @@ class Node {
     var frame: CGRect!
     
     private var root: CGPoint!
+    
+    func swapText(other: Node) {
+        AnimationManager.addAnimation(animation: {
+            self.label.layer.backgroundColor = UIColor.init(red: 0, green: 1, blue: 1, alpha: 1).cgColor
+            other.label.layer.backgroundColor = UIColor.init(red: 0, green: 1, blue: 1, alpha: 1).cgColor
+        }, completion: nil, type: .animation)
+        
+        AnimationManager.addAnimation(animation: {
+            swap(&self.label.text, &other.label.text)
+        }, completion: nil, type: .transition)
+        
+        AnimationManager.addAnimation(animation: {
+            self.label.layer.backgroundColor = UIColor.yellow.cgColor
+            other.label.layer.backgroundColor = UIColor.green.cgColor
+        }, completion: nil, type: .animation)
+    }
     
     func pulse() {
         select()
@@ -53,7 +69,7 @@ class Node {
     func disapear() {
         AnimationManager.addAnimation(animation: {
             self.view.removeFromSuperview()
-            }, completion: nil, type: .transition)
+        }, completion: nil, type: .transition)
     }
     
     func move(difX: CGFloat, difY: CGFloat) {
@@ -418,20 +434,7 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
         
         if singleton.value < newTree.value {
             swap(&singleton.value, &newTree.value)
-            
-            AnimationManager.addAnimation(animation: {
-                singleton.label.layer.backgroundColor = UIColor.init(red: 0, green: 255, blue: 255, alpha: 1).cgColor
-                newTree.label.layer.backgroundColor = UIColor.init(red: 0, green: 255, blue: 255, alpha: 1).cgColor
-            }, completion: nil, type: .animation)
-            
-            AnimationManager.addAnimation(animation: {
-                swap(&singleton.label.text, &newTree.label.text)
-            }, completion: nil, type: .transition)
-            
-            AnimationManager.addAnimation(animation: {
-                singleton.label.layer.backgroundColor = UIColor.yellow.cgColor
-                newTree.label.layer.backgroundColor = UIColor.green.cgColor
-            }, completion: nil, type: .animation)
+            singleton.swapText(other: newTree)
         }
         
         newTree.singletons.append(singleton)
