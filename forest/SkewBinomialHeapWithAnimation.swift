@@ -11,9 +11,11 @@ import Foundation
 
 var mainView: UIView!
 
-let nodeOffset: CGFloat = 5
-let treeOffset: CGFloat = 10
+let nodeOffset: CGFloat = 15
+let treeOffset: CGFloat = 30
 let size: CGFloat = 50
+let lineWidth: CGFloat = 2
+
 var nodeSizeDifference: CGFloat {
     return nodeOffset + size
 }
@@ -27,6 +29,8 @@ class Node {
     
     var frame: CGRect!
     
+    private var root: CGPoint!
+    
     func pulse() {
         select()
         deselect()
@@ -38,9 +42,7 @@ class Node {
     
     func changeBackground(color: UIColor) {
         AnimationManager.addAnimation(animation: {
-            print("changeBackground: " + self.label.text!)
             self.label.layer.backgroundColor = color.cgColor
-            sleep(0)
         }, completion: nil, type: .animation)
     }
     
@@ -51,7 +53,6 @@ class Node {
     func disapear() {
         AnimationManager.addAnimation(animation: {
             self.view.removeFromSuperview()
-            sleep(0)
             }, completion: nil, type: .transition)
     }
     
@@ -62,8 +63,7 @@ class Node {
         AnimationManager.addAnimation(animation: {
             self.view.frame.origin.x = self.view.frame.origin.x + difX
             self.view.frame.origin.y = self.view.frame.origin.y + difY
-            sleep(0)
-            }, completion: nil, type: .animation)
+        }, completion: nil, type: .animation)
     }
     
     func getMovesBlock(difX: CGFloat, difY: CGFloat) -> () -> Void {
@@ -78,6 +78,7 @@ class Node {
     
     func createNode(text: String) {
         frame = CGRect(x: nodeOffset, y: nodeOffset + 20, width: size, height: size)
+        root = CGPoint(x: size / 2, y: size / 2)
         view = UIView(frame: frame)
         label = UILabel(frame: CGRect(x: 0, y: 0, width: size, height: size))
         label.text = text
@@ -87,50 +88,48 @@ class Node {
         label.layer.cornerRadius = size / 2
         label.layer.masksToBounds = true
         label.layer.borderColor = UIColor.black.cgColor
-        label.layer.borderWidth = 2
+        label.layer.borderWidth = lineWidth
         view.addSubview(label)
         
         AnimationManager.addAnimation(animation: {
-            print("insertSingleton: addSubview")
-            
             mainView.addSubview(self.view)
-            
-            print("done")
-            sleep(0)
         }, completion: nil, type: .transition)
     }
     
     func swapNodes(other: Node) {
+        
         let difX = other.frame.origin.x - frame.origin.x
+        let difX2 = frame.origin.x + frame.size.width - other.frame.size.width - other.frame.origin.x
         let difY = other.frame.origin.y - frame.origin.y
         
         var animations = [() -> Void]()
         animations.append(getMovesBlock(difX: difX, difY: difY))
-        animations.append(other.getMovesBlock(difX: -difX, difY: -difY))
+        animations.append(other.getMovesBlock(difX: difX2, difY: -difY))
         AnimationManager.addAnimation(animation: {
-            print("swap trees: \(difX) \(difY)")
             for animation in animations {
                 animation()
             }
-            print("done")
-            sleep(0)
         }, completion: nil, type: .animation)
+        
     }
     
-    func connectNodes(to: CGPoint) {
+    func connectNodes(from: CGPoint, to: CGPoint, isDashed: Bool = false) {
         let path = UIBezierPath()
         
-        path.move(to: CGPoint(x: view.frame.width - size / 2, y: size / 2))
-        print("connecting: x: \(view.frame.width - size / 2), y: \(size / 2)")
-        path.addQuadCurve(to: to, controlPoint: CGPoint(x: to.x, y: size / 2))
-        print("connecting to x: \(to.x), y: \(to.y)")
+        path.move(to: from)
+        path.addQuadCurve(to: to, controlPoint: CGPoint(x: to.x, y: from.y))
         
         let layer = CAShapeLayer()
         layer.strokeColor = UIColor.black.cgColor
         layer.fillColor = nil
         layer.path = path.cgPath
-        layer.lineWidth = 2
+        layer.lineWidth = lineWidth
         layer.zPosition = -1
+        if isDashed {
+            layer.lineDashPattern = [0, NSNumber(value: Float(lineWidth * 4))]
+            layer.lineCap = kCALineCapRound
+        }
+        
         view.layer.addSublayer(layer)
     }
     
@@ -138,7 +137,6 @@ class Node {
         frame.size.height += nodeSizeDifference
         
         AnimationManager.addAnimation(animation: {
-            print("change view parent 0 order")
             self.view.removeFromSuperview()
             node.view.removeFromSuperview()
             
@@ -154,26 +152,88 @@ class Node {
             node.view.frame.origin.x = 0
             node.view.frame.origin.y = nodeSizeDifference
             
+            node.root.x = self.root.x
+            node.root.y = self.root.y + nodeSizeDifference
+            
             let newView = UIView(frame: newFrame)
             newView.addSubview(self.view)
             newView.addSubview(node.view)
             mainView.addSubview(newView)
             self.view = newView
-            let x = node.view.frame.origin.x + node.view.frame.size.width - size / 2
-            let y = node.view.frame.origin.y + size / 2
-            self.connectNodes(to: CGPoint(x: x, y: y))
             
-            print("done")
-            sleep(0)
-            }, completion: nil, type: .none)
+            self.connectNodes(from: CGPoint(x: self.root.x, y: self.root.y), to: CGPoint(x: node.root.x, y: node.root.y))
+        }, completion: nil, type: .none)
     }
     
-    func appendNode(node: Node) {
-        
+    func appendSingleton(node: Node) {
         frame.size.width += node.frame.size.width + nodeOffset
+        AnimationManager.addAnimation(animation: {
+            self.view.removeFromSuperview()
+            node.view.removeFromSuperview()
+            
+            let newFrame = CGRect(
+                x: self.view.frame.origin.x,
+                y: self.view.frame.origin.y,
+                width: self.view.frame.size.width + node.view.frame.size.width + nodeOffset,
+                height: self.view.frame.size.height)
+            
+            self.view.frame.origin.x = 0
+            self.view.frame.origin.y = 0
+            
+            node.view.frame.origin.x = self.view.frame.size.width + nodeOffset
+            node.view.frame.origin.y = nodeSizeDifference
+            
+            node.root.x += self.view.frame.size.width + nodeOffset
+            node.root.y += nodeSizeDifference
+            
+            let newView = UIView(frame: newFrame)
+            newView.addSubview(self.view)
+            newView.addSubview(node.view)
+            mainView.addSubview(newView)
+            self.view = newView
+            
+            self.connectNodes(from: CGPoint(x: self.root.x, y: self.root.y), to: CGPoint(x: node.root.x, y: node.root.y), isDashed: true)
+        }, completion: nil, type: .none)
+    }
+    
+    func appendChild(node: Node) {
+        
         frame.origin.x -= node.frame.size.width + nodeOffset
+        frame.size.width += node.frame.size.width + nodeOffset
         frame.size.height = node.frame.size.height + nodeSizeDifference
         
+        AnimationManager.addAnimation(animation: {
+            self.view.removeFromSuperview()
+            node.view.removeFromSuperview()
+            
+            let newFrame = CGRect(
+                x: self.view.frame.origin.x - (node.view.frame.size.width + nodeOffset),
+                y: self.view.frame.origin.y,
+                width: self.view.frame.size.width + nodeOffset + node.view.frame.size.width,
+                height: node.view.frame.size.height + nodeSizeDifference)
+            
+            self.view.frame.origin.x = node.view.frame.size.width + nodeOffset
+            self.view.frame.origin.y = 0
+            
+            node.view.frame.origin.x = 0
+            node.view.frame.origin.y = nodeSizeDifference
+            self.root.x += node.view.frame.width + nodeOffset
+            node.root.y += nodeSizeDifference
+            
+            let newView = UIView(frame: newFrame)
+            newView.addSubview(self.view)
+            newView.addSubview(node.view)
+            mainView.addSubview(newView)
+            self.view = newView
+            
+            
+            self.connectNodes(from: CGPoint(x: self.root.x, y: self.root.y), to: CGPoint(x: node.root.x, y: node.root.y))
+        }, completion: nil, type: .none)
+    }
+    
+    func removeRoot() {
+        // to do
+        /*
         AnimationManager.addAnimation(animation: {
             print("change view parent")
             self.view.removeFromSuperview()
@@ -202,7 +262,7 @@ class Node {
             
             print("done")
             sleep(0)
-        }, completion: nil, type: .none)
+            }, completion: nil, type: .none)*/
     }
 }
 
@@ -307,7 +367,7 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
             second.move(difX: nodeSizeDifference - treeSizeDifference, difY: 0)
             first.deselect()
             second.deselect()
-            second.appendNode(node: first)
+            second.appendChild(node: first)
             second.pulse()
             moveTrees(difX: nodeSizeDifference - treeSizeDifference, difY: 0)
         }
@@ -321,14 +381,9 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
             animations.append(tree.getMovesBlock(difX: difX, difY: difY))
         }
         AnimationManager.addAnimation(animation: {
-            var counter = 0
-            print("moveTrees: \(difX) \(difY)")
             for animation in animations {
                 animation()
-                counter += 1
             }
-            print("done \(counter)")
-            sleep(0)
         }, completion: nil, type: .animation)
     }
     
@@ -363,21 +418,32 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
         
         if singleton.value < newTree.value {
             swap(&singleton.value, &newTree.value)
+            
+            AnimationManager.addAnimation(animation: {
+                singleton.label.layer.backgroundColor = UIColor.init(red: 0, green: 255, blue: 255, alpha: 1).cgColor
+                newTree.label.layer.backgroundColor = UIColor.init(red: 0, green: 255, blue: 255, alpha: 1).cgColor
+            }, completion: nil, type: .animation)
+            
             AnimationManager.addAnimation(animation: {
                 swap(&singleton.label.text, &newTree.label.text)
-                print("done")
-                sleep(0)
+            }, completion: nil, type: .transition)
+            
+            AnimationManager.addAnimation(animation: {
+                singleton.label.layer.backgroundColor = UIColor.yellow.cgColor
+                newTree.label.layer.backgroundColor = UIColor.green.cgColor
             }, completion: nil, type: .animation)
         }
         
         newTree.singletons.append(singleton)
         
-        // remove from view, now it's stored in the newTree.
+        newTree.swapNodes(other: singleton)
+        singleton.move(difX: nodeSizeDifference - treeSizeDifference, difY: nodeSizeDifference)
+        newTree.appendSingleton(node: singleton)
         singleton.deselect()
-        singleton.disapear()
+        newTree.deselect()
         
+        moveTrees(difX: nodeSizeDifference - treeSizeDifference, difY: 0)
         trees.prepend(newTree)
-        moveTrees(difX: -treeSizeDifference, difY: 0)
     }
     
     func push(element: Element) {
@@ -453,6 +519,7 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
         
         let index = findMinIndex()
         let treeToRemove = trees[index]
+        treeToRemove.changeBackground(color: .red)
         trees.remove(at: index)
         mergeHeaps(first: trees, second: treeToRemove.childrens)
         
