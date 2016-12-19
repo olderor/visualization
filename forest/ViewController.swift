@@ -18,7 +18,7 @@ class ViewController: UIViewController {
         print("done")
         
         let skewHeap = SkewBinomialHeapAnimation<Int>()
-        for _ in 0..<200 {
+        for _ in 0..<2048 {
             let element = Int(arc4random() % 100)
             skewHeap.push(element: element)
             print("push \(element)")
