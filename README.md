@@ -31,6 +31,7 @@ let input = "a 42 b a 42 a 43 a 44 b b b"
 // change the value of input:
 // a 42 - insert element 42 in the queue
 // b - extract minimum element from the queue
+// all commands should be separated by spaces ' '
 ```
 
 Also you can use custom tests by runing functions:
