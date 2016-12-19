@@ -74,6 +74,10 @@ class Node {
         }, completion: nil, type: .transition)
     }
     
+    func moveTo(x: CGFloat, y: CGFloat) {
+        move(difX: frame.origin.x - x, difY: frame.origin.y - y)
+    }
+    
     func move(difX: CGFloat, difY: CGFloat) {
         frame.origin.x = frame.origin.x + difX
         frame.origin.y = frame.origin.y + difY
@@ -86,6 +90,10 @@ class Node {
             mainView.frame.size.height = max(mainView.frame.size.height, self.view.frame.origin.y + self.view.frame.size.height + treeOffset)
             mainScrollView.contentSize = CGSize(width: mainView.frame.size.width, height: mainView.frame.size.height)
         }, completion: nil, type: .animation)
+    }
+    
+    func getMovesToBlock(x: CGFloat, y: CGFloat) -> () -> Void {
+        return getMovesBlock(difX: frame.origin.x - x, difY: frame.origin.y - y)
     }
     
     func getMovesBlock(difX: CGFloat, difY: CGFloat) -> () -> Void {
@@ -295,15 +303,32 @@ class HeapNodeAnimation<Element> : Node {
     func removeRoot() {
         // to do
         AnimationManager.addAnimation(animation: {
-            self.view.removeFromSuperview()
             
-            for view in self.view.subviews {
+            func removeRootInView(view: UIView, x: CGFloat, y: CGFloat) {
                 view.removeFromSuperview()
-                view.frame.origin.x += self.view.frame.origin.x
-                view.frame.origin.y += self.view.frame.origin.y
-                mainView.addSubview(view)
+                if view.isKind(of: UILabel.self) || view.subviews.count == 0 {
+                    print("removing")
+                    print((view as? UILabel)?.text)
+                    return
+                }
+                let subview = view.subviews[0]
+                removeRootInView(view: subview, x: x + subview.frame.origin.x, y: y + subview.frame.origin.y)
+                for view in subview.subviews {
+                    view.removeFromSuperview()
+                    view.frame.origin.x += x
+                    view.frame.origin.y += y
+                    mainView.addSubview(view)
+                }
+                for view in view.subviews {
+                    view.removeFromSuperview()
+                    view.frame.origin.x += x
+                    view.frame.origin.y += y
+                    mainView.addSubview(view)
+                }
             }
-        }, completion: nil, type: .transition)
+            
+            removeRootInView(view: self.view, x: self.view.frame.origin.x, y: self.view.frame.origin.y)
+        }, completion: nil, type: .none)
     }
 }
 
@@ -477,6 +502,22 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
         return index
     }
     
+    private func reshowTrees(trees: Deque<HeapNodeAnimation<Element>>) {
+        var curX = nodeOffset
+        var animations = [() -> Void]()
+        
+        for tree in trees {
+            animations.append(tree.getMovesToBlock(x: curX, y: nodeOffset))
+            curX += tree.frame.size.width + treeOffset
+        }
+        
+        AnimationManager.addAnimation(animation: {
+            for animation in animations {
+                animation()
+            }
+        }, completion: nil, type: .animation)
+    }
+    
     private func mergeHeaps(
         first: Deque<HeapNodeAnimation<Element>>,
         second: Deque<HeapNodeAnimation<Element>>) {
@@ -497,6 +538,10 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
         while !second.isEmpty {
             result.append(second.removeFirst())
         }
+        
+        reshowTrees(trees: result)
+        
+        return
         
         while !result.isEmpty {
             var treesWithSameOrder = Deque<HeapNodeAnimation<Element>>()
@@ -528,12 +573,14 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
         let index = findMinIndex()
         let treeToRemove = trees[index]
         treeToRemove.changeBackground(color: .red)
-        trees.remove(at: index)
-        
+        treeToRemove.changeBackground(color: .white)
+        treeToRemove.changeBackground(color: .red)
         treeToRemove.removeRoot()
-        return
+        
+        trees.remove(at: index)
         mergeHeaps(first: trees, second: treeToRemove.childrens)
         
+        return
         while !treeToRemove.singletons.isEmpty {
             insertSingleton(singleton: treeToRemove.singletons.removeFirst())
         }

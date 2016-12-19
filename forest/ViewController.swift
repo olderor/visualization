@@ -41,7 +41,7 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         
         
         let skewHeap = SkewBinomialHeapAnimation<Int>()
-        for _ in 0..<4 {
+        for _ in 0..<14 {
             let element = Int(arc4random() % 100)
             skewHeap.push(element: element)
             print("push \(element)")
