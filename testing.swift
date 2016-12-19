@@ -965,25 +965,21 @@ func test4(size: Int) {
 }
 
 
-func run() {
+func run(input: String) {
     let queue = BrodalPriorityQueue<Int>()
     let data = input.components(separatedBy: " ")
     var index = 0
     while index < data.count {
-        if data[index] == "a" {
-            index += 1
+        if data[index] == "q" {
+            print(queue.extractMin())
+        } else {
             queue.insert(element: Int(data[index])!)
-            index += 1
-            continue
         }
-        print(queue.extractMin())
         index += 1
     }
 }
 
-let input = "a 42 b a 42 a 43 a 44 b b b"
-
-run()
+run(input: "1 2 3 4 5 q 4 3 5 q 2 3 4 q q q q q q q q q q")
 
 
 
