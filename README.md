@@ -1,12 +1,12 @@
 <h1>visualization</h1>
 Visualize data structures (Skew Binomial Heap and Brodal-Okasaki Priority Queue)
-
+</br>
 <h3>Click on the cat to watch the video-demo.</h3>
 [![ScreenShot](http://i.imgur.com/e5R2P7U.jpg)](https://vk.com/video79766031_456239032)
-
+</br></br>
 You can test structure using Xcode with playground available [here](forest/MyPlayground.playground).</br>
-All you need is to download 'MyPlayground.playground' to your local pc and open it using Xcode.</br>
-Or you can try to use [swift online compiler](https://www.google.com/search?q=swift+online+compiler) (I would recomend [this one](http://www.runswiftlang.com/)) by copy-pasting into it [code from here](testing.swift). (warning, this may not work as expected)
+All you need is to download 'MyPlayground.playground' to your local pc and open it using Xcode.</br></br>
+Or you can try to use [swift online compiler](https://www.google.com/search?q=swift+online+compiler) (I would recomend [this one](http://www.runswiftlang.com/)) by copy-pasting into it [code from here](testing.swift). (warning, this may not work as expected)</br>
 ```swift
 // type your code at the end of the file containing source code.
 // create new queue of integer type.
