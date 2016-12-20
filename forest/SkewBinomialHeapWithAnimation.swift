@@ -571,12 +571,13 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
                 let firstTree = treesWithSameOrder.removeFirst()
                 let secondTree = treesWithSameOrder.removeFirst()
                 first.append(merge(first: firstTree, second: secondTree)!)
-                firstTree.deselect()
-                secondTree.deselect()
                 
                 var animations = [() -> Void]()
                 for tree in treesWithSameOrder {
-                    animations.append(tree.getMovesBlock(difX: -nodeSizeDifference, difY: 0))
+                    animations.append(tree.getMovesBlock(difX: -treeSizeDifference, difY: 0))
+                }
+                for tree in result {
+                    animations.append(tree.getMovesBlock(difX: -treeSizeDifference, difY: 0))
                 }
                 
                 AnimationManager.addAnimation(animation: {
