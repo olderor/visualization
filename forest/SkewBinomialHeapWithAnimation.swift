@@ -11,18 +11,19 @@ import Foundation
 
 var mainScrollView: UIScrollView!
 var mainView: UIView!
+var singletonsStackView: UIView!
 
 let nodeOffset: CGFloat = 10
 let treeOffset: CGFloat = 25
-let size: CGFloat = 50
+let nodeSize: CGFloat = 50
 let lineWidth: CGFloat = 2
 let fontSize: CGFloat = 20
 
 var nodeSizeDifference: CGFloat {
-    return nodeOffset + size
+    return nodeOffset + nodeSize
 }
 var treeSizeDifference: CGFloat {
-    return treeOffset + size
+    return treeOffset + nodeSize
 }
 
 class Node {
@@ -93,7 +94,17 @@ class Node {
     }
     
     func getMovesToBlock(x: CGFloat, y: CGFloat) -> () -> Void {
-        return getMovesBlock(difX: frame.origin.x - x, difY: frame.origin.y - y)
+        frame.origin.x = x
+        frame.origin.y = y
+        
+        return {
+            self.view.frame.origin.x = x
+            self.view.frame.origin.y = y
+            
+            mainView.frame.size.width = max(mainView.frame.size.width, self.view.frame.origin.x + self.view.frame.size.width + treeOffset)
+            mainView.frame.size.height = max(mainView.frame.size.height, self.view.frame.origin.y + self.view.frame.size.height + treeOffset)
+            mainScrollView.contentSize = CGSize(width: mainView.frame.size.width, height: mainView.frame.size.height)
+        }
     }
     
     func getMovesBlock(difX: CGFloat, difY: CGFloat) -> () -> Void {
@@ -111,15 +122,15 @@ class Node {
     }
     
     func createNode(text: String) {
-        frame = CGRect(x: nodeOffset, y: nodeOffset + 20, width: size, height: size)
-        root = CGPoint(x: size / 2, y: size / 2)
+        frame = CGRect(x: nodeOffset, y: nodeOffset + 20, width: nodeSize, height: nodeSize)
+        root = CGPoint(x: nodeSize / 2, y: nodeSize / 2)
         view = UIView(frame: frame)
-        label = UILabel(frame: CGRect(x: 0, y: 0, width: size, height: size))
+        label = UILabel(frame: CGRect(x: 0, y: 0, width: nodeSize, height: nodeSize))
         label.text = text
         label.font = label.font.withSize(fontSize)
         label.textAlignment = .center
         label.layer.backgroundColor = UIColor.green.cgColor
-        label.layer.cornerRadius = size / 2
+        label.layer.cornerRadius = nodeSize / 2
         label.layer.masksToBounds = true
         label.layer.borderColor = UIColor.black.cgColor
         label.layer.borderWidth = lineWidth
@@ -301,7 +312,7 @@ class HeapNodeAnimation<Element> : Node {
     }
     
     func removeRoot() {
-        // to do
+        
         AnimationManager.addAnimation(animation: {
             
             func removeRootInView(view: UIView, x: CGFloat, y: CGFloat) {
@@ -316,13 +327,13 @@ class HeapNodeAnimation<Element> : Node {
                 for view in subview.subviews {
                     view.removeFromSuperview()
                     view.frame.origin.x += x
-                    view.frame.origin.y += y
+                    view.frame.origin.y += y - nodeOffset
                     mainView.addSubview(view)
                 }
                 for view in view.subviews {
                     view.removeFromSuperview()
                     view.frame.origin.x += x
-                    view.frame.origin.y += y
+                    view.frame.origin.y += y - nodeOffset
                     mainView.addSubview(view)
                 }
             }
@@ -507,7 +518,7 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
         var animations = [() -> Void]()
         
         for tree in trees {
-            animations.append(tree.getMovesToBlock(x: curX, y: nodeOffset))
+            animations.append(tree.getMovesToBlock(x: curX, y: treeOffset))
             curX += tree.frame.size.width + treeOffset
         }
         
@@ -541,27 +552,93 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
         
         reshowTrees(trees: result)
         
-        return
-        
         while !result.isEmpty {
             var treesWithSameOrder = Deque<HeapNodeAnimation<Element>>()
-            treesWithSameOrder.append(result.removeFirst())
+            let tree = result.removeFirst()
+            tree.select()
+            treesWithSameOrder.append(tree)
             
             while !result.isEmpty &&
                 result.first!.order == treesWithSameOrder.first!.order {
-                    treesWithSameOrder.append(result.removeFirst())
+                    let tree = result.removeFirst()
+                    tree.select()
+                    treesWithSameOrder.append(tree)
             }
             
             if treesWithSameOrder.count % 2 == 1 {
-                first.append(treesWithSameOrder.removeFirst())
+                let tree = treesWithSameOrder.removeFirst()
+                tree.deselect()
+                first.append(tree)
             }
             
             while !treesWithSameOrder.isEmpty {
                 let firstTree = treesWithSameOrder.removeFirst()
                 let secondTree = treesWithSameOrder.removeFirst()
                 first.append(merge(first: firstTree, second: secondTree)!)
+                firstTree.deselect()
+                secondTree.deselect()
+                
+                var animations = [() -> Void]()
+                for tree in treesWithSameOrder {
+                    animations.append(tree.getMovesBlock(difX: -nodeSizeDifference, difY: 0))
+                }
+                
+                AnimationManager.addAnimation(animation: {
+                    for animation in animations {
+                        animation()
+                    }
+                }, completion: nil, type: .animation)
             }
         }
+    }
+    
+    private func moveSingletons(singletons: Deque<HeapNodeAnimation<Element>>) {
+        
+        
+        var animations = [() -> Void]()
+        var animationsAfter = [() -> Void]()
+        
+        animationsAfter.append() {
+            singletonsStackView.frame.origin.y -= nodeOffset * 2 + nodeSize
+            singletonsStackView.frame.size.height = nodeOffset * 2 + nodeSize
+            mainScrollView.frame.size.height -= nodeOffset * 2 + nodeSize
+            singletonsStackView.layer.borderWidth = lineWidth
+            singletonsStackView.layer.borderColor = UIColor.green.cgColor
+        }
+        
+        var x: CGFloat = nodeOffset
+        for singleton in singletons {
+            
+            let moveToX = x
+            animations.append() {
+                singleton.view.frame.origin.x = moveToX
+                singleton.view.frame.origin.y = singletonsStackView.frame.origin.y + nodeOffset
+            }
+            
+            singleton.frame.origin.x = moveToX
+            singleton.frame.origin.y = nodeOffset
+            
+            
+            animationsAfter.append() {
+                singleton.view.removeFromSuperview()
+                singleton.view.frame.origin.y = nodeOffset
+                singletonsStackView.addSubview(singleton.view)
+            }
+            
+            x += nodeSize + nodeOffset
+        }
+        
+        AnimationManager.addAnimation(animation: {
+            for animation in animations {
+                animation()
+            }
+        }, completion: nil, type: .animation)
+        
+        AnimationManager.addAnimation(animation: {
+            for animation in animationsAfter {
+                animation()
+            }
+        }, completion: nil, type: .animation)
     }
     
     func pop() {
@@ -578,12 +655,39 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
         treeToRemove.removeRoot()
         
         trees.remove(at: index)
+        
+        moveSingletons(singletons: treeToRemove.singletons)
+        
         mergeHeaps(first: trees, second: treeToRemove.childrens)
         
-        return
+        
         while !treeToRemove.singletons.isEmpty {
-            insertSingleton(singleton: treeToRemove.singletons.removeFirst())
+            let tree = treeToRemove.singletons.removeFirst()
+            let treeView = tree.view!
+            tree.changeBackground(color: .green)
+            insertSingleton(singleton: HeapNodeAnimation<Element>(value: tree.value))
+            
+            AnimationManager.addAnimation(animation: {
+                treeView.removeFromSuperview()
+            }, completion: nil, type: .transition)
+            
+            var animations = [() -> Void]()
+            for tree in treeToRemove.singletons {
+                animations.append(tree.getMovesBlock(difX: -nodeSizeDifference, difY: 0))
+            }
+            AnimationManager.addAnimation(animation: {
+                for animation in animations {
+                    animation()
+                }
+            }, completion: nil, type: .animation)
+            
         }
+        
+        AnimationManager.addAnimation(animation: {
+            singletonsStackView.frame.origin.y += nodeSize + nodeOffset * 2
+            singletonsStackView.frame.size.height = 0
+            mainScrollView.frame.size.height += nodeSize + nodeOffset * 2
+        }, completion: nil, type: .animation)
         
         elementsCount -= 1
     }

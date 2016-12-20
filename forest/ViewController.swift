@@ -17,31 +17,50 @@ class ViewController: UIViewController, UIScrollViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let scrollView = UIScrollView(frame: self.view.frame)
-        let subView = UIView(frame: self.view.frame)
-        self.view.addSubview(scrollView)
-        scrollView.addSubview(subView)
+        mainScrollView = UIScrollView(frame: self.view.frame)
+        mainView = UIView(frame: self.view.frame)
         
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        let view = UIView(frame: self.view.frame)
         
-        scrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0).isActive = true
-        scrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 0).isActive = true
-        scrollView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 20).isActive = true
-        scrollView.bottomAnchor.constraint(equalTo: speedView.topAnchor, constant: 0).isActive = true
+        self.view.addSubview(view)
+        view.addSubview(mainScrollView)
+        mainScrollView.addSubview(mainView)
+        
+        singletonsStackView = UIView(frame: CGRect(x: 0, y: speedView.frame.origin.y, width: self.view.frame.size.width, height: 0))
+        view.addSubview(singletonsStackView)
+        
+        
+        singletonsStackView.translatesAutoresizingMaskIntoConstraints = false
+        mainScrollView.translatesAutoresizingMaskIntoConstraints = false
+        view.translatesAutoresizingMaskIntoConstraints = false
+        
+        
+        view.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0).isActive = true
+        view.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 0).isActive = true
+        view.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 20).isActive = true
+        view.bottomAnchor.constraint(equalTo: speedView.topAnchor, constant: 0).isActive = true
+        
+        
+        mainScrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0).isActive = true
+        mainScrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 0).isActive = true
+        mainScrollView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 20).isActive = true
+        mainScrollView.bottomAnchor.constraint(equalTo: speedView.topAnchor, constant: 0).isActive = true
+        
+        
+        singletonsStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
+        singletonsStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+        singletonsStackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
         
         
         
-        scrollView.delegate = self
-        scrollView.minimumZoomScale = CGFloat.leastNormalMagnitude
-        scrollView.maximumZoomScale = CGFloat.greatestFiniteMagnitude
+        mainScrollView.delegate = self
+        mainScrollView.minimumZoomScale = CGFloat.leastNormalMagnitude
+        mainScrollView.maximumZoomScale = CGFloat.greatestFiniteMagnitude
 
-        mainScrollView = scrollView
-        mainView = subView
-        
         
         
         let skewHeap = SkewBinomialHeapAnimation<Int>()
-        for _ in 0..<14 {
+        for _ in 0..<16 {
             let element = Int(arc4random() % 100)
             skewHeap.push(element: element)
             print("push \(element)")
