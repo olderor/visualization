@@ -18,7 +18,7 @@ class SpeedView : UIView {
     
     @IBAction func sliderValueChanged(sender: UISlider) {
         AnimationManager.defaultDuration = Double(Int(sender.value)) / 100.0
-        label.text = "Speed \(AnimationManager.defaultDuration)"
+        label.text = "Speed \(AnimationManager.defaultDuration) seconds per operation"
     }
     
     
