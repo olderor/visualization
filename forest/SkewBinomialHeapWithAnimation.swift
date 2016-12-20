@@ -32,7 +32,7 @@ class Node {
     
     var frame: CGRect!
     
-    var root: CGPoint!
+    private var root: CGPoint!
     
     func swapText(other: Node) {
         AnimationManager.addAnimation(animation: {
@@ -179,11 +179,9 @@ class Node {
     }
     
     func appendToZeroOrderNode(node: Node) {
-        print("connecting one node \(label.text!) to \(node.label.text!)")
         frame.size.height += nodeSizeDifference
         
         AnimationManager.addAnimation(animation: {
-            print("connected one node \(self.label.text!) to \(node.label.text!)")
             self.view.removeFromSuperview()
             node.view.removeFromSuperview()
             
@@ -215,10 +213,8 @@ class Node {
     }
     
     func appendSingleton(node: Node) {
-        print("connecting singlenton \(label.text!) to \(node.label.text!)")
         frame.size.width += node.frame.size.width + nodeOffset
         AnimationManager.addAnimation(animation: {
-            print("connected singleton \(self.label.text!) to \(node.label.text!)")
             self.view.removeFromSuperview()
             node.view.removeFromSuperview()
             
@@ -253,13 +249,11 @@ class Node {
     
     func appendChild(node: Node) {
         
-        print("connecting child \(label.text!) to \(node.label.text!)")
         frame.origin.x -= node.frame.size.width + nodeOffset
         frame.size.width += node.frame.size.width + nodeOffset
         frame.size.height = node.frame.size.height + nodeSizeDifference
         
         AnimationManager.addAnimation(animation: {
-            print("connected child \(self.label.text!) to \(node.label.text!)")
             self.view.removeFromSuperview()
             node.view.removeFromSuperview()
             
@@ -524,12 +518,7 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
             print("order \(tree.order)")
         }
         
-        let curTrees = trees
         AnimationManager.addAnimation(animation: {
-            for tree in curTrees {
-                print("tree x: \(tree.view.frame.origin.x), y: \(tree.view.frame.origin.y), width: \(tree.view.frame.size.width), height: \(tree.view.frame.size.height),")
-                print("root x: \(tree.root.x), y: \(tree.root.y)")
-            }
             for animation in animations {
                 animation()
             }
