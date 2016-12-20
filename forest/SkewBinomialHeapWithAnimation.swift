@@ -32,7 +32,7 @@ class Node {
     
     var frame: CGRect!
     
-    private var root: CGPoint!
+    var root: CGPoint!
     
     func swapText(other: Node) {
         AnimationManager.addAnimation(animation: {
@@ -122,7 +122,7 @@ class Node {
     }
     
     func createNode(text: String) {
-        frame = CGRect(x: nodeOffset, y: nodeOffset + 20, width: nodeSize, height: nodeSize)
+        frame = CGRect(x: nodeOffset, y: nodeOffset, width: nodeSize, height: nodeSize)
         root = CGPoint(x: nodeSize / 2, y: nodeSize / 2)
         view = UIView(frame: frame)
         label = UILabel(frame: CGRect(x: 0, y: 0, width: nodeSize, height: nodeSize))
@@ -179,9 +179,11 @@ class Node {
     }
     
     func appendToZeroOrderNode(node: Node) {
+        print("connecting one node \(label.text!) to \(node.label.text!)")
         frame.size.height += nodeSizeDifference
         
         AnimationManager.addAnimation(animation: {
+            print("connected one node \(self.label.text!) to \(node.label.text!)")
             self.view.removeFromSuperview()
             node.view.removeFromSuperview()
             
@@ -197,9 +199,6 @@ class Node {
             node.view.frame.origin.x = 0
             node.view.frame.origin.y = nodeSizeDifference
             
-            node.root.x = self.root.x
-            node.root.y = self.root.y + nodeSizeDifference
-            
             let newView = UIView(frame: newFrame)
             newView.addSubview(self.view)
             newView.addSubview(node.view)
@@ -211,13 +210,15 @@ class Node {
             
             self.view = newView
             
-            self.connectNodes(from: CGPoint(x: self.root.x, y: self.root.y), to: CGPoint(x: node.root.x, y: node.root.y))
+            self.connectNodes(from: CGPoint(x: self.root.x, y: self.root.y), to: CGPoint(x: self.root.x, y: self.root.y + nodeSizeDifference))
         }, completion: nil, type: .none)
     }
     
     func appendSingleton(node: Node) {
+        print("connecting singlenton \(label.text!) to \(node.label.text!)")
         frame.size.width += node.frame.size.width + nodeOffset
         AnimationManager.addAnimation(animation: {
+            print("connected singleton \(self.label.text!) to \(node.label.text!)")
             self.view.removeFromSuperview()
             node.view.removeFromSuperview()
             
@@ -233,8 +234,7 @@ class Node {
             node.view.frame.origin.x = self.view.frame.size.width + nodeOffset
             node.view.frame.origin.y = nodeSizeDifference
             
-            node.root.x += self.view.frame.size.width + nodeOffset
-            node.root.y += nodeSizeDifference
+            let width = self.view.frame.size.width
             
             let newView = UIView(frame: newFrame)
             newView.addSubview(self.view)
@@ -247,17 +247,19 @@ class Node {
             
             self.view = newView
             
-            self.connectNodes(from: CGPoint(x: self.root.x, y: self.root.y), to: CGPoint(x: node.root.x, y: node.root.y), isDashed: true)
+            self.connectNodes(from: CGPoint(x: self.root.x, y: self.root.y), to: CGPoint(x: node.root.x + width + nodeOffset, y: node.root.y + nodeSizeDifference), isDashed: true)
         }, completion: nil, type: .none)
     }
     
     func appendChild(node: Node) {
         
+        print("connecting child \(label.text!) to \(node.label.text!)")
         frame.origin.x -= node.frame.size.width + nodeOffset
         frame.size.width += node.frame.size.width + nodeOffset
         frame.size.height = node.frame.size.height + nodeSizeDifference
         
         AnimationManager.addAnimation(animation: {
+            print("connected child \(self.label.text!) to \(node.label.text!)")
             self.view.removeFromSuperview()
             node.view.removeFromSuperview()
             
@@ -273,7 +275,6 @@ class Node {
             node.view.frame.origin.x = 0
             node.view.frame.origin.y = nodeSizeDifference
             self.root.x += node.view.frame.width + nodeOffset
-            node.root.y += nodeSizeDifference
             
             let newView = UIView(frame: newFrame)
             newView.addSubview(self.view)
@@ -287,7 +288,7 @@ class Node {
             self.view = newView
             
             
-            self.connectNodes(from: CGPoint(x: self.root.x, y: self.root.y), to: CGPoint(x: node.root.x, y: node.root.y))
+            self.connectNodes(from: CGPoint(x: self.root.x, y: self.root.y), to: CGPoint(x: node.root.x, y: node.root.y + nodeSizeDifference))
         }, completion: nil, type: .none)
     }
 }
@@ -518,11 +519,17 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
         var animations = [() -> Void]()
         
         for tree in trees {
-            animations.append(tree.getMovesToBlock(x: curX, y: treeOffset))
+            animations.append(tree.getMovesToBlock(x: curX, y: nodeOffset))
             curX += tree.frame.size.width + treeOffset
+            print("order \(tree.order)")
         }
         
+        let curTrees = trees
         AnimationManager.addAnimation(animation: {
+            for tree in curTrees {
+                print("tree x: \(tree.view.frame.origin.x), y: \(tree.view.frame.origin.y), width: \(tree.view.frame.size.width), height: \(tree.view.frame.size.height),")
+                print("root x: \(tree.root.x), y: \(tree.root.y)")
+            }
             for animation in animations {
                 animation()
             }
