@@ -90,13 +90,23 @@ class AnimationManager {
     }
     
     
-    static func playAnimation() {
+    private static var completionBlock: (() -> Void)?
+    
+    private static func playAnimation() {
         isRunning = true
         if animations.isEmpty {
             isRunning = false
+            if completionBlock != nil {
+                completionBlock!()
+            }
             return
         }
         let animation = animations.removeFirst()
         animation.play(onComplete: playAnimation)
+    }
+    
+    static func play(completion: (() -> Void)?) {
+        completionBlock = completion
+        playAnimation()
     }
 }

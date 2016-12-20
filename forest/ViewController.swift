@@ -61,20 +61,39 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         
         let skewHeap = SkewBinomialHeapAnimation<Int>()
         
-        for _ in 0..<22 {
-            let element = Int(arc4random() % 100)
-            skewHeap.push(element: element)
-            print("push \(element)")
-        }
-        for _ in 0..<Int(arc4random() % 10) {
-            print(skewHeap.pop())
-        }
+        var result = ""
         
+        for _ in 0...3 {
+            for _ in 0..<Int(arc4random() % 20) + 5 {
+                let element = Int(arc4random() % 100)
+                skewHeap.push(element: element)
+                print("push \(element)")
+            }
+            for _ in 0..<Int(arc4random() % 10) {
+                let element = skewHeap.first
+                skewHeap.pop()
+                if element != nil {
+                    print(element!)
+                    result += " \(element!)"
+                }
+            }
+            result += "\n"
+        }
         while !skewHeap.isEmpty {
-            print(skewHeap.pop())
+            let element = skewHeap.first
+            skewHeap.pop()
+            if element != nil {
+                print(element!)
+                result += " \(element!)"
+            }
         }
-        AnimationManager.playAnimation()
         
+        
+        let alert = UIAlertController(title: "Done", message: result, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        
+        
+        AnimationManager.play(completion: ) { self.present(alert, animated: true, completion: nil) }
     }
 
     override func didReceiveMemoryWarning() {
@@ -89,8 +108,28 @@ class ViewController: UIViewController, UIScrollViewDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return mainView
     }
-    
-
 
 }
+
+/*
+ 
+ 
+ 4 16 57 56 82 90 12 7 90 54 61 70 54 97 
+ - 4 7 12 16 54 54 56
+ 76 64 43 73 60 20 32 38 82 9 31 63 45 63 87
+ - 9 20 31 32 38 43 45 57 60
+ 2 69 17 48 28 43 49 87 96 82 81 41 77 1 89 52 15 90 15 59 20 36 10 86 23
+ - 1 2 10 15 15 17 20 23 28 36 41 43 48 49 52 59 61 63 63 64 69 70 73 76 77 81 82 82 82 86 87
+ - 87 89 90 90 90 96 97
+ 
+ 
+ 
+     
+ - 4 7 12 16 54 54 56
+ 
+ - 9 20 31 32 38 43 45 57 60
+ 
+ - 1 2 10 15 15 17 20 23 28 36 41 43 48 49 52 59 61 63 63 64 69 70 73 76 77 81 82 82 82 86 87
+ - 87 89 90 90 90 96 97
+ */
 
