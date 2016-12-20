@@ -609,7 +609,7 @@ class SkewBinomialHeap<Element: Comparable> {
             while !treesWithSameOrder.isEmpty {
                 let firstTree = treesWithSameOrder.removeFirst()
                 let secondTree = treesWithSameOrder.removeFirst()
-                first.append(merge(first: firstTree, second: secondTree)!)
+                result.prepend(merge(first: firstTree, second: secondTree)!)
             }
         }
     }
@@ -989,6 +989,9 @@ func run(input: String) {
 }
 
 run(input: "1 2 3 4 5 q 4 3 5 q 2 3 4 q q q q q q q q q q")
+
+
+
 
 
 
