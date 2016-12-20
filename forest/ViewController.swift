@@ -8,11 +8,18 @@
 
 import UIKit
 
+
+var superView: UIView!
+
 class ViewController: UIViewController, UIScrollViewDelegate {
     
     @IBOutlet var speedView: SpeedView!
     
     // MARK:- UIViewController
+    
+    var mainScrollView: UIScrollView!
+    var mainView: UIView!
+    var singletonsStackView: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,25 +27,25 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         mainScrollView = UIScrollView(frame: self.view.frame)
         mainView = UIView(frame: self.view.frame)
         
-        let view = UIView(frame: self.view.frame)
+        superView = UIView(frame: self.view.frame)
         
-        self.view.addSubview(view)
-        view.addSubview(mainScrollView)
+        self.view.addSubview(superView)
+        superView.addSubview(mainScrollView)
         mainScrollView.addSubview(mainView)
         
         singletonsStackView = UIView(frame: CGRect(x: 0, y: speedView.frame.origin.y, width: self.view.frame.size.width, height: 0))
-        view.addSubview(singletonsStackView)
+        superView.addSubview(singletonsStackView)
         
         
         singletonsStackView.translatesAutoresizingMaskIntoConstraints = false
         mainScrollView.translatesAutoresizingMaskIntoConstraints = false
-        view.translatesAutoresizingMaskIntoConstraints = false
+        superView.translatesAutoresizingMaskIntoConstraints = false
         
         
-        view.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0).isActive = true
-        view.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 0).isActive = true
-        view.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 20).isActive = true
-        view.bottomAnchor.constraint(equalTo: speedView.topAnchor, constant: 0).isActive = true
+        superView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0).isActive = true
+        superView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 0).isActive = true
+        superView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 20).isActive = true
+        superView.bottomAnchor.constraint(equalTo: speedView.topAnchor, constant: 0).isActive = true
         
         
         mainScrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0).isActive = true
@@ -47,9 +54,9 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         mainScrollView.bottomAnchor.constraint(equalTo: speedView.topAnchor, constant: 0).isActive = true
         
         
-        singletonsStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-        singletonsStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
-        singletonsStackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
+        singletonsStackView.leadingAnchor.constraint(equalTo: superView.leadingAnchor, constant: 0).isActive = true
+        singletonsStackView.trailingAnchor.constraint(equalTo: superView.trailingAnchor, constant: 0).isActive = true
+        singletonsStackView.bottomAnchor.constraint(equalTo: superView.bottomAnchor, constant: 0).isActive = true
         
         
         
@@ -59,7 +66,7 @@ class ViewController: UIViewController, UIScrollViewDelegate {
 
         
         
-        let skewHeap = SkewBinomialHeapAnimation<Int>()
+        let skewHeap = SkewBinomialHeapAnimation<Int>(mainScrollView: mainScrollView, mainView: mainView, singletonsStackView: singletonsStackView)
         
         var result = ""
         
@@ -124,7 +131,7 @@ class ViewController: UIViewController, UIScrollViewDelegate {
  
  
  
-     
+ 
  - 4 7 12 16 54 54 56
  
  - 9 20 31 32 38 43 45 57 60

@@ -31,7 +31,7 @@ class Animation {
     func play(onComplete: (() -> Swift.Void)?) {
         switch type {
         case .transition:
-            UIView.transition(with: mainView,
+            UIView.transition(with: superView,
                               duration: AnimationManager.defaultDuration,
                               options: UIViewAnimationOptions.transitionCrossDissolve,
                               animations: animation,

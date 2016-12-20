@@ -9,10 +9,6 @@
 import UIKit
 import Foundation
 
-var mainScrollView: UIScrollView!
-var mainView: UIView!
-var singletonsStackView: UIView!
-
 let nodeOffset: CGFloat = 10
 let treeOffset: CGFloat = 25
 let nodeSize: CGFloat = 50
@@ -27,6 +23,12 @@ var treeSizeDifference: CGFloat {
 }
 
 class Node {
+    
+    var mainScrollView: UIScrollView!
+    var mainView: UIView!
+    var singletonsStackView: UIView!
+    
+    
     var view: UIView!
     var label: UILabel!
     
@@ -87,9 +89,9 @@ class Node {
             self.view.frame.origin.x = self.view.frame.origin.x + difX
             self.view.frame.origin.y = self.view.frame.origin.y + difY
             
-            mainView.frame.size.width = max(mainView.frame.size.width, self.view.frame.origin.x + self.view.frame.size.width + treeOffset)
-            mainView.frame.size.height = max(mainView.frame.size.height, self.view.frame.origin.y + self.view.frame.size.height + treeOffset)
-            mainScrollView.contentSize = CGSize(width: mainView.frame.size.width, height: mainView.frame.size.height)
+            self.mainView.frame.size.width = max(self.mainView.frame.size.width, self.view.frame.origin.x + self.view.frame.size.width + treeOffset)
+            self.mainView.frame.size.height = max(self.mainView.frame.size.height, self.view.frame.origin.y + self.view.frame.size.height + treeOffset)
+            self.mainScrollView.contentSize = CGSize(width: self.mainView.frame.size.width, height: self.mainView.frame.size.height)
         }, completion: nil, type: .animation)
     }
     
@@ -101,9 +103,9 @@ class Node {
             self.view.frame.origin.x = x
             self.view.frame.origin.y = y
             
-            mainView.frame.size.width = max(mainView.frame.size.width, self.view.frame.origin.x + self.view.frame.size.width + treeOffset)
-            mainView.frame.size.height = max(mainView.frame.size.height, self.view.frame.origin.y + self.view.frame.size.height + treeOffset)
-            mainScrollView.contentSize = CGSize(width: mainView.frame.size.width, height: mainView.frame.size.height)
+            self.mainView.frame.size.width = max(self.mainView.frame.size.width, self.view.frame.origin.x + self.view.frame.size.width + treeOffset)
+            self.mainView.frame.size.height = max(self.mainView.frame.size.height, self.view.frame.origin.y + self.view.frame.size.height + treeOffset)
+            self.mainScrollView.contentSize = CGSize(width: self.mainView.frame.size.width, height: self.mainView.frame.size.height)
         }
     }
     
@@ -115,9 +117,9 @@ class Node {
             self.view.frame.origin.x = self.view.frame.origin.x + difX
             self.view.frame.origin.y = self.view.frame.origin.y + difY
             
-            mainView.frame.size.width = max(mainView.frame.size.width, self.view.frame.origin.x + self.view.frame.size.width + treeOffset)
-            mainView.frame.size.height = max(mainView.frame.size.height, self.view.frame.origin.y + self.view.frame.size.height + treeOffset)
-            mainScrollView.contentSize = CGSize(width: mainView.frame.size.width, height: mainView.frame.size.height)
+            self.mainView.frame.size.width = max(self.mainView.frame.size.width, self.view.frame.origin.x + self.view.frame.size.width + treeOffset)
+            self.mainView.frame.size.height = max(self.mainView.frame.size.height, self.view.frame.origin.y + self.view.frame.size.height + treeOffset)
+            self.mainScrollView.contentSize = CGSize(width: self.mainView.frame.size.width, height: self.mainView.frame.size.height)
         }
     }
     
@@ -137,7 +139,7 @@ class Node {
         view.addSubview(label)
         
         AnimationManager.addAnimation(animation: {
-            mainView.addSubview(self.view)
+            self.mainView.addSubview(self.view)
         }, completion: nil, type: .transition)
     }
     
@@ -200,11 +202,11 @@ class Node {
             let newView = UIView(frame: newFrame)
             newView.addSubview(self.view)
             newView.addSubview(node.view)
-            mainView.addSubview(newView)
+            self.mainView.addSubview(newView)
             
-            mainView.frame.size.width = max(mainView.frame.size.width, newView.frame.origin.x + newView.frame.size.width + treeOffset)
-            mainView.frame.size.height = max(mainView.frame.size.height, newView.frame.origin.y + newView.frame.size.height + treeOffset)
-            mainScrollView.contentSize = CGSize(width: mainView.frame.size.width, height: mainView.frame.size.height)
+            self.mainView.frame.size.width = max(self.mainView.frame.size.width, newView.frame.origin.x + newView.frame.size.width + treeOffset)
+            self.mainView.frame.size.height = max(self.mainView.frame.size.height, newView.frame.origin.y + newView.frame.size.height + treeOffset)
+            self.mainScrollView.contentSize = CGSize(width: self.mainView.frame.size.width, height: self.mainView.frame.size.height)
             
             self.view = newView
             
@@ -235,11 +237,11 @@ class Node {
             let newView = UIView(frame: newFrame)
             newView.addSubview(self.view)
             newView.addSubview(node.view)
-            mainView.addSubview(newView)
+            self.mainView.addSubview(newView)
             
-            mainView.frame.size.width = max(mainView.frame.size.width, newView.frame.origin.x + newView.frame.size.width + treeOffset)
-            mainView.frame.size.height = max(mainView.frame.size.height, newView.frame.origin.y + newView.frame.size.height + treeOffset)
-            mainScrollView.contentSize = CGSize(width: mainView.frame.size.width, height: mainView.frame.size.height)
+            self.mainView.frame.size.width = max(self.mainView.frame.size.width, newView.frame.origin.x + newView.frame.size.width + treeOffset)
+            self.mainView.frame.size.height = max(self.mainView.frame.size.height, newView.frame.origin.y + newView.frame.size.height + treeOffset)
+            self.mainScrollView.contentSize = CGSize(width: self.mainView.frame.size.width, height: self.mainView.frame.size.height)
             
             self.view = newView
             
@@ -273,11 +275,11 @@ class Node {
             let newView = UIView(frame: newFrame)
             newView.addSubview(self.view)
             newView.addSubview(node.view)
-            mainView.addSubview(newView)
+            self.mainView.addSubview(newView)
             
-            mainView.frame.size.width = max(mainView.frame.size.width, newView.frame.origin.x + newView.frame.size.width + treeOffset)
-            mainView.frame.size.height = max(mainView.frame.size.height, newView.frame.origin.y + newView.frame.size.height + treeOffset)
-            mainScrollView.contentSize = CGSize(width: mainView.frame.size.width, height: mainView.frame.size.height)
+            self.mainView.frame.size.width = max(self.mainView.frame.size.width, newView.frame.origin.x + newView.frame.size.width + treeOffset)
+            self.mainView.frame.size.height = max(self.mainView.frame.size.height, newView.frame.origin.y + newView.frame.size.height + treeOffset)
+            self.mainScrollView.contentSize = CGSize(width: self.mainView.frame.size.width, height: self.mainView.frame.size.height)
             
             self.view = newView
             
@@ -288,6 +290,7 @@ class Node {
 }
 
 class HeapNodeAnimation<Element> : Node {
+    
     public var order = 0
     public var childrens = Deque<HeapNodeAnimation>()
     public var singletons = Deque<HeapNodeAnimation>()
@@ -302,7 +305,10 @@ class HeapNodeAnimation<Element> : Node {
         self.order = order
     }
     
-    func createNode() {
+    func createNode(mainScrollView: UIScrollView, mainView: UIView, singletonsStackView: UIView) {
+        self.mainScrollView = mainScrollView
+        self.mainView = mainView
+        self.singletonsStackView = singletonsStackView
         createNode(text: String(describing: value))
     }
     
@@ -321,13 +327,13 @@ class HeapNodeAnimation<Element> : Node {
                     view.removeFromSuperview()
                     view.frame.origin.x += x
                     view.frame.origin.y += y - nodeOffset
-                    mainView.addSubview(view)
+                    self.mainView.addSubview(view)
                 }
                 for view in view.subviews {
                     view.removeFromSuperview()
                     view.frame.origin.x += x
                     view.frame.origin.y += y - nodeOffset
-                    mainView.addSubview(view)
+                    self.mainView.addSubview(view)
                 }
             }
             
@@ -338,11 +344,18 @@ class HeapNodeAnimation<Element> : Node {
 
 class SkewBinomialHeapAnimation<Element: Comparable> {
     
+    var mainScrollView: UIScrollView!
+    var mainView: UIView!
+    var singletonsStackView: UIView!
+    
     private var trees = Deque<HeapNodeAnimation<Element>>()
     private var elementsCount = 0
     
-    init() {
-        
+    
+    init (mainScrollView: UIScrollView, mainView: UIView, singletonsStackView: UIView) {
+        self.mainScrollView = mainScrollView
+        self.mainView = mainView
+        self.singletonsStackView = singletonsStackView
     }
     
     var first: Element? {
@@ -448,7 +461,7 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
         moveTrees(difX: treeSizeDifference, difY: 0)
         
         // add new element to the view.
-        singleton.createNode()
+        singleton.createNode(mainScrollView: mainScrollView, mainView: mainView, singletonsStackView: singletonsStackView)
         
         
         if !(trees.count >= 2 && trees[0].order == trees[1].order) {
@@ -600,11 +613,11 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
         var animationsAfter = [() -> Void]()
         
         animationsAfter.append() {
-            singletonsStackView.frame.origin.y -= nodeOffset * 2 + nodeSize
-            singletonsStackView.frame.size.height = nodeOffset * 2 + nodeSize
-            mainScrollView.frame.size.height -= nodeOffset * 2 + nodeSize
-            singletonsStackView.layer.borderWidth = lineWidth
-            singletonsStackView.layer.borderColor = UIColor.green.cgColor
+            self.singletonsStackView.frame.origin.y -= nodeOffset * 2 + nodeSize
+            self.singletonsStackView.frame.size.height = nodeOffset * 2 + nodeSize
+            self.mainScrollView.frame.size.height -= nodeOffset * 2 + nodeSize
+            self.singletonsStackView.layer.borderWidth = lineWidth
+            self.singletonsStackView.layer.borderColor = UIColor.green.cgColor
         }
         
         var x: CGFloat = nodeOffset
@@ -613,7 +626,7 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
             let moveToX = x
             animations.append() {
                 singleton.view.frame.origin.x = moveToX
-                singleton.view.frame.origin.y = singletonsStackView.frame.origin.y + nodeOffset
+                singleton.view.frame.origin.y = self.singletonsStackView.frame.origin.y + nodeOffset
             }
             
             singleton.frame.origin.x = moveToX
@@ -623,7 +636,7 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
             animationsAfter.append() {
                 singleton.view.removeFromSuperview()
                 singleton.view.frame.origin.y = nodeOffset
-                singletonsStackView.addSubview(singleton.view)
+                self.singletonsStackView.addSubview(singleton.view)
             }
             
             x += nodeSize + nodeOffset
@@ -685,9 +698,9 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
         }
         
         AnimationManager.addAnimation(animation: {
-            singletonsStackView.frame.origin.y += nodeSize + nodeOffset * 2
-            singletonsStackView.frame.size.height = 0
-            mainScrollView.frame.size.height += nodeSize + nodeOffset * 2
+            self.singletonsStackView.frame.origin.y += nodeSize + nodeOffset * 2
+            self.singletonsStackView.frame.size.height = 0
+            self.mainScrollView.frame.size.height += nodeSize + nodeOffset * 2
         }, completion: nil, type: .animation)
         
         elementsCount -= 1
