@@ -34,7 +34,7 @@ run(input: "1 2 3 4 5 q 4 3 5 q 2 3 4 q q q q q q q q q q")
 // all commands should be separated by spaces ' '
 ```
 
-Also you can use custom tests by runing functions:
+Also you can use custom tests by running functions:
 ```swift
 // testing functions.
 // parameter size: Int - number of elements for testing.
