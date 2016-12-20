@@ -1,7 +1,8 @@
 # visualization
 Visualize data structures (Skew Binomial Heap and Brodal-Okasaki Priority Queue)
 
-<img src="http://i.imgur.com/e5R2P7U.jpg" />
+<h1>Click on the cat to watch the video-demo.</h1>
+[![ScreenShot](http://i.imgur.com/e5R2P7U.jpg)](https://vk.com/video79766031_456239032)
 
 You can test structure using Xcode with playground available [here](forest/MyPlayground.playground).</br>
 All you need is to download 'MyPlayground.playground' to your local pc and open it using Xcode.</br>
