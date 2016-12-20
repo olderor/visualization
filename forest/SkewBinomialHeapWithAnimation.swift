@@ -313,8 +313,6 @@ class HeapNodeAnimation<Element> : Node {
             func removeRootInView(view: UIView, x: CGFloat, y: CGFloat) {
                 view.removeFromSuperview()
                 if view.isKind(of: UILabel.self) || view.subviews.count == 0 {
-                    print("removing")
-                    print((view as? UILabel)?.text)
                     return
                 }
                 let subview = view.subviews[0]
@@ -384,7 +382,7 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
     
     private func merge(
         first: HeapNodeAnimation<Element>?,
-        second: HeapNodeAnimation<Element>?) -> HeapNodeAnimation<Element>? {
+        second: HeapNodeAnimation<Element>?, enabledMoving: Bool = true) -> HeapNodeAnimation<Element>? {
         
         if first == nil {
             return second
@@ -414,14 +412,18 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
             second.deselect()
             second.appendToZeroOrderNode(node: first)
             second.pulse()
-            moveTrees(difX: -treeSizeDifference, difY: 0)
+            if enabledMoving {
+                moveTrees(difX: -treeSizeDifference, difY: 0)
+            }
         } else {
             second.move(difX: nodeSizeDifference - treeSizeDifference, difY: 0)
             first.deselect()
             second.deselect()
             second.appendChild(node: first)
             second.pulse()
-            moveTrees(difX: nodeSizeDifference - treeSizeDifference, difY: 0)
+            if enabledMoving {
+                moveTrees(difX: nodeSizeDifference - treeSizeDifference, difY: 0)
+            }
         }
         
         return second
@@ -515,7 +517,6 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
         for tree in trees {
             animations.append(tree.getMovesToBlock(x: curX, y: nodeOffset))
             curX += tree.frame.size.width + treeOffset
-            print("order \(tree.order)")
         }
         
         AnimationManager.addAnimation(animation: {
@@ -570,15 +571,18 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
             while !treesWithSameOrder.isEmpty {
                 let firstTree = treesWithSameOrder.removeFirst()
                 let secondTree = treesWithSameOrder.removeFirst()
-                first.append(merge(first: firstTree, second: secondTree)!)
+                let difX = firstTree.order == 0 ? -treeSizeDifference : nodeOffset - treeOffset
                 
                 var animations = [() -> Void]()
+                
                 for tree in treesWithSameOrder {
-                    animations.append(tree.getMovesBlock(difX: -treeSizeDifference, difY: 0))
+                    animations.append(tree.getMovesBlock(difX: difX, difY: 0))
                 }
                 for tree in result {
-                    animations.append(tree.getMovesBlock(difX: -treeSizeDifference, difY: 0))
+                    animations.append(tree.getMovesBlock(difX: difX, difY: 0))
                 }
+                
+                result.prepend(merge(first: firstTree, second: secondTree, enabledMoving: false)!)
                 
                 AnimationManager.addAnimation(animation: {
                     for animation in animations {
