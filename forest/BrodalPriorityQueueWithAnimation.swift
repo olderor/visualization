@@ -268,6 +268,7 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
         let minElement = root!.value
         if root!.queue.isEmpty {
             root = nil
+            elementLabel.text = description
             return minElement
         }
         let minBpq = root!.queue.first!
