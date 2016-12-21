@@ -9,19 +9,6 @@
 import UIKit
 import Foundation
 
-let nodeOffset: CGFloat = 10
-let treeOffset: CGFloat = 25
-let nodeSize: CGFloat = 50
-let lineWidth: CGFloat = 2
-let fontSize: CGFloat = 20
-
-var nodeSizeDifference: CGFloat {
-    return nodeOffset + nodeSize
-}
-var treeSizeDifference: CGFloat {
-    return treeOffset + nodeSize
-}
-
 class Node {
     
     var mainScrollView: UIScrollView!
