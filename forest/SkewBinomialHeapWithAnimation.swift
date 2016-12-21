@@ -9,19 +9,6 @@
 import UIKit
 import Foundation
 
-let nodeOffset: CGFloat = 10
-let treeOffset: CGFloat = 25
-let nodeSize: CGFloat = 50
-let lineWidth: CGFloat = 2
-let fontSize: CGFloat = 20
-
-var nodeSizeDifference: CGFloat {
-    return nodeOffset + nodeSize
-}
-var treeSizeDifference: CGFloat {
-    return treeOffset + nodeSize
-}
-
 class Node {
     
     var mainScrollView: UIScrollView!
@@ -52,6 +39,8 @@ class Node {
         }, completion: nil, type: .animation)
     }
     
+    //MARK:- Selection Animation
+    
     func pulse() {
         select()
         deselect()
@@ -76,6 +65,8 @@ class Node {
             self.view.removeFromSuperview()
         }, completion: nil, type: .transition)
     }
+    
+    //MARK:- Moving Animation
     
     func moveTo(x: CGFloat, y: CGFloat) {
         move(difX: frame.origin.x - x, difY: frame.origin.y - y)
@@ -122,6 +113,8 @@ class Node {
             self.mainScrollView.contentSize = CGSize(width: self.mainView.frame.size.width, height: self.mainView.frame.size.height)
         }
     }
+    
+    //MARK:- Connection Animation
     
     func createNode(text: String) {
         frame = CGRect(x: nodeOffset, y: nodeOffset, width: nodeSize, height: nodeSize)
@@ -348,7 +341,7 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
     var mainView: UIView!
     var singletonsStackView: UIView!
     
-    private var trees = Deque<HeapNodeAnimation<Element>>()
+    var trees = Deque<HeapNodeAnimation<Element>>()
     private var elementsCount = 0
     
     
@@ -549,7 +542,15 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
             if first.first!.order < second.first!.order {
                 result.append(first.removeFirst())
             } else {
-                result.append(second.removeFirst())
+                let element = second.removeFirst()
+                AnimationManager.addAnimation(animation: {
+                    element.view.removeFromSuperview()
+                    self.mainView.addSubview(element.view)
+                }, completion: nil, type: .none)
+                element.mainView = mainView
+                element.mainScrollView = mainScrollView
+                element.singletonsStackView = singletonsStackView
+                result.append(element)
             }
         }
         
@@ -557,7 +558,15 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
             result.append(first.removeFirst())
         }
         while !second.isEmpty {
-            result.append(second.removeFirst())
+            let element = second.removeFirst()
+            AnimationManager.addAnimation(animation: {
+                element.view.removeFromSuperview()
+                self.mainView.addSubview(element.view)
+                }, completion: nil, type: .none)
+            element.mainView = mainView
+            element.mainScrollView = mainScrollView
+            element.singletonsStackView = singletonsStackView
+            result.append(element)
         }
         
         reshowTrees(trees: result)

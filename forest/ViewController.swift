@@ -10,6 +10,25 @@ import UIKit
 
 
 var superView: UIView!
+var settingsView: UIView!
+
+
+let nodeOffset: CGFloat = 10
+let treeOffset: CGFloat = 25
+let nodeSize: CGFloat = 50
+let lineWidth: CGFloat = 2
+let fontSize: CGFloat = 20
+
+var nodeSizeDifference: CGFloat {
+    return nodeOffset + nodeSize
+}
+var treeSizeDifference: CGFloat {
+    return treeOffset + nodeSize
+}
+
+
+
+
 
 class ViewController: UIViewController, UIScrollViewDelegate {
     
@@ -23,6 +42,22 @@ class ViewController: UIViewController, UIScrollViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        settingsView = speedView
+        superView = UIView(frame: self.view.frame)
+        self.view.addSubview(superView)
+        
+        
+        superView.translatesAutoresizingMaskIntoConstraints = false
+        superView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0).isActive = true
+        superView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 0).isActive = true
+        superView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 20).isActive = true
+        superView.bottomAnchor.constraint(equalTo: speedView.topAnchor, constant: 0).isActive = true
+                
+    }
+    
+    
+    func runSkewBinomialHeap() {
+        settingsView = speedView
         
         mainScrollView = UIScrollView(frame: self.view.frame)
         mainView = UIView(frame: self.view.frame)
@@ -63,7 +98,7 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         mainScrollView.delegate = self
         mainScrollView.minimumZoomScale = CGFloat.leastNormalMagnitude
         mainScrollView.maximumZoomScale = CGFloat.greatestFiniteMagnitude
-
+        
         
         
         let skewHeap = SkewBinomialHeapAnimation<Int>(mainScrollView: mainScrollView, mainView: mainView, singletonsStackView: singletonsStackView)
@@ -106,14 +141,6 @@ class ViewController: UIViewController, UIScrollViewDelegate {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-    
-    
-    
-    // MARK:- UIScrollViewDelegate
-    
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return mainView
     }
 
 }

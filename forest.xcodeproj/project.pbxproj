@@ -12,6 +12,7 @@
 		287601B01E03262C006BFC7F /* SkewBinomialHeap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287601AF1E03262C006BFC7F /* SkewBinomialHeap.swift */; };
 		287601B21E0326CC006BFC7F /* BrodalPriorityQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287601B11E0326CC006BFC7F /* BrodalPriorityQueue.swift */; };
 		287601B61E033A19006BFC7F /* SkewBinomialHeapWithAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287601B51E033A19006BFC7F /* SkewBinomialHeapWithAnimation.swift */; };
+		2882D7F71E09C23F00FE474A /* BrodalPriorityQueueWithAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2882D7F61E09C23F00FE474A /* BrodalPriorityQueueWithAnimation.swift */; };
 		288C603B1E08433D00659633 /* SpeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288C603A1E08433C00659633 /* SpeedView.swift */; };
 		28F43BF91DE17EC800BD633C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F43BF81DE17EC800BD633C /* AppDelegate.swift */; };
 		28F43BFB1DE17EC800BD633C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F43BFA1DE17EC800BD633C /* ViewController.swift */; };
@@ -27,6 +28,7 @@
 		287601AF1E03262C006BFC7F /* SkewBinomialHeap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SkewBinomialHeap.swift; sourceTree = "<group>"; };
 		287601B11E0326CC006BFC7F /* BrodalPriorityQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrodalPriorityQueue.swift; sourceTree = "<group>"; };
 		287601B51E033A19006BFC7F /* SkewBinomialHeapWithAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SkewBinomialHeapWithAnimation.swift; sourceTree = "<group>"; };
+		2882D7F61E09C23F00FE474A /* BrodalPriorityQueueWithAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrodalPriorityQueueWithAnimation.swift; sourceTree = "<group>"; };
 		288C603A1E08433C00659633 /* SpeedView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeedView.swift; sourceTree = "<group>"; };
 		28F43BF51DE17EC800BD633C /* forest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = forest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28F43BF81DE17EC800BD633C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -48,6 +50,40 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2882D7F81E09C26F00FE474A /* Application */ = {
+			isa = PBXGroup;
+			children = (
+				28F43BFC1DE17EC800BD633C /* Main.storyboard */,
+				28F43BFF1DE17EC800BD633C /* Assets.xcassets */,
+				28F43C011DE17EC800BD633C /* LaunchScreen.storyboard */,
+				28F43C041DE17EC800BD633C /* Info.plist */,
+				287601AE1E0315F0006BFC7F /* MyPlayground.playground */,
+				28F43BF81DE17EC800BD633C /* AppDelegate.swift */,
+				28F43BFA1DE17EC800BD633C /* ViewController.swift */,
+			);
+			name = Application;
+			sourceTree = "<group>";
+		};
+		2882D7F91E09C27C00FE474A /* Data structures */ = {
+			isa = PBXGroup;
+			children = (
+				287601AC1E031596006BFC7F /* Deque.swift */,
+				287601AF1E03262C006BFC7F /* SkewBinomialHeap.swift */,
+				287601B11E0326CC006BFC7F /* BrodalPriorityQueue.swift */,
+			);
+			name = "Data structures";
+			sourceTree = "<group>";
+		};
+		2882D7FA1E09C28D00FE474A /* Animations */ = {
+			isa = PBXGroup;
+			children = (
+				2882D7F61E09C23F00FE474A /* BrodalPriorityQueueWithAnimation.swift */,
+				287601B51E033A19006BFC7F /* SkewBinomialHeapWithAnimation.swift */,
+				2827BCDC1E053D2E00B59799 /* AnimationManager.swift */,
+			);
+			name = Animations;
+			sourceTree = "<group>";
+		};
 		28F43BEC1DE17EC700BD633C = {
 			isa = PBXGroup;
 			children = (
@@ -67,18 +103,9 @@
 		28F43BF71DE17EC800BD633C /* forest */ = {
 			isa = PBXGroup;
 			children = (
-				28F43BF81DE17EC800BD633C /* AppDelegate.swift */,
-				28F43BFA1DE17EC800BD633C /* ViewController.swift */,
-				28F43BFC1DE17EC800BD633C /* Main.storyboard */,
-				28F43BFF1DE17EC800BD633C /* Assets.xcassets */,
-				28F43C011DE17EC800BD633C /* LaunchScreen.storyboard */,
-				28F43C041DE17EC800BD633C /* Info.plist */,
-				287601AC1E031596006BFC7F /* Deque.swift */,
-				287601AE1E0315F0006BFC7F /* MyPlayground.playground */,
-				287601AF1E03262C006BFC7F /* SkewBinomialHeap.swift */,
-				287601B11E0326CC006BFC7F /* BrodalPriorityQueue.swift */,
-				287601B51E033A19006BFC7F /* SkewBinomialHeapWithAnimation.swift */,
-				2827BCDC1E053D2E00B59799 /* AnimationManager.swift */,
+				2882D7F81E09C26F00FE474A /* Application */,
+				2882D7FA1E09C28D00FE474A /* Animations */,
+				2882D7F91E09C27C00FE474A /* Data structures */,
 				288C603A1E08433C00659633 /* SpeedView.swift */,
 			);
 			path = forest;
@@ -161,6 +188,7 @@
 				28F43BFB1DE17EC800BD633C /* ViewController.swift in Sources */,
 				287601B61E033A19006BFC7F /* SkewBinomialHeapWithAnimation.swift in Sources */,
 				2827BCDD1E053D2E00B59799 /* AnimationManager.swift in Sources */,
+				2882D7F71E09C23F00FE474A /* BrodalPriorityQueueWithAnimation.swift in Sources */,
 				287601B21E0326CC006BFC7F /* BrodalPriorityQueue.swift in Sources */,
 				28F43BF91DE17EC800BD633C /* AppDelegate.swift in Sources */,
 				288C603B1E08433D00659633 /* SpeedView.swift in Sources */,
