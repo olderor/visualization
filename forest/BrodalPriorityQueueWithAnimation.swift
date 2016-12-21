@@ -30,6 +30,14 @@ class BPQNodeAnimation<Element: Comparable> {
         self.value = value
         self.queue = queue
     }
+    
+    init(other: BPQNodeAnimation) {
+        value = other.value
+        queue = other.queue
+        mainScrollView = other.mainScrollView
+        mainView = other.mainView
+        singletonsStackView = other.singletonsStackView
+    }
 }
 
 class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, UIScrollViewDelegate {
@@ -53,7 +61,7 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
         contentView = UIView(frame: superView.frame)
         mainScrollView = UIScrollView(frame: CGRect(x: 0, y: nodeSize, width: contentView.frame.size.width, height: contentView.frame.size.height - nodeSizeDifference - nodeOffset))
         queueView = UIView(frame: mainScrollView.frame)
-        queueView.backgroundColor = .yellow
+        queueView.layer.borderWidth = lineWidth
         mainView = UIView(frame: mainScrollView.frame)
         elementLabel = UILabel(frame: CGRect(x: 0, y: nodeOffset, width: nodeSize, height: nodeSize))
         elementLabel.text = description
@@ -82,7 +90,7 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
         
         queueView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0).isActive = true
         queueView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0).isActive = true
-        queueView.topAnchor.constraint(equalTo: elementLabel.bottomAnchor, constant: 0).isActive = true
+        queueView.topAnchor.constraint(equalTo: elementLabel.bottomAnchor, constant: 20).isActive = true
         queueView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0).isActive = true
         
         
@@ -97,7 +105,6 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
         singletonsStackView.bottomAnchor.constraint(equalTo: queueView.bottomAnchor, constant: 0).isActive = true
         
         
-        
         mainScrollView.delegate = self
         mainScrollView.minimumZoomScale = CGFloat.leastNormalMagnitude
         mainScrollView.maximumZoomScale = CGFloat.greatestFiniteMagnitude
@@ -106,12 +113,17 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
     
     private func copyRoot(other: BrodalPriorityQueueAnimation) {
         root = other.root
+        copyViews(other: other)
+    }
+    
+    private func copyViews(other: BrodalPriorityQueueAnimation) {
         elementLabel = other.elementLabel
         queueView = other.queueView
         mainScrollView = other.mainScrollView
         mainView = other.mainView
         singletonsStackView = other.singletonsStackView
         contentView = other.contentView
+        mainScrollView.delegate = self
     }
     
     override init()  {
@@ -134,6 +146,13 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
         elementLabel.text = description
     }
     
+    private init(other: BrodalPriorityQueueAnimation) {
+        super.init()
+        copyViews(other: other)
+        root = BPQNodeAnimation(other: other.root!)
+        elementLabel.text = description
+    }
+    
     var first: Element? {
         if isEmpty {
             return nil
@@ -144,7 +163,15 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
     
     func merge(other: BrodalPriorityQueueAnimation) {
         if isEmpty {
+            let previousContentView = contentView!
             copyRoot(other: other)
+            let currentContentView = contentView!
+            AnimationManager.addAnimation(animation: {
+                if let parent = previousContentView.superview {
+                    previousContentView.removeFromSuperview()
+                    self.addSubview(view: currentContentView, parent: parent)
+                }
+            }, completion: nil, type: .transition)
             return
         }
         if other.isEmpty {
@@ -156,10 +183,75 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
             return
         }
         
-        let selfCopy = BrodalPriorityQueueAnimation<Element>(value: root!.value, queue: root!.queue)
-        root!.queue = other.root!.queue
+        let selfCopy = BrodalPriorityQueueAnimation<Element>(other: self)
+        copyRoot(other: other)
+        
+        var label: UILabel!
+        
+        AnimationManager.addAnimation(animation: {
+            label = UILabel(frame: selfCopy.elementLabel.frame)
+            label.layer.borderWidth = lineWidth
+            label.textAlignment = .center
+            label.text = selfCopy.elementLabel.text
+            label.alpha = 0.0
+            if selfCopy.contentView.superview != nil {
+                superView.addSubview(label)
+            }
+        }, completion: nil, type: .none)
+        AnimationManager.addAnimation(animation: {
+            label.alpha = 1.0
+        }, completion: nil, type: .animation)
+        AnimationManager.addAnimation(animation: {
+            label.backgroundColor = .yellow
+        }, completion: nil, type: .animation)
+        let currentContentView = contentView!
+        var parent: UIView!
+        AnimationManager.addAnimation(animation: {
+            parent = selfCopy.contentView.superview
+            if parent != nil {
+                selfCopy.contentView.alpha = 0.0
+            }
+        }, completion: nil, type: .animation)
+        AnimationManager.addAnimation(animation: {
+            parent = selfCopy.contentView.superview
+            if parent != nil {
+                selfCopy.contentView.removeFromSuperview()
+                selfCopy.contentView.alpha = 1.0
+            }
+        }, completion: nil, type: .none)
+        AnimationManager.addAnimation(animation: {
+            label.frame.origin.x = superView.frame.size.width - label.frame.size.width - 10
+        }, completion: nil, type: .animation)
+        AnimationManager.addAnimation(animation: {
+            label.backgroundColor = .green
+        }, completion: nil, type: .animation)
+        AnimationManager.addAnimation(animation: {
+            if parent != nil {
+                currentContentView.alpha = 0.0
+                self.addSubview(view: currentContentView, parent: parent)
+            }
+        }, completion: nil, type: .none)
+        AnimationManager.addAnimation(animation: {
+            if parent != nil {
+                currentContentView.alpha = 1.0
+            }
+        }, completion: nil, type: .animation)
         root!.queue.push(element: selfCopy)
-        root!.value = other.root!.value
+        AnimationManager.addAnimation(animation: {
+            label.alpha = 0.0
+        }, completion: nil, type: .animation)
+        AnimationManager.addAnimation(animation: {
+            label.removeFromSuperview()
+        }, completion: nil, type: .none)
+    }
+    
+    private func addSubview(view: UIView, parent: UIView) {
+        parent.addSubview(view)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.leadingAnchor.constraint(equalTo: parent.leadingAnchor, constant: 0).isActive = true
+        view.trailingAnchor.constraint(equalTo: parent.trailingAnchor, constant: 0).isActive = true
+        view.topAnchor.constraint(equalTo: parent.topAnchor, constant: 0).isActive = true
+        view.bottomAnchor.constraint(equalTo: parent.bottomAnchor, constant: 0).isActive = true
     }
     
     func insert(element: Element) {
@@ -177,9 +269,13 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
             return minElement
         }
         let minBpq = root!.queue.first!
+        let value = minBpq.root!.value
+        AnimationManager.addAnimation(animation: {
+            self.elementLabel.text = "\(value)"
+        }, completion: nil, type: .animation)
         root!.queue.pop()
         root!.queue.merge(other: minBpq.root!.queue)
-        root!.value = minBpq.root!.value
+        root!.value = value
         return minElement
     }
     
@@ -234,7 +330,10 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
     // MARK:- UIScrollViewDelegate
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return mainView
+        if scrollView.subviews.count == 0 {
+            return nil
+        }
+        return scrollView.subviews[0]
     }
     
     // MARK:- Description
