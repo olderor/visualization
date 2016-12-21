@@ -153,6 +153,8 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
         elementLabel.text = description
     }
     
+    //MARK:- Queue functions
+    
     var first: Element? {
         if isEmpty {
             return nil

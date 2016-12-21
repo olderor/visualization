@@ -30,15 +30,37 @@
                                             <action selector="sliderValueChangedWithSender:" destination="rx5-GD-o6f" eventType="valueChanged" id="Iu0-Tf-AkC"/>
                                         </connections>
                                     </slider>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VMp-uL-TeB">
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="150" id="toH-gu-TY8"/>
+                                        </constraints>
+                                        <state key="normal" title="Remove minimum"/>
+                                        <connections>
+                                            <action selector="removeElementTouchUpInsideSender:" destination="rx5-GD-o6f" eventType="touchUpInside" id="3pB-38-IwF"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ejh-Xf-eXD">
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="150" id="Gow-iX-Mgr"/>
+                                        </constraints>
+                                        <state key="normal" title="Add element"/>
+                                        <connections>
+                                            <action selector="addElementTouchUpInsideSender:" destination="rx5-GD-o6f" eventType="touchUpInside" id="ND4-p0-Nss"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="ejh-Xf-eXD" secondAttribute="bottom" id="0eU-52-9xN"/>
                                     <constraint firstAttribute="trailing" secondItem="mUb-BO-8ZO" secondAttribute="trailing" id="3xV-2d-5cK"/>
+                                    <constraint firstItem="ejh-Xf-eXD" firstAttribute="baseline" secondItem="VMp-uL-TeB" secondAttribute="baseline" id="Cap-yA-q2W"/>
                                     <constraint firstItem="9Mv-hQ-ytw" firstAttribute="top" secondItem="mUb-BO-8ZO" secondAttribute="bottom" constant="8" id="DX7-q9-XWg"/>
+                                    <constraint firstAttribute="trailing" secondItem="ejh-Xf-eXD" secondAttribute="trailing" id="RzH-UF-rK4"/>
+                                    <constraint firstItem="VMp-uL-TeB" firstAttribute="leading" secondItem="9Mv-hQ-ytw" secondAttribute="leading" id="am3-2j-dqp"/>
                                     <constraint firstItem="mUb-BO-8ZO" firstAttribute="leading" secondItem="rx5-GD-o6f" secondAttribute="leading" id="bBR-X8-wdz"/>
-                                    <constraint firstAttribute="height" constant="77" id="gfR-MI-Bjr"/>
+                                    <constraint firstAttribute="height" constant="116" id="gfR-MI-Bjr"/>
                                     <constraint firstAttribute="trailing" secondItem="9Mv-hQ-ytw" secondAttribute="trailing" id="llZ-YW-RTS"/>
                                     <constraint firstItem="9Mv-hQ-ytw" firstAttribute="leading" secondItem="rx5-GD-o6f" secondAttribute="leading" id="mx3-Aw-qEP"/>
-                                    <constraint firstAttribute="bottom" secondItem="9Mv-hQ-ytw" secondAttribute="bottom" constant="10" id="q8M-XZ-67f"/>
+                                    <constraint firstAttribute="bottom" secondItem="9Mv-hQ-ytw" secondAttribute="bottom" constant="49" id="q8M-XZ-67f"/>
                                     <constraint firstItem="9Mv-hQ-ytw" firstAttribute="top" secondItem="mUb-BO-8ZO" secondAttribute="bottom" constant="8" id="rAN-84-p92"/>
                                     <constraint firstItem="mUb-BO-8ZO" firstAttribute="top" secondItem="rx5-GD-o6f" secondAttribute="top" constant="8" id="yCy-Ul-gzA"/>
                                 </constraints>
