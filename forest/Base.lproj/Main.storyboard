@@ -189,7 +189,7 @@
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="forest" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="vc" id="BYZ-38-t0r" customClass="ViewController" customModule="forest" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -211,36 +211,45 @@
                                         </connections>
                                     </slider>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VMp-uL-TeB">
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="150" id="toH-gu-TY8"/>
-                                        </constraints>
-                                        <state key="normal" title="Remove minimum"/>
+                                        <state key="normal" title="Remove"/>
                                         <connections>
                                             <action selector="removeElementTouchUpInsideSender:" destination="rx5-GD-o6f" eventType="touchUpInside" id="3pB-38-IwF"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ejh-Xf-eXD">
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="150" id="Gow-iX-Mgr"/>
+                                            <constraint firstAttribute="width" constant="62" id="Gow-iX-Mgr"/>
                                         </constraints>
-                                        <state key="normal" title="Add element"/>
+                                        <state key="normal" title="Add"/>
                                         <connections>
                                             <action selector="addElementTouchUpInsideSender:" destination="rx5-GD-o6f" eventType="touchUpInside" id="ND4-p0-Nss"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3zW-4A-MZi">
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="78" id="49p-Ws-CIB"/>
+                                        </constraints>
+                                        <state key="normal" title="Retrieve"/>
+                                        <connections>
+                                            <action selector="retrieveElementTouchUpInsideSender:" destination="rx5-GD-o6f" eventType="touchUpInside" id="Iw7-G5-zHN"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstAttribute="bottom" secondItem="ejh-Xf-eXD" secondAttribute="bottom" id="0eU-52-9xN"/>
                                     <constraint firstAttribute="trailing" secondItem="mUb-BO-8ZO" secondAttribute="trailing" id="3xV-2d-5cK"/>
-                                    <constraint firstItem="ejh-Xf-eXD" firstAttribute="baseline" secondItem="VMp-uL-TeB" secondAttribute="baseline" id="Cap-yA-q2W"/>
+                                    <constraint firstItem="ejh-Xf-eXD" firstAttribute="baseline" secondItem="VMp-uL-TeB" secondAttribute="baseline" id="6tP-LG-6zZ"/>
                                     <constraint firstItem="9Mv-hQ-ytw" firstAttribute="top" secondItem="mUb-BO-8ZO" secondAttribute="bottom" constant="8" id="DX7-q9-XWg"/>
-                                    <constraint firstAttribute="trailing" secondItem="ejh-Xf-eXD" secondAttribute="trailing" id="RzH-UF-rK4"/>
+                                    <constraint firstItem="VMp-uL-TeB" firstAttribute="leading" secondItem="rx5-GD-o6f" secondAttribute="leading" id="MbJ-Tn-Oo4"/>
+                                    <constraint firstItem="ejh-Xf-eXD" firstAttribute="baseline" secondItem="3zW-4A-MZi" secondAttribute="baseline" id="VDx-5b-7Kl"/>
+                                    <constraint firstItem="3zW-4A-MZi" firstAttribute="centerX" secondItem="9Mv-hQ-ytw" secondAttribute="centerX" id="YXH-7P-g7i"/>
                                     <constraint firstItem="VMp-uL-TeB" firstAttribute="leading" secondItem="9Mv-hQ-ytw" secondAttribute="leading" id="am3-2j-dqp"/>
                                     <constraint firstItem="mUb-BO-8ZO" firstAttribute="leading" secondItem="rx5-GD-o6f" secondAttribute="leading" id="bBR-X8-wdz"/>
                                     <constraint firstAttribute="height" constant="116" id="gfR-MI-Bjr"/>
                                     <constraint firstAttribute="trailing" secondItem="9Mv-hQ-ytw" secondAttribute="trailing" id="llZ-YW-RTS"/>
                                     <constraint firstItem="9Mv-hQ-ytw" firstAttribute="leading" secondItem="rx5-GD-o6f" secondAttribute="leading" id="mx3-Aw-qEP"/>
+                                    <constraint firstItem="ejh-Xf-eXD" firstAttribute="trailing" secondItem="9Mv-hQ-ytw" secondAttribute="trailing" id="ohu-qh-VGV"/>
                                     <constraint firstAttribute="bottom" secondItem="9Mv-hQ-ytw" secondAttribute="bottom" constant="49" id="q8M-XZ-67f"/>
+                                    <constraint firstAttribute="bottom" secondItem="VMp-uL-TeB" secondAttribute="bottom" id="quM-PT-uj3"/>
                                     <constraint firstItem="9Mv-hQ-ytw" firstAttribute="top" secondItem="mUb-BO-8ZO" secondAttribute="bottom" constant="8" id="rAN-84-p92"/>
                                     <constraint firstItem="mUb-BO-8ZO" firstAttribute="top" secondItem="rx5-GD-o6f" secondAttribute="top" constant="8" id="yCy-Ul-gzA"/>
                                 </constraints>
@@ -248,6 +257,7 @@
                                     <outlet property="addButton" destination="ejh-Xf-eXD" id="nc3-8d-lzc"/>
                                     <outlet property="label" destination="mUb-BO-8ZO" id="k9K-4w-vRf"/>
                                     <outlet property="removeButton" destination="VMp-uL-TeB" id="keK-kV-3w9"/>
+                                    <outlet property="retrieveButton" destination="3zW-4A-MZi" id="ge4-n4-mlt"/>
                                     <outlet property="slider" destination="9Mv-hQ-ytw" id="aNH-4Z-D2L"/>
                                 </connections>
                             </view>
@@ -261,6 +271,36 @@
                                                 <action selector="backBarButtonItemOnTouchUpInside:" destination="BYZ-38-t0r" id="2mU-qw-Xwa"/>
                                             </connections>
                                         </barButtonItem>
+                                        <barButtonItem key="rightBarButtonItem" style="plain" id="vQM-Lx-wDf">
+                                            <view key="customView" contentMode="scaleToFill" id="uvL-Mg-hrh">
+                                                <rect key="frame" x="159" y="-6" width="200" height="55"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <subviews>
+                                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B0k-rO-JsW">
+                                                        <frame key="frameInset" minX="144" minY="13" width="56" height="30"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <state key="normal" title="Next"/>
+                                                        <connections>
+                                                            <action selector="onNextButtonTouchUpInside:" destination="BYZ-38-t0r" eventType="touchUpInside" id="RAu-q7-tvn"/>
+                                                        </connections>
+                                                    </button>
+                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="rbk-zh-puC">
+                                                        <frame key="frameInset" minX="96" minY="13" width="51" height="31"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <connections>
+                                                            <action selector="onAnimationByStepSwitchValueChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="00h-qA-Yee"/>
+                                                        </connections>
+                                                    </switch>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="By step" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kre-NE-sjg">
+                                                        <frame key="frameInset" minX="19" minY="18" width="69" height="21"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                            </view>
+                                        </barButtonItem>
                                     </navigationItem>
                                 </items>
                             </navigationBar>
@@ -273,14 +313,16 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="animationByStepSwitch" destination="rbk-zh-puC" id="uxE-UB-ADq"/>
                         <outlet property="navigationBar" destination="Ir8-bd-Hf2" id="h2Q-SD-BoS"/>
+                        <outlet property="nextButton" destination="B0k-rO-JsW" id="uC6-wa-Lpk"/>
                         <outlet property="speedView" destination="rx5-GD-o6f" id="ZGG-qe-rQE"/>
                         <outlet property="titleNavigationItem" destination="XOP-ke-9a3" id="cy3-u3-bQI"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1270" y="27"/>
+            <point key="canvasLocation" x="-1271.7391304347827" y="26.086956521739133"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Qb8-2y-SEN">

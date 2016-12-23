@@ -11,6 +11,7 @@ import UIKit
 
 protocol ControlDelegate: class {
     func onAddElement()
+    func onRetrieveElement()
     func onRemoveElement()
 }
 
@@ -21,6 +22,7 @@ class SpeedView : UIView {
     @IBOutlet weak var slider: UISlider!
     
     @IBOutlet weak var removeButton: UIButton!
+    @IBOutlet weak var retrieveButton: UIButton!
     @IBOutlet weak var addButton: UIButton!
     
     var queue: BrodalPriorityQueueAnimation<MyString>!
@@ -31,15 +33,26 @@ class SpeedView : UIView {
     @IBAction func addElementTouchUpInside(sender: UIButton) {
         
         removeButton.isEnabled = false
+        retrieveButton.isEnabled = false
         addButton.isEnabled = false
         
         delegate?.onAddElement()
         
     }
     
+    @IBAction func retrieveElementTouchUpInside(sender: UIButton) {
+        
+        removeButton.isEnabled = false
+        retrieveButton.isEnabled = false
+        addButton.isEnabled = false
+        
+        delegate?.onRetrieveElement()
+    }
+    
     @IBAction func removeElementTouchUpInside(sender: UIButton) {
         
         removeButton.isEnabled = false
+        retrieveButton.isEnabled = false
         addButton.isEnabled = false
         
         delegate?.onRemoveElement()

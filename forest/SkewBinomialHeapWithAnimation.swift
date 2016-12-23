@@ -9,6 +9,10 @@
 import UIKit
 import Foundation
 
+protocol SkewBinomialHeapDelegate: class {
+    func onElementTouchUpInside(element: Any)
+}
+
 class Node {
     
     var mainScrollView: UIScrollView!
@@ -298,11 +302,21 @@ class HeapNodeAnimation<Element> : Node {
         self.order = order
     }
     
+    var delegate: SkewBinomialHeapDelegate?
+    
     func createNode(mainScrollView: UIScrollView, mainView: UIView, singletonsStackView: UIView) {
         self.mainScrollView = mainScrollView
         self.mainView = mainView
         self.singletonsStackView = singletonsStackView
         createNode(text: String(describing: value))
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(onElementTouchUpInside))
+        label.isUserInteractionEnabled = true
+        label.addGestureRecognizer(tap)
+    }
+    
+    @objc private func onElementTouchUpInside(_ sender: Any?) {
+        delegate?.onElementTouchUpInside(element: value)
     }
     
     func removeRoot() {
@@ -333,6 +347,8 @@ class HeapNodeAnimation<Element> : Node {
             removeRootInView(view: self.view, x: self.view.frame.origin.x, y: self.view.frame.origin.y)
         }, completion: nil, type: .none, description: nil)
     }
+    
+    
 }
 
 class SkewBinomialHeapAnimation<Element: Comparable> {
@@ -344,6 +360,7 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
     var trees = Deque<HeapNodeAnimation<Element>>()
     private var elementsCount = 0
     
+    var delegate: SkewBinomialHeapDelegate?
     
     init (mainScrollView: UIScrollView, mainView: UIView, singletonsStackView: UIView) {
         self.mainScrollView = mainScrollView
@@ -352,7 +369,16 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
     }
     
     var first: Element? {
+        if isEmpty {
+            return nil
+        }
+        AnimationManager.addAnimation(animation: {}, completion: nil, type: .none, description: "find minimum")
         let tree = trees[findMinIndex()]
+        AnimationManager.addAnimation(animation: {}, completion: nil, type: .none, description: "minimum is found")
+        tree.select()
+        tree.deselect()
+        tree.select()
+        tree.deselect()
         return tree.value
     }
     
@@ -449,6 +475,7 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
     
     
     private func insertSingleton(singleton: HeapNodeAnimation<Element>) {
+        singleton.delegate = delegate
         
         // move trees to get free space for new element.
         moveTrees(difX: treeSizeDifference, difY: 0)

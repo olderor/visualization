@@ -55,6 +55,8 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
         return root == nil
     }
     
+    var delegate: SkewBinomialHeapDelegate?
+    
     //MARK: - Initialization
     
     private func createViews() {
@@ -67,7 +69,6 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
         elementLabel.text = description
         elementLabel.textAlignment = .center
         elementLabel.layer.borderWidth = lineWidth
-        
         contentView.addSubview(queueView)
         contentView.addSubview(elementLabel)
         
@@ -129,6 +130,7 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
     override init()  {
         super.init()
         createViews()
+        root?.queue.delegate = delegate
     }
     
     private init(value: Element) {
@@ -136,6 +138,7 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
         createViews()
         root = BPQNodeAnimation(value: value, mainScrollView: mainScrollView, mainView: mainView, singletonsStackView: singletonsStackView)
         elementLabel.text = description
+        root?.queue.delegate = delegate
     }
     
     private init(value: Element,
@@ -151,6 +154,7 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
         copyViews(other: other)
         root = BPQNodeAnimation(other: other.root!)
         elementLabel.text = description
+        delegate = root!.queue.delegate
     }
     
     //MARK:- Queue functions
@@ -159,11 +163,36 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
         if isEmpty {
             return nil
         }
-        
+        AnimationManager.addAnimation(animation: {
+            print(AnimationManager.defaultDuration)
+            self.elementLabel.backgroundColor = .yellow
+        }, completion: nil, type: .transition, description: "minimum is found")
+        AnimationManager.addAnimation(animation: {
+            print(AnimationManager.defaultDuration)
+            self.elementLabel.backgroundColor = .white
+        }, completion: nil, type: .transition, description: nil)
+        AnimationManager.addAnimation(animation: {
+            print(AnimationManager.defaultDuration)
+            self.elementLabel.backgroundColor = .yellow
+            }, completion: nil, type: .transition, description: nil)
+        AnimationManager.addAnimation(animation: {
+            print(AnimationManager.defaultDuration)
+            self.elementLabel.backgroundColor = .white
+            }, completion: nil, type: .transition, description: nil)
+        AnimationManager.addAnimation(animation: {
+            print(AnimationManager.defaultDuration)
+            self.elementLabel.backgroundColor = .yellow
+            }, completion: nil, type: .transition, description: nil)
+        AnimationManager.addAnimation(animation: {
+            print(AnimationManager.defaultDuration)
+            self.elementLabel.backgroundColor = .white
+            }, completion: nil, type: .transition, description: nil)
         return root!.value
     }
     
     func merge(other: BrodalPriorityQueueAnimation) {
+        other.delegate = delegate
+        other.root?.queue.delegate = delegate
         if isEmpty {
             let previousContentView = contentView!
             copyRoot(other: other)

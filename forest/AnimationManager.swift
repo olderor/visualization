@@ -84,7 +84,7 @@ class AnimationManager {
     
     static private var animations = Deque<Animation>()
     
-    static var defaultDuration: TimeInterval = 0.2
+    static var defaultDuration: TimeInterval = 0.5
     
     static private(set) var isRunning = false
     
@@ -103,7 +103,7 @@ class AnimationManager {
     static weak var delegate: AnimationManagerDelegate?
     
     
-    static func play() {
+    static func playAll() {
         isRunning = true
         if animations.isEmpty {
             isRunning = false
@@ -114,7 +114,31 @@ class AnimationManager {
         delegate?.willPlayAnimation(animationDescription: animation.description)
         animation.play(onComplete: ) {
             delegate?.didPlayAnimation(animationDescription: animation.description)
-            play()
+            playAll()
+        }
+    }
+    
+    static func playNext() {
+        if animations.isEmpty {
+            return
+        }
+        isRunning = true
+        let animation = animations.removeFirst()
+        delegate?.willPlayAnimation(animationDescription: animation.description)
+        animation.play(onComplete: ) {
+            delegate?.didPlayAnimation(animationDescription: animation.description)
+        }
+        if animations.isEmpty {
+            isRunning = false
+            delegate?.didFinishAnimation()
+        }
+    }
+    
+    static func play(isByStep: Bool) {
+        if isByStep {
+            playNext()
+        } else {
+            playAll()
         }
     }
     

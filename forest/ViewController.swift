@@ -30,10 +30,14 @@ var treeSizeDifference: CGFloat {
 
 
 
-class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDelegate, ControlDelegate {
+class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDelegate, ControlDelegate, SkewBinomialHeapDelegate {
     
     
     // MARK:- IBOutlets and IBActions
+    
+    @IBOutlet weak var animationByStepSwitch: UISwitch!
+    
+    @IBOutlet weak var nextButton: UIButton!
     
     @IBOutlet weak var speedView: SpeedView!
     
@@ -46,18 +50,24 @@ class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDe
         self.dismiss(animated: true, completion: nil)
     }
     
+    @IBAction func onAnimationByStepSwitchValueChanged(_ sender: UISwitch) {
+        nextButton.isEnabled = sender.isOn
+    }
     
+    @IBAction func onNextButtonTouchUpInside(_ sender: UIButton) {
+        AnimationManager.playNext()
+    }
     // MARK:- UIViewController
     
     var mainScrollView: UIScrollView!
     var mainView: UIView!
     var singletonsStackView: UIView!
     
+    var hasControlls = true
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        AnimationManager.delegate = self
-        speedView.delegate = self
         
         settingsView = speedView
         superView = UIView(frame: self.view.frame)
@@ -68,8 +78,24 @@ class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDe
         superView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0).isActive = true
         superView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 0).isActive = true
         superView.topAnchor.constraint(equalTo: navigationBar.bottomAnchor, constant: 0).isActive = true
-        superView.bottomAnchor.constraint(equalTo: speedView.topAnchor, constant: 0).isActive = true
         
+        
+        if !hasControlls {
+            speedView.removeFromSuperview()
+            superView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: 0).isActive = true
+            superView.addSubview(mainView)
+            
+            mainView.translatesAutoresizingMaskIntoConstraints = false
+            mainView.leadingAnchor.constraint(equalTo: superView.leadingAnchor, constant: 0).isActive = true
+            mainView.trailingAnchor.constraint(equalTo: superView.trailingAnchor, constant: 0).isActive = true
+            mainView.topAnchor.constraint(equalTo: superView.topAnchor, constant: 0).isActive = true
+            mainView.bottomAnchor.constraint(equalTo: superView.bottomAnchor, constant: 0).isActive = true
+            return
+        }
+        
+        superView.bottomAnchor.constraint(equalTo: speedView.topAnchor, constant: 0).isActive = true
+        AnimationManager.delegate = self
+        speedView.delegate = self
         
         switch TaskManager.sturctureType {
         case .queue:
@@ -81,11 +107,27 @@ class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDe
         }
     }
     
+    //MARK:- SkewBinomialHeapDelegate
+    
+    func onElementTouchUpInside(element: Any) {
+        let queue = element as? BrodalPriorityQueueAnimation<MyString>
+        if queue == nil {
+            return
+        }
+        let vc = storyboard?.instantiateViewController(withIdentifier: "vc") as! ViewController
+        vc.hasControlls = false
+        vc.mainView = queue!.contentView
+        if let topController = UIApplication.topViewController() {
+            topController.present(vc, animated: true, completion: nil)
+        }
+    }
+    
     // MARK:- ControlDelegate
     
     func checkIfQueueExist() {
         if speedView.queue == nil {
             speedView.queue = BrodalPriorityQueueAnimation<MyString>()
+            speedView.queue.delegate = self
             superView.addSubview(speedView.queue.contentView)
             
             speedView.queue.contentView.translatesAutoresizingMaskIntoConstraints = false
@@ -167,7 +209,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDe
             let confirmAction = UIAlertAction(title: "Done", style: .default, handler: { (_) in
                 if let field = alertController.textFields?[0] {
                     self.speedView.queue.insert(element: MyString(value: field.text!))
-                    AnimationManager.play()
+                    AnimationManager.play(isByStep: self.animationByStepSwitch.isOn)
                 } else {
                     self.didFinishAnimation()
                 }
@@ -181,7 +223,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDe
         }
         switch TaskManager.taskType {
         case .equal, .increasing, .decreasing, .random:
-            AnimationManager.play()
+            AnimationManager.play(isByStep: animationByStepSwitch.isOn)
             break
         default:
             break
@@ -218,7 +260,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDe
             let confirmAction = UIAlertAction(title: "Done", style: .default, handler: { (_) in
                 if let field = alertController.textFields?[0] {
                     self.speedView.heap.push(element: MyString(value: field.text!))
-                    AnimationManager.play()
+                    AnimationManager.play(isByStep: self.animationByStepSwitch.isOn)
                 } else {
                     self.didFinishAnimation()
                 }
@@ -233,7 +275,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDe
         
         switch TaskManager.taskType {
         case .equal, .increasing, .decreasing, .random:
-            AnimationManager.play()
+            AnimationManager.play(isByStep: animationByStepSwitch.isOn)
             break
         default:
             break
@@ -266,13 +308,14 @@ class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDe
                 let element = speedView.heap.pop()!
                 print(element)
             }
+            AnimationManager.play(isByStep: animationByStepSwitch.isOn)
             break
         default:
             let element = speedView.heap.pop()
             print(element)
             let message = element == nil ? "Queue is empty. Nothing to extract." : "\(element!)"
             let alertController = UIAlertController(title: "Done", message: message, preferredStyle: .alert)
-            let confirmAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            let confirmAction = UIAlertAction(title: "OK", style: .default, handler: { (_) in AnimationManager.play(isByStep: self.animationByStepSwitch.isOn) })
             alertController.addAction(confirmAction)
             self.present(alertController, animated: true, completion: nil)
             break
@@ -283,7 +326,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDe
         if speedView.queue == nil {
             let message = "Queue is empty. Nothing to extract."
             let alertController = UIAlertController(title: "Done", message: message, preferredStyle: .alert)
-            let confirmAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            let confirmAction = UIAlertAction(title: "OK", style: .default, handler: { (_) in AnimationManager.play(isByStep: self.animationByStepSwitch.isOn) })
             alertController.addAction(confirmAction)
             self.present(alertController, animated: true, completion: nil)
             return
@@ -294,15 +337,48 @@ class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDe
                 let element = speedView.queue.extractMin()!
                 print(element)
             }
+            AnimationManager.play(isByStep: animationByStepSwitch.isOn)
             break
         default:
             let element = speedView.queue.extractMin()
             print(element)
             let message = element == nil ? "Queue is empty. Nothing to extract." : "\(element!)"
             let alertController = UIAlertController(title: "Done", message: message, preferredStyle: .alert)
-            let confirmAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            let confirmAction = UIAlertAction(title: "OK", style: .default, handler: { (_) in AnimationManager.play(isByStep: self.animationByStepSwitch.isOn) })
             alertController.addAction(confirmAction)
             self.present(alertController, animated: true, completion: nil)
+            break
+        }
+    }
+    
+    func retrieveFromQueue() {
+        let element = speedView.queue.first
+        print(element)
+        let message = element == nil ? "Queue is empty." : "\(element!)"
+        let alertController = UIAlertController(title: "Done", message: message, preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "OK", style: .default, handler: { (_) in AnimationManager.play(isByStep: self.animationByStepSwitch.isOn) })
+        alertController.addAction(confirmAction)
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    func retrieveFromHeap() {
+        let element = speedView.heap.first
+        print(element)
+        let message = element == nil ? "Queue is empty." : "\(element!)"
+        let alertController = UIAlertController(title: "Done", message: message, preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "OK", style: .default, handler: { (_) in AnimationManager.play(isByStep: self.animationByStepSwitch.isOn) })
+        alertController.addAction(confirmAction)
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    func onRetrieveElement() {
+        
+        switch TaskManager.sturctureType {
+        case .queue:
+            retrieveFromQueue()
+            break
+        case .heap:
+            retrieveFromHeap()
             break
         }
     }
@@ -317,7 +393,6 @@ class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDe
             removeFromHeap()
             break
         }
-        AnimationManager.play()
     }
     
         
@@ -325,6 +400,9 @@ class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDe
     // MARK:- AnimationManagerDelegate
     
     func willPlayAnimation(animationDescription: String) {
+        if animationDescription == "" {
+            return
+        }
         titleNavigationItem.title = animationDescription
     }
     
@@ -335,6 +413,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDe
     func didFinishAnimation() {
         titleNavigationItem.title = "Done"
         speedView.addButton.isEnabled = true
+        speedView.retrieveButton.isEnabled = true
         speedView.removeButton.isEnabled = true
     }
     
