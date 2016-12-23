@@ -102,14 +102,8 @@ class AnimationManager {
     
     static weak var delegate: AnimationManagerDelegate?
     
-    static private var shouldContinueAnimation = true
     
     static func play() {
-        if !shouldContinueAnimation {
-            shouldContinueAnimation = true
-            return
-        }
-        
         isRunning = true
         if animations.isEmpty {
             isRunning = false
@@ -125,9 +119,7 @@ class AnimationManager {
     }
     
     static func clear() {
-        shouldContinueAnimation = false
         animations.removeAll()
-        isRunning = false
         defaultDuration = 0.5
     }
 }
