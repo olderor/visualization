@@ -16,6 +16,7 @@
 		2882D7FC1E0C7BF700FE474A /* TaskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2882D7FB1E0C7BF700FE474A /* TaskManager.swift */; };
 		2882D7FF1E0C8DD100FE474A /* TestChoosingTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2882D7FE1E0C8DD100FE474A /* TestChoosingTableViewController.swift */; };
 		2882D8011E0C910500FE474A /* StructureChoosingTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2882D8001E0C910500FE474A /* StructureChoosingTableViewController.swift */; };
+		2882D8031E0CA67D00FE474A /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2882D8021E0CA67C00FE474A /* StringExtension.swift */; };
 		288C603B1E08433D00659633 /* SpeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288C603A1E08433C00659633 /* SpeedView.swift */; };
 		28F43BF91DE17EC800BD633C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F43BF81DE17EC800BD633C /* AppDelegate.swift */; };
 		28F43BFB1DE17EC800BD633C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F43BFA1DE17EC800BD633C /* ViewController.swift */; };
@@ -35,6 +36,7 @@
 		2882D7FB1E0C7BF700FE474A /* TaskManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskManager.swift; sourceTree = "<group>"; };
 		2882D7FE1E0C8DD100FE474A /* TestChoosingTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestChoosingTableViewController.swift; sourceTree = "<group>"; };
 		2882D8001E0C910500FE474A /* StructureChoosingTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StructureChoosingTableViewController.swift; sourceTree = "<group>"; };
+		2882D8021E0CA67C00FE474A /* StringExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		288C603A1E08433C00659633 /* SpeedView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeedView.swift; sourceTree = "<group>"; };
 		28F43BF51DE17EC800BD633C /* forest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = forest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28F43BF81DE17EC800BD633C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -68,6 +70,7 @@
 				28F43BF81DE17EC800BD633C /* AppDelegate.swift */,
 				28F43BFA1DE17EC800BD633C /* ViewController.swift */,
 				2882D7FB1E0C7BF700FE474A /* TaskManager.swift */,
+				288C603A1E08433C00659633 /* SpeedView.swift */,
 			);
 			name = Application;
 			sourceTree = "<group>";
@@ -123,7 +126,7 @@
 				2882D7F81E09C26F00FE474A /* Application */,
 				2882D7FA1E09C28D00FE474A /* Animations */,
 				2882D7F91E09C27C00FE474A /* Data structures */,
-				288C603A1E08433C00659633 /* SpeedView.swift */,
+				2882D8021E0CA67C00FE474A /* StringExtension.swift */,
 			);
 			path = forest;
 			sourceTree = "<group>";
@@ -212,6 +215,7 @@
 				287601B21E0326CC006BFC7F /* BrodalPriorityQueue.swift in Sources */,
 				28F43BF91DE17EC800BD633C /* AppDelegate.swift in Sources */,
 				288C603B1E08433D00659633 /* SpeedView.swift in Sources */,
+				2882D8031E0CA67D00FE474A /* StringExtension.swift in Sources */,
 				287601AD1E031596006BFC7F /* Deque.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

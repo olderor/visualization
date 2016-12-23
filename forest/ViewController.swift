@@ -85,7 +85,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDe
     
     func checkIfQueueExist() {
         if speedView.queue == nil {
-            speedView.queue = BrodalPriorityQueueAnimation<Int>()
+            speedView.queue = BrodalPriorityQueueAnimation<MyString>()
             superView.addSubview(speedView.queue.contentView)
             
             speedView.queue.contentView.translatesAutoresizingMaskIntoConstraints = false
@@ -133,7 +133,7 @@ class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDe
             
             
             
-            speedView.heap = SkewBinomialHeapAnimation<Int>(mainScrollView: mainScrollView, mainView: mainView, singletonsStackView: singletonsStackView)
+            speedView.heap = SkewBinomialHeapAnimation<MyString>(mainScrollView: mainScrollView, mainView: mainView, singletonsStackView: singletonsStackView)
         }
     }
     
@@ -142,31 +142,31 @@ class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDe
         switch TaskManager.taskType {
         case .equal:
             for _ in 0..<100 {
-                speedView.queue.insert(element: 0)
+                speedView.queue.insert(element: MyString(value: "0"))
             }
             break
         case .increasing:
             for i in 0..<100 {
-                speedView.queue.insert(element: i)
+                speedView.queue.insert(element: MyString(value: "\(i)"))
             }
             break
         case .decreasing:
             for i in 0..<100 {
-                speedView.queue.insert(element: 100 - i)
+                speedView.queue.insert(element: MyString(value: "\(100 - i)"))
             }
             break
         case .random:
             for _ in 0..<100 {
                 let element = Int(arc4random() % 100)
                 print(element)
-                speedView.queue.insert(element: element)
+                speedView.queue.insert(element: MyString(value: "\(element)"))
             }
             break
         case .custom:
             let alertController = UIAlertController(title: "Input", message: "Enter element", preferredStyle: .alert)
             let confirmAction = UIAlertAction(title: "Done", style: .default, handler: { (_) in
                 if let field = alertController.textFields?[0] {
-                    self.speedView.queue.insert(element: Int(field.text!)!)
+                    self.speedView.queue.insert(element: MyString(value: field.text!))
                     AnimationManager.play()
                 } else {
                     self.didFinishAnimation()
@@ -193,31 +193,31 @@ class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDe
         switch TaskManager.taskType {
         case .equal:
             for _ in 0..<100 {
-                speedView.heap.push(element: 0)
+                speedView.heap.push(element: MyString(value: "0"))
             }
             break
         case .increasing:
             for i in 0..<100 {
-                speedView.heap.push(element: i)
+                speedView.heap.push(element: MyString(value: "\(i)"))
             }
             break
         case .decreasing:
             for i in 0..<100 {
-                speedView.heap.push(element: 100 - i)
+                speedView.heap.push(element: MyString(value: "\(100 - i)"))
             }
             break
         case .random:
             for _ in 0..<100 {
                 let element = Int(arc4random() % 100)
                 print(element)
-                speedView.heap.push(element: element)
+                speedView.heap.push(element: MyString(value: "\(element)"))
             }
             break
         case .custom:
             let alertController = UIAlertController(title: "Input", message: "Enter element", preferredStyle: .alert)
             let confirmAction = UIAlertAction(title: "Done", style: .default, handler: { (_) in
                 if let field = alertController.textFields?[0] {
-                    self.speedView.heap.push(element: Int(field.text!)!)
+                    self.speedView.heap.push(element: MyString(value: field.text!))
                     AnimationManager.play()
                 } else {
                     self.didFinishAnimation()

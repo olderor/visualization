@@ -342,10 +342,10 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
     // MARK:- Description
     
     override var description: String {
-        return root == nil ? "" : "\(root!.value)"
+        return root == nil ? "" : String(describing: root!.value)
     }
     
     override var debugDescription: String {
-        return root == nil ? "" : "\(root!.value)"
+        return root == nil ? "" : String(describing: root!.value)
     }
 }

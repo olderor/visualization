@@ -23,8 +23,8 @@ class SpeedView : UIView {
     @IBOutlet weak var removeButton: UIButton!
     @IBOutlet weak var addButton: UIButton!
     
-    var queue: BrodalPriorityQueueAnimation<Int>!
-    var heap: SkewBinomialHeapAnimation<Int>!
+    var queue: BrodalPriorityQueueAnimation<MyString>!
+    var heap: SkewBinomialHeapAnimation<MyString>!
     
     weak var delegate: ControlDelegate?
     
