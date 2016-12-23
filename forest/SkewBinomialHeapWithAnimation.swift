@@ -27,16 +27,16 @@ class Node {
         AnimationManager.addAnimation(animation: {
             self.label.layer.backgroundColor = UIColor.init(red: 0, green: 1, blue: 1, alpha: 1).cgColor
             other.label.layer.backgroundColor = UIColor.init(red: 0, green: 1, blue: 1, alpha: 1).cgColor
-        }, completion: nil, type: .animation)
+        }, completion: nil, type: .animation, description: "swapping nodes")
         
         AnimationManager.addAnimation(animation: {
             swap(&self.label.text, &other.label.text)
-        }, completion: nil, type: .transition)
+        }, completion: nil, type: .transition, description: "swapping nodes")
         
         AnimationManager.addAnimation(animation: {
             self.label.layer.backgroundColor = UIColor.yellow.cgColor
             other.label.layer.backgroundColor = UIColor.green.cgColor
-        }, completion: nil, type: .animation)
+        }, completion: nil, type: .animation, description: "swapping nodes")
     }
     
     //MARK:- Selection Animation
@@ -53,7 +53,7 @@ class Node {
     func changeBackground(color: UIColor) {
         AnimationManager.addAnimation(animation: {
             self.label.layer.backgroundColor = color.cgColor
-        }, completion: nil, type: .animation)
+        }, completion: nil, type: .animation, description: nil)
     }
     
     func deselect() {
@@ -63,7 +63,7 @@ class Node {
     func disapear() {
         AnimationManager.addAnimation(animation: {
             self.view.removeFromSuperview()
-        }, completion: nil, type: .transition)
+        }, completion: nil, type: .transition, description: nil)
     }
     
     //MARK:- Moving Animation
@@ -83,7 +83,7 @@ class Node {
             self.mainView.frame.size.width = max(self.mainView.frame.size.width, self.view.frame.origin.x + self.view.frame.size.width + treeOffset)
             self.mainView.frame.size.height = max(self.mainView.frame.size.height, self.view.frame.origin.y + self.view.frame.size.height + treeOffset)
             self.mainScrollView.contentSize = CGSize(width: self.mainView.frame.size.width, height: self.mainView.frame.size.height)
-        }, completion: nil, type: .animation)
+        }, completion: nil, type: .animation, description: "moving nodes")
     }
     
     func getMovesToBlock(x: CGFloat, y: CGFloat) -> () -> Void {
@@ -133,7 +133,7 @@ class Node {
         
         AnimationManager.addAnimation(animation: {
             self.mainView.addSubview(self.view)
-        }, completion: nil, type: .transition)
+        }, completion: nil, type: .transition, description: "creating new node")
     }
     
     func swapNodes(other: Node) {
@@ -149,7 +149,7 @@ class Node {
             for animation in animations {
                 animation()
             }
-        }, completion: nil, type: .animation)
+        }, completion: nil, type: .animation, description: "swapping nodes")
         
     }
     
@@ -204,7 +204,7 @@ class Node {
             self.view = newView
             
             self.connectNodes(from: CGPoint(x: self.root.x, y: self.root.y), to: CGPoint(x: self.root.x, y: self.root.y + nodeSizeDifference))
-        }, completion: nil, type: .none)
+        }, completion: nil, type: .none, description: "add new child")
     }
     
     func appendSingleton(node: Node) {
@@ -239,7 +239,7 @@ class Node {
             self.view = newView
             
             self.connectNodes(from: CGPoint(x: self.root.x, y: self.root.y), to: CGPoint(x: node.root.x + width + nodeOffset, y: node.root.y + nodeSizeDifference), isDashed: true)
-        }, completion: nil, type: .none)
+        }, completion: nil, type: .none, description: "add new singleton")
     }
     
     func appendChild(node: Node) {
@@ -278,7 +278,7 @@ class Node {
             
             
             self.connectNodes(from: CGPoint(x: self.root.x, y: self.root.y), to: CGPoint(x: node.root.x, y: node.root.y + nodeSizeDifference))
-        }, completion: nil, type: .none)
+        }, completion: nil, type: .none, description: "add new child")
     }
 }
 
@@ -331,7 +331,7 @@ class HeapNodeAnimation<Element> : Node {
             }
             
             removeRootInView(view: self.view, x: self.view.frame.origin.x, y: self.view.frame.origin.y)
-        }, completion: nil, type: .none)
+        }, completion: nil, type: .none, description: nil)
     }
 }
 
@@ -444,7 +444,7 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
             for animation in animations {
                 animation()
             }
-        }, completion: nil, type: .animation)
+        }, completion: nil, type: .animation, description: "moving trees")
     }
     
     
@@ -529,7 +529,7 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
             for animation in animations {
                 animation()
             }
-        }, completion: nil, type: .animation)
+        }, completion: nil, type: .animation, description: "showing trees in the right order")
     }
     
     private func mergeHeaps(
@@ -546,7 +546,7 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
                 AnimationManager.addAnimation(animation: {
                     element.view.removeFromSuperview()
                     self.mainView.addSubview(element.view)
-                }, completion: nil, type: .none)
+                }, completion: nil, type: .none, description: nil)
                 element.mainView = mainView
                 element.mainScrollView = mainScrollView
                 element.singletonsStackView = singletonsStackView
@@ -562,7 +562,7 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
             AnimationManager.addAnimation(animation: {
                 element.view.removeFromSuperview()
                 self.mainView.addSubview(element.view)
-                }, completion: nil, type: .none)
+                }, completion: nil, type: .none, description: nil)
             element.mainView = mainView
             element.mainScrollView = mainScrollView
             element.singletonsStackView = singletonsStackView
@@ -610,7 +610,7 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
                     for animation in animations {
                         animation()
                     }
-                }, completion: nil, type: .animation)
+                }, completion: nil, type: .animation, description: "merging trees with same order")
             }
         }
     }
@@ -655,23 +655,26 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
             for animation in animations {
                 animation()
             }
-        }, completion: nil, type: .animation)
+        }, completion: nil, type: .animation, description: "take singletons from root")
         
         AnimationManager.addAnimation(animation: {
             for animation in animationsAfter {
                 animation()
             }
-        }, completion: nil, type: .animation)
+        }, completion: nil, type: .animation, description: "take singletons from root")
     }
     
-    func pop() {
+    func pop() -> Element? {
         
         if isEmpty {
-            return
+            return nil
         }
         
         let index = findMinIndex()
         let treeToRemove = trees[index]
+        
+        let element = treeToRemove.value
+        
         treeToRemove.changeBackground(color: .red)
         treeToRemove.changeBackground(color: .white)
         treeToRemove.changeBackground(color: .red)
@@ -692,7 +695,7 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
             
             AnimationManager.addAnimation(animation: {
                 treeView.removeFromSuperview()
-            }, completion: nil, type: .transition)
+            }, completion: nil, type: .transition, description: "removing minimum")
             
             var animations = [() -> Void]()
             for tree in treeToRemove.singletons {
@@ -702,7 +705,7 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
                 for animation in animations {
                     animation()
                 }
-            }, completion: nil, type: .animation)
+            }, completion: nil, type: .animation, description: "move trees")
             
         }
         
@@ -710,9 +713,11 @@ class SkewBinomialHeapAnimation<Element: Comparable> {
             self.singletonsStackView.frame.origin.y += nodeSize + nodeOffset * 2
             self.singletonsStackView.frame.size.height = 0
             self.mainScrollView.frame.size.height += nodeSize + nodeOffset * 2
-        }, completion: nil, type: .animation)
+        }, completion: nil, type: .animation, description: "")
         
         elementsCount -= 1
+        
+        return element
     }
     
     func merge(other: SkewBinomialHeapAnimation<Element>) {

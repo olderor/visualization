@@ -30,9 +30,22 @@ var treeSizeDifference: CGFloat {
 
 
 
-class ViewController: UIViewController, UIScrollViewDelegate {
+class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDelegate, ControlDelegate {
     
-    @IBOutlet var speedView: SpeedView!
+    
+    // MARK:- IBOutlets and IBActions
+    
+    @IBOutlet weak var speedView: SpeedView!
+    
+    @IBOutlet weak var navigationBar: UINavigationBar!
+    
+    @IBOutlet weak var titleNavigationItem: UINavigationItem!
+    
+    @IBAction func backBarButtonItemOnTouchUpInside(_ sender: UIBarButtonItem) {
+        AnimationManager.clear()
+        self.dismiss(animated: true, completion: nil)
+    }
+    
     
     // MARK:- UIViewController
     
@@ -42,6 +55,10 @@ class ViewController: UIViewController, UIScrollViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        AnimationManager.delegate = self
+        speedView.delegate = self
+        
         settingsView = speedView
         superView = UIView(frame: self.view.frame)
         self.view.addSubview(superView)
@@ -50,120 +67,284 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         superView.translatesAutoresizingMaskIntoConstraints = false
         superView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0).isActive = true
         superView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 0).isActive = true
-        superView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 20).isActive = true
+        superView.topAnchor.constraint(equalTo: navigationBar.bottomAnchor, constant: 0).isActive = true
         superView.bottomAnchor.constraint(equalTo: speedView.topAnchor, constant: 0).isActive = true
-                
+        
+        
+        switch TaskManager.sturctureType {
+        case .queue:
+            checkIfQueueExist()
+            break
+        case .heap:
+            checkIfHeapExist()
+            break
+        }
     }
     
+    // MARK:- ControlDelegate
     
-    func runSkewBinomialHeap() {
-        settingsView = speedView
+    func checkIfQueueExist() {
+        if speedView.queue == nil {
+            speedView.queue = BrodalPriorityQueueAnimation<Int>()
+            superView.addSubview(speedView.queue.contentView)
+            
+            speedView.queue.contentView.translatesAutoresizingMaskIntoConstraints = false
+            speedView.queue.contentView.leadingAnchor.constraint(equalTo: superView.leadingAnchor, constant: 0).isActive = true
+            speedView.queue.contentView.trailingAnchor.constraint(equalTo: superView.trailingAnchor, constant: 0).isActive = true
+            speedView.queue.contentView.topAnchor.constraint(equalTo: superView.topAnchor, constant: 0).isActive = true
+            speedView.queue.contentView.bottomAnchor.constraint(equalTo: superView.bottomAnchor, constant: 0).isActive = true
+            
+        }
+    }
+    
+    func checkIfHeapExist() {
+        if speedView.heap == nil {
+            
+            mainScrollView = UIScrollView(frame: self.view.frame)
+            mainView = UIView(frame: self.view.frame)
+            
+            superView.addSubview(mainScrollView)
+            mainScrollView.addSubview(mainView)
+            
+            singletonsStackView = UIView(frame: CGRect(x: 0, y: speedView.frame.origin.y, width: self.view.frame.size.width, height: 0))
+            superView.addSubview(singletonsStackView)
+            
+            
+            singletonsStackView.translatesAutoresizingMaskIntoConstraints = false
+            mainScrollView.translatesAutoresizingMaskIntoConstraints = false
+            superView.translatesAutoresizingMaskIntoConstraints = false
+            
+            
+            mainScrollView.leadingAnchor.constraint(equalTo: superView.leadingAnchor, constant: 0).isActive = true
+            mainScrollView.trailingAnchor.constraint(equalTo: superView.trailingAnchor, constant: 0).isActive = true
+            mainScrollView.topAnchor.constraint(equalTo: superView.topAnchor, constant: 0).isActive = true
+            mainScrollView.bottomAnchor.constraint(equalTo: superView.bottomAnchor, constant: 0).isActive = true
+            
+            
+            singletonsStackView.leadingAnchor.constraint(equalTo: superView.leadingAnchor, constant: 0).isActive = true
+            singletonsStackView.trailingAnchor.constraint(equalTo: superView.trailingAnchor, constant: 0).isActive = true
+            singletonsStackView.bottomAnchor.constraint(equalTo: superView.bottomAnchor, constant: 0).isActive = true
+            
+            
+            
+            mainScrollView.delegate = self
+            mainScrollView.minimumZoomScale = CGFloat.leastNormalMagnitude
+            mainScrollView.maximumZoomScale = CGFloat.greatestFiniteMagnitude
+            
+            
+            
+            speedView.heap = SkewBinomialHeapAnimation<Int>(mainScrollView: mainScrollView, mainView: mainView, singletonsStackView: singletonsStackView)
+        }
+    }
+    
+    func addElementToQueue() {
         
-        mainScrollView = UIScrollView(frame: self.view.frame)
-        mainView = UIView(frame: self.view.frame)
-        
-        superView = UIView(frame: self.view.frame)
-        
-        self.view.addSubview(superView)
-        superView.addSubview(mainScrollView)
-        mainScrollView.addSubview(mainView)
-        
-        singletonsStackView = UIView(frame: CGRect(x: 0, y: speedView.frame.origin.y, width: self.view.frame.size.width, height: 0))
-        superView.addSubview(singletonsStackView)
-        
-        
-        singletonsStackView.translatesAutoresizingMaskIntoConstraints = false
-        mainScrollView.translatesAutoresizingMaskIntoConstraints = false
-        superView.translatesAutoresizingMaskIntoConstraints = false
-        
-        
-        superView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0).isActive = true
-        superView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 0).isActive = true
-        superView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 20).isActive = true
-        superView.bottomAnchor.constraint(equalTo: speedView.topAnchor, constant: 0).isActive = true
-        
-        
-        mainScrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0).isActive = true
-        mainScrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 0).isActive = true
-        mainScrollView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 20).isActive = true
-        mainScrollView.bottomAnchor.constraint(equalTo: speedView.topAnchor, constant: 0).isActive = true
-        
-        
-        singletonsStackView.leadingAnchor.constraint(equalTo: superView.leadingAnchor, constant: 0).isActive = true
-        singletonsStackView.trailingAnchor.constraint(equalTo: superView.trailingAnchor, constant: 0).isActive = true
-        singletonsStackView.bottomAnchor.constraint(equalTo: superView.bottomAnchor, constant: 0).isActive = true
-        
-        
-        
-        mainScrollView.delegate = self
-        mainScrollView.minimumZoomScale = CGFloat.leastNormalMagnitude
-        mainScrollView.maximumZoomScale = CGFloat.greatestFiniteMagnitude
-        
-        
-        
-        let skewHeap = SkewBinomialHeapAnimation<Int>(mainScrollView: mainScrollView, mainView: mainView, singletonsStackView: singletonsStackView)
-        
-        var result = ""
-        
-        for _ in 0...3 {
-            for _ in 0..<Int(arc4random() % 20) + 5 {
+        switch TaskManager.taskType {
+        case .equal:
+            for _ in 0..<100 {
+                speedView.queue.insert(element: 0)
+            }
+            break
+        case .increasing:
+            for i in 0..<100 {
+                speedView.queue.insert(element: i)
+            }
+            break
+        case .decreasing:
+            for i in 0..<100 {
+                speedView.queue.insert(element: 100 - i)
+            }
+            break
+        case .random:
+            for _ in 0..<100 {
                 let element = Int(arc4random() % 100)
-                skewHeap.push(element: element)
-                print("push \(element)")
+                print(element)
+                speedView.queue.insert(element: element)
             }
-            for _ in 0..<Int(arc4random() % 10) {
-                let element = skewHeap.first
-                skewHeap.pop()
-                if element != nil {
-                    print(element!)
-                    result += " \(element!)"
+            break
+        case .custom:
+            let alertController = UIAlertController(title: "Input", message: "Enter element", preferredStyle: .alert)
+            let confirmAction = UIAlertAction(title: "Done", style: .default, handler: { (_) in
+                if let field = alertController.textFields?[0] {
+                    self.speedView.queue.insert(element: Int(field.text!)!)
+                    AnimationManager.play()
+                } else {
+                    self.didFinishAnimation()
                 }
-            }
-            result += "\n"
+            })
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: { (_) in self.didFinishAnimation() })
+            alertController.addTextField(configurationHandler: nil)
+            alertController.addAction(confirmAction)
+            alertController.addAction(cancelAction)
+            self.present(alertController, animated: true, completion: nil)
+            break
         }
-        while !skewHeap.isEmpty {
-            let element = skewHeap.first
-            skewHeap.pop()
-            if element != nil {
-                print(element!)
-                result += " \(element!)"
-            }
+        switch TaskManager.taskType {
+        case .equal, .increasing, .decreasing, .random:
+            AnimationManager.play()
+            break
+        default:
+            break
         }
-        
-        
-        let alert = UIAlertController(title: "Done", message: result, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        
-        
-        AnimationManager.play(completion: ) { self.present(alert, animated: true, completion: nil) }
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    func addElementToHeap() {
+        
+        switch TaskManager.taskType {
+        case .equal:
+            for _ in 0..<100 {
+                speedView.heap.push(element: 0)
+            }
+            break
+        case .increasing:
+            for i in 0..<100 {
+                speedView.heap.push(element: i)
+            }
+            break
+        case .decreasing:
+            for i in 0..<100 {
+                speedView.heap.push(element: 100 - i)
+            }
+            break
+        case .random:
+            for _ in 0..<100 {
+                let element = Int(arc4random() % 100)
+                print(element)
+                speedView.heap.push(element: element)
+            }
+            break
+        case .custom:
+            let alertController = UIAlertController(title: "Input", message: "Enter element", preferredStyle: .alert)
+            let confirmAction = UIAlertAction(title: "Done", style: .default, handler: { (_) in
+                if let field = alertController.textFields?[0] {
+                    self.speedView.heap.push(element: Int(field.text!)!)
+                    AnimationManager.play()
+                } else {
+                    self.didFinishAnimation()
+                }
+            })
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: { (_) in self.didFinishAnimation() })
+            alertController.addTextField(configurationHandler: nil)
+            alertController.addAction(confirmAction)
+            alertController.addAction(cancelAction)
+            self.present(alertController, animated: true, completion: nil)
+            break
+        }
+        
+        switch TaskManager.taskType {
+        case .equal, .increasing, .decreasing, .random:
+            AnimationManager.play()
+            break
+        default:
+            break
+        }
+    }
+    
+    func onAddElement() {
+        switch TaskManager.sturctureType {
+        case .queue:
+            addElementToQueue()
+            break
+        case .heap:
+            addElementToHeap()
+            break
+        }
+    }
+    
+    func removeFromHeap() {
+        if speedView.heap == nil {
+            let message = "Queue is empty. Nothing to extract."
+            let alertController = UIAlertController(title: "Done", message: message, preferredStyle: .alert)
+            let confirmAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alertController.addAction(confirmAction)
+            self.present(alertController, animated: true, completion: nil)
+            return
+        }
+        switch TaskManager.taskType {
+        case .equal, .increasing, .decreasing, .random:
+            while !speedView.heap.isEmpty {
+                let element = speedView.heap.pop()!
+                print(element)
+            }
+            break
+        default:
+            let element = speedView.heap.pop()
+            print(element)
+            let message = element == nil ? "Queue is empty. Nothing to extract." : "\(element!)"
+            let alertController = UIAlertController(title: "Done", message: message, preferredStyle: .alert)
+            let confirmAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alertController.addAction(confirmAction)
+            self.present(alertController, animated: true, completion: nil)
+            break
+        }
+    }
+    
+    func removeFromQueue() {
+        if speedView.queue == nil {
+            let message = "Queue is empty. Nothing to extract."
+            let alertController = UIAlertController(title: "Done", message: message, preferredStyle: .alert)
+            let confirmAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alertController.addAction(confirmAction)
+            self.present(alertController, animated: true, completion: nil)
+            return
+        }
+        switch TaskManager.taskType {
+        case .equal, .increasing, .decreasing, .random:
+            while !speedView.queue.isEmpty {
+                let element = speedView.queue.extractMin()!
+                print(element)
+            }
+            break
+        default:
+            let element = speedView.queue.extractMin()
+            print(element)
+            let message = element == nil ? "Queue is empty. Nothing to extract." : "\(element!)"
+            let alertController = UIAlertController(title: "Done", message: message, preferredStyle: .alert)
+            let confirmAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alertController.addAction(confirmAction)
+            self.present(alertController, animated: true, completion: nil)
+            break
+        }
+    }
+    
+    func onRemoveElement() {
+        
+        switch TaskManager.sturctureType {
+        case .queue:
+            removeFromQueue()
+            break
+        case .heap:
+            removeFromHeap()
+            break
+        }
+        AnimationManager.play()
+    }
+    
+        
+    
+    // MARK:- AnimationManagerDelegate
+    
+    func willPlayAnimation(animationDescription: String) {
+        titleNavigationItem.title = animationDescription
+    }
+    
+    func didPlayAnimation(animationDescription: String) {
+        // titleNavigationItem.title = ""
+    }
+    
+    func didFinishAnimation() {
+        titleNavigationItem.title = "Done"
+        speedView.addButton.isEnabled = true
+        speedView.removeButton.isEnabled = true
+    }
+    
+    // MARK:- UIScrollViewDelegate
+    
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        if scrollView.subviews.count == 0 {
+            return nil
+        }
+        return scrollView.subviews[0]
     }
 
 }
-
-/*
- 
- 
- 4 16 57 56 82 90 12 7 90 54 61 70 54 97 
- - 4 7 12 16 54 54 56
- 76 64 43 73 60 20 32 38 82 9 31 63 45 63 87
- - 9 20 31 32 38 43 45 57 60
- 2 69 17 48 28 43 49 87 96 82 81 41 77 1 89 52 15 90 15 59 20 36 10 86 23
- - 1 2 10 15 15 17 20 23 28 36 41 43 48 49 52 59 61 63 63 64 69 70 73 76 77 81 82 82 82 86 87
- - 87 89 90 90 90 96 97
- 
- 
- 
- 
- - 4 7 12 16 54 54 56
- 
- - 9 20 31 32 38 43 45 57 60
- 
- - 1 2 10 15 15 17 20 23 28 36 41 43 48 49 52 59 61 63 63 64 69 70 73 76 77 81 82 82 82 86 87
- - 87 89 90 90 90 96 97
- */
-

@@ -13,6 +13,9 @@
 		287601B21E0326CC006BFC7F /* BrodalPriorityQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287601B11E0326CC006BFC7F /* BrodalPriorityQueue.swift */; };
 		287601B61E033A19006BFC7F /* SkewBinomialHeapWithAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287601B51E033A19006BFC7F /* SkewBinomialHeapWithAnimation.swift */; };
 		2882D7F71E09C23F00FE474A /* BrodalPriorityQueueWithAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2882D7F61E09C23F00FE474A /* BrodalPriorityQueueWithAnimation.swift */; };
+		2882D7FC1E0C7BF700FE474A /* TaskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2882D7FB1E0C7BF700FE474A /* TaskManager.swift */; };
+		2882D7FF1E0C8DD100FE474A /* TestChoosingTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2882D7FE1E0C8DD100FE474A /* TestChoosingTableViewController.swift */; };
+		2882D8011E0C910500FE474A /* StructureChoosingTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2882D8001E0C910500FE474A /* StructureChoosingTableViewController.swift */; };
 		288C603B1E08433D00659633 /* SpeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288C603A1E08433C00659633 /* SpeedView.swift */; };
 		28F43BF91DE17EC800BD633C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F43BF81DE17EC800BD633C /* AppDelegate.swift */; };
 		28F43BFB1DE17EC800BD633C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F43BFA1DE17EC800BD633C /* ViewController.swift */; };
@@ -29,6 +32,9 @@
 		287601B11E0326CC006BFC7F /* BrodalPriorityQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrodalPriorityQueue.swift; sourceTree = "<group>"; };
 		287601B51E033A19006BFC7F /* SkewBinomialHeapWithAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SkewBinomialHeapWithAnimation.swift; sourceTree = "<group>"; };
 		2882D7F61E09C23F00FE474A /* BrodalPriorityQueueWithAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrodalPriorityQueueWithAnimation.swift; sourceTree = "<group>"; };
+		2882D7FB1E0C7BF700FE474A /* TaskManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskManager.swift; sourceTree = "<group>"; };
+		2882D7FE1E0C8DD100FE474A /* TestChoosingTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestChoosingTableViewController.swift; sourceTree = "<group>"; };
+		2882D8001E0C910500FE474A /* StructureChoosingTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StructureChoosingTableViewController.swift; sourceTree = "<group>"; };
 		288C603A1E08433C00659633 /* SpeedView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeedView.swift; sourceTree = "<group>"; };
 		28F43BF51DE17EC800BD633C /* forest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = forest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28F43BF81DE17EC800BD633C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -53,6 +59,7 @@
 		2882D7F81E09C26F00FE474A /* Application */ = {
 			isa = PBXGroup;
 			children = (
+				2882D7FD1E0C8DA200FE474A /* TableViewControllers */,
 				28F43BFC1DE17EC800BD633C /* Main.storyboard */,
 				28F43BFF1DE17EC800BD633C /* Assets.xcassets */,
 				28F43C011DE17EC800BD633C /* LaunchScreen.storyboard */,
@@ -60,6 +67,7 @@
 				287601AE1E0315F0006BFC7F /* MyPlayground.playground */,
 				28F43BF81DE17EC800BD633C /* AppDelegate.swift */,
 				28F43BFA1DE17EC800BD633C /* ViewController.swift */,
+				2882D7FB1E0C7BF700FE474A /* TaskManager.swift */,
 			);
 			name = Application;
 			sourceTree = "<group>";
@@ -82,6 +90,15 @@
 				2827BCDC1E053D2E00B59799 /* AnimationManager.swift */,
 			);
 			name = Animations;
+			sourceTree = "<group>";
+		};
+		2882D7FD1E0C8DA200FE474A /* TableViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				2882D7FE1E0C8DD100FE474A /* TestChoosingTableViewController.swift */,
+				2882D8001E0C910500FE474A /* StructureChoosingTableViewController.swift */,
+			);
+			name = TableViewControllers;
 			sourceTree = "<group>";
 		};
 		28F43BEC1DE17EC700BD633C = {
@@ -186,8 +203,11 @@
 			files = (
 				287601B01E03262C006BFC7F /* SkewBinomialHeap.swift in Sources */,
 				28F43BFB1DE17EC800BD633C /* ViewController.swift in Sources */,
+				2882D7FC1E0C7BF700FE474A /* TaskManager.swift in Sources */,
+				2882D8011E0C910500FE474A /* StructureChoosingTableViewController.swift in Sources */,
 				287601B61E033A19006BFC7F /* SkewBinomialHeapWithAnimation.swift in Sources */,
 				2827BCDD1E053D2E00B59799 /* AnimationManager.swift in Sources */,
+				2882D7FF1E0C8DD100FE474A /* TestChoosingTableViewController.swift in Sources */,
 				2882D7F71E09C23F00FE474A /* BrodalPriorityQueueWithAnimation.swift in Sources */,
 				287601B21E0326CC006BFC7F /* BrodalPriorityQueue.swift in Sources */,
 				28F43BF91DE17EC800BD633C /* AppDelegate.swift in Sources */,

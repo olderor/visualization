@@ -173,7 +173,7 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
                     previousContentView.removeFromSuperview()
                     self.addSubview(view: currentContentView, parent: parent)
                 }
-            }, completion: nil, type: .transition)
+                }, completion: nil, type: .transition, description: "making new root")
             return
         }
         if other.isEmpty {
@@ -199,13 +199,13 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
             if selfCopy.contentView.superview != nil {
                 superView.addSubview(label)
             }
-        }, completion: nil, type: .none)
+        }, completion: nil, type: .none, description: nil)
         AnimationManager.addAnimation(animation: {
             label.alpha = 1.0
-        }, completion: nil, type: .animation)
+        }, completion: nil, type: .animation, description: "merging")
         AnimationManager.addAnimation(animation: {
             label.backgroundColor = .yellow
-        }, completion: nil, type: .animation)
+        }, completion: nil, type: .animation, description: "merging")
         let currentContentView = contentView!
         var parent: UIView!
         AnimationManager.addAnimation(animation: {
@@ -213,38 +213,38 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
             if parent != nil {
                 selfCopy.contentView.alpha = 0.0
             }
-        }, completion: nil, type: .animation)
+        }, completion: nil, type: .animation, description: nil)
         AnimationManager.addAnimation(animation: {
             parent = selfCopy.contentView.superview
             if parent != nil {
                 selfCopy.contentView.removeFromSuperview()
                 selfCopy.contentView.alpha = 1.0
             }
-        }, completion: nil, type: .none)
+        }, completion: nil, type: .none, description: nil)
         AnimationManager.addAnimation(animation: {
             label.frame.origin.x = superView.frame.size.width - label.frame.size.width - 10
-        }, completion: nil, type: .animation)
+        }, completion: nil, type: .animation, description: "add root to the queue")
         AnimationManager.addAnimation(animation: {
             label.backgroundColor = .green
-        }, completion: nil, type: .animation)
+        }, completion: nil, type: .animation, description: "add root to the queue")
         AnimationManager.addAnimation(animation: {
             if parent != nil {
                 currentContentView.alpha = 0.0
                 self.addSubview(view: currentContentView, parent: parent)
             }
-        }, completion: nil, type: .none)
+        }, completion: nil, type: .none, description: "add root to the queue")
         AnimationManager.addAnimation(animation: {
             if parent != nil {
                 currentContentView.alpha = 1.0
             }
-        }, completion: nil, type: .animation)
+        }, completion: nil, type: .animation, description: "add root to the queue")
         root!.queue.push(element: selfCopy)
         AnimationManager.addAnimation(animation: {
             label.alpha = 0.0
-        }, completion: nil, type: .animation)
+        }, completion: nil, type: .animation, description: "add root to the queue")
         AnimationManager.addAnimation(animation: {
             label.removeFromSuperview()
-        }, completion: nil, type: .none)
+        }, completion: nil, type: .none, description: nil)
     }
     
     private func addSubview(view: UIView, parent: UIView) {
@@ -275,7 +275,7 @@ class BrodalPriorityQueueAnimation<Element: Comparable> : NSObject, Comparable, 
         let value = minBpq.root!.value
         AnimationManager.addAnimation(animation: {
             self.elementLabel.text = "\(value)"
-        }, completion: nil, type: .animation)
+        }, completion: nil, type: .animation, description: "changing root")
         root!.queue.pop()
         root!.queue.merge(other: minBpq.root!.queue)
         root!.value = value

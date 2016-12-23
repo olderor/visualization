@@ -12,20 +12,31 @@ enum AnimationType {
     case animation, transition, none
 }
 
+protocol AnimationManagerDelegate: class {
+    func willPlayAnimation(animationDescription: String)
+    func didPlayAnimation(animationDescription: String)
+    func didFinishAnimation()
+}
+
+
 class Animation {
     var animation: () -> Swift.Void
     var completion: ((Bool) -> Swift.Void)?
     var duration: TimeInterval
     var type: AnimationType
     
+    var description: String
+    
     init(animation: @escaping () -> Swift.Void,
          completion: ((Bool) -> Swift.Void)?,
          duration: TimeInterval,
-         type: AnimationType) {
+         type: AnimationType,
+         description: String?) {
         self.animation = animation
         self.completion = completion
         self.duration = duration
         self.type = type
+        self.description = description == nil ? "" : description!
     }
     
     func play(onComplete: (() -> Swift.Void)?) {
@@ -81,32 +92,43 @@ class AnimationManager {
         animations.append(animation)
     }
     
-    static func addAnimation(animation: @escaping () -> Swift.Void, completion: ((Bool) -> Swift.Void)?, type: AnimationType) {
-        addAnimation(animation: animation, completion: completion, duration: defaultDuration, type: type)
+    static func addAnimation(animation: @escaping () -> Swift.Void, completion: ((Bool) -> Swift.Void)?, type: AnimationType, description: String?) {
+        addAnimation(animation: animation, completion: completion, duration: defaultDuration, type: type, description: description)
     }
     
-    static func addAnimation(animation: @escaping () -> Swift.Void, completion: ((Bool) -> Swift.Void)?, duration: TimeInterval, type: AnimationType) {
-        addAnimation(animation: Animation(animation: animation, completion: completion, duration: duration, type: type))
+    static func addAnimation(animation: @escaping () -> Swift.Void, completion: ((Bool) -> Swift.Void)?, duration: TimeInterval, type: AnimationType, description: String?) {
+        addAnimation(animation: Animation(animation: animation, completion: completion, duration: duration, type: type, description: description))
     }
     
+    static weak var delegate: AnimationManagerDelegate?
     
-    private static var completionBlock: (() -> Void)?
+    static private var shouldContinueAnimation = true
     
-    private static func playAnimation() {
+    static func play() {
+        if !shouldContinueAnimation {
+            shouldContinueAnimation = true
+            return
+        }
+        
         isRunning = true
         if animations.isEmpty {
             isRunning = false
-            if completionBlock != nil {
-                completionBlock!()
-            }
+            delegate?.didFinishAnimation()
             return
         }
         let animation = animations.removeFirst()
-        animation.play(onComplete: playAnimation)
+        delegate?.willPlayAnimation(animationDescription: animation.description)
+        animation.play(onComplete: ) {
+            delegate?.didPlayAnimation(animationDescription: animation.description)
+            play()
+        }
     }
     
-    static func play(completion: (() -> Void)?) {
-        completionBlock = completion
-        playAnimation()
+    static func clear() {
+        shouldContinueAnimation = false
+        animations.removeAll()
+        isRunning = false
+        defaultDuration = 0.5
     }
 }
+
