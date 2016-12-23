@@ -17,6 +17,8 @@
 		2882D7FF1E0C8DD100FE474A /* TestChoosingTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2882D7FE1E0C8DD100FE474A /* TestChoosingTableViewController.swift */; };
 		2882D8011E0C910500FE474A /* StructureChoosingTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2882D8001E0C910500FE474A /* StructureChoosingTableViewController.swift */; };
 		2882D8031E0CA67D00FE474A /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2882D8021E0CA67C00FE474A /* StringExtension.swift */; };
+		2882D8051E0DAEEB00FE474A /* TreeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2882D8041E0DAEEA00FE474A /* TreeViewController.swift */; };
+		2882D8081E0DD73200FE474A /* MerryChristmasFlake.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2882D8061E0DD4F500FE474A /* MerryChristmasFlake.ttf */; };
 		288C603B1E08433D00659633 /* SpeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288C603A1E08433C00659633 /* SpeedView.swift */; };
 		28F43BF91DE17EC800BD633C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F43BF81DE17EC800BD633C /* AppDelegate.swift */; };
 		28F43BFB1DE17EC800BD633C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F43BFA1DE17EC800BD633C /* ViewController.swift */; };
@@ -37,6 +39,8 @@
 		2882D7FE1E0C8DD100FE474A /* TestChoosingTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestChoosingTableViewController.swift; sourceTree = "<group>"; };
 		2882D8001E0C910500FE474A /* StructureChoosingTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StructureChoosingTableViewController.swift; sourceTree = "<group>"; };
 		2882D8021E0CA67C00FE474A /* StringExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
+		2882D8041E0DAEEA00FE474A /* TreeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TreeViewController.swift; sourceTree = "<group>"; };
+		2882D8061E0DD4F500FE474A /* MerryChristmasFlake.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = MerryChristmasFlake.ttf; sourceTree = "<group>"; };
 		288C603A1E08433C00659633 /* SpeedView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeedView.swift; sourceTree = "<group>"; };
 		28F43BF51DE17EC800BD633C /* forest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = forest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28F43BF81DE17EC800BD633C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -61,6 +65,7 @@
 		2882D7F81E09C26F00FE474A /* Application */ = {
 			isa = PBXGroup;
 			children = (
+				2882D8061E0DD4F500FE474A /* MerryChristmasFlake.ttf */,
 				2882D7FD1E0C8DA200FE474A /* TableViewControllers */,
 				28F43BFC1DE17EC800BD633C /* Main.storyboard */,
 				28F43BFF1DE17EC800BD633C /* Assets.xcassets */,
@@ -71,6 +76,7 @@
 				28F43BFA1DE17EC800BD633C /* ViewController.swift */,
 				2882D7FB1E0C7BF700FE474A /* TaskManager.swift */,
 				288C603A1E08433C00659633 /* SpeedView.swift */,
+				2882D8041E0DAEEA00FE474A /* TreeViewController.swift */,
 			);
 			name = Application;
 			sourceTree = "<group>";
@@ -194,6 +200,7 @@
 				28F43C031DE17EC800BD633C /* LaunchScreen.storyboard in Resources */,
 				28F43C001DE17EC800BD633C /* Assets.xcassets in Resources */,
 				28F43BFE1DE17EC800BD633C /* Main.storyboard in Resources */,
+				2882D8081E0DD73200FE474A /* MerryChristmasFlake.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -212,6 +219,7 @@
 				2827BCDD1E053D2E00B59799 /* AnimationManager.swift in Sources */,
 				2882D7FF1E0C8DD100FE474A /* TestChoosingTableViewController.swift in Sources */,
 				2882D7F71E09C23F00FE474A /* BrodalPriorityQueueWithAnimation.swift in Sources */,
+				2882D8051E0DAEEB00FE474A /* TreeViewController.swift in Sources */,
 				287601B21E0326CC006BFC7F /* BrodalPriorityQueue.swift in Sources */,
 				28F43BF91DE17EC800BD633C /* AppDelegate.swift in Sources */,
 				288C603B1E08433D00659633 /* SpeedView.swift in Sources */,
