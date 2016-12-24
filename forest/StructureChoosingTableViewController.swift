@@ -52,7 +52,11 @@ class StructureChoosingTableViewController : UITableViewController {
                 let element = queue.extractMin()
                 result += element == nil ? "nil " : "\(element!) "
             } else {
-                queue.insert(element: Int(data[index])!)
+                if let element = Int(data[index]) {
+                    queue.insert(element: element)
+                } else {
+                    return "Error format: " + input
+                }
             }
             index += 1
         }

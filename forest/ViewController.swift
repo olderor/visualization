@@ -110,6 +110,11 @@ class ViewController: UIViewController, UIScrollViewDelegate, AnimationManagerDe
     //MARK:- SkewBinomialHeapDelegate
     
     func onElementTouchUpInside(element: Any) {
+        
+        if AnimationManager.isRunning {
+            return
+        }
+        
         let queue = element as? BrodalPriorityQueueAnimation<MyString>
         if queue == nil {
             return

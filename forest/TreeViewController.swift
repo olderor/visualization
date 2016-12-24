@@ -19,10 +19,11 @@ class TreeViewController : UIViewController {
     
     var counter = 0
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
+        mainView = UIView(frame: self.view.frame)
         
         buildTree()
         
