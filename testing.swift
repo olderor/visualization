@@ -483,6 +483,9 @@ class SkewBinomialHeap<Element: Comparable> {
     }
     
     var first: Element? {
+        if isEmpty {
+            return nil
+        }
         return trees[findMinIndex()].value
     }
     
@@ -509,11 +512,11 @@ class SkewBinomialHeap<Element: Comparable> {
     }
     
     var isEmpty: Bool {
-        return elementsCount == 0
+        return size == 0
     }
     
     var size: Int {
-        return elementsCount
+        return trees.count
     }
     
     private func merge(
@@ -571,47 +574,49 @@ class SkewBinomialHeap<Element: Comparable> {
     
     private func mergeHeaps(
         first: Deque<HeapNode<Element>>,
-        second: Deque<HeapNode<Element>>) {
+        second: Deque<HeapNode<Element>>) -> Deque<HeapNode<Element>> {
         var first = first
         var second = second
+        var all = Deque<HeapNode<Element>>()
+        
         var result = Deque<HeapNode<Element>>()
+        
         while !first.isEmpty && !second.isEmpty {
             if first.first!.order < second.first!.order {
-                result.append(first.removeFirst())
+                all.append(first.removeFirst())
             } else {
-                result.append(second.removeFirst())
+                all.append(second.removeFirst())
             }
         }
         
         while !first.isEmpty {
-            result.append(first.removeFirst())
+            all.append(first.removeFirst())
         }
         while !second.isEmpty {
-            result.append(second.removeFirst())
+            all.append(second.removeFirst())
         }
         
-        while !result.isEmpty {
+        while !all.isEmpty {
             var treesWithSameOrder = Deque<HeapNode<Element>>()
-            treesWithSameOrder.append(result.first!)
-            let _ = result.removeFirst()
+            treesWithSameOrder.append(all.removeFirst())
             
-            while !result.isEmpty &&
-                result.first!.order == treesWithSameOrder.first!.order {
-                    treesWithSameOrder.append(result.first!)
-                    let _ = result.removeFirst()
+            while !all.isEmpty &&
+                all.first!.order == treesWithSameOrder.first!.order {
+                    treesWithSameOrder.append(all.removeFirst())
             }
             
             if treesWithSameOrder.count % 2 == 1 {
-                first.append(treesWithSameOrder.first!)
-                let _ = treesWithSameOrder.removeFirst()
+                result.append(treesWithSameOrder.removeFirst())
             }
             
             while !treesWithSameOrder.isEmpty {
                 let firstTree = treesWithSameOrder.removeFirst()
                 let secondTree = treesWithSameOrder.removeFirst()
-                result.prepend(merge(first: firstTree, second: secondTree)!)
+                all.prepend(merge(first: firstTree, second: secondTree)!)
             }
         }
+        
+        return result
     }
     
     func pop() {
@@ -623,18 +628,22 @@ class SkewBinomialHeap<Element: Comparable> {
         let index = findMinIndex()
         let treeToRemove = trees[index]
         trees.remove(at: index)
-        mergeHeaps(first: trees, second: treeToRemove.childrens)
+        trees = mergeHeaps(first: trees, second: treeToRemove.childrens)
         
         while !treeToRemove.singletons.isEmpty {
             insertSingleton(singleton: treeToRemove.singletons.first!)
             let _ = treeToRemove.singletons.removeFirst()
         }
         
+        if trees.count == 0 {
+            
+        }
+        
         elementsCount -= 1
     }
     
     func merge(other: SkewBinomialHeap<Element>) {
-        mergeHeaps(first: trees, second: other.trees)
+        trees = mergeHeaps(first: trees, second: other.trees)
         elementsCount += other.elementsCount
         other.elementsCount = 0
     }
