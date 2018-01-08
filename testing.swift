@@ -1,5 +1,6 @@
 //: Playground - noun: a place where people can play
-
+import Dispatch
+import Foundation
 
 let DequeOverAllocateFactor = 2
 let DequeDownsizeTriggerFactor = 16
@@ -860,9 +861,9 @@ func insert3(queue: BrodalPriorityQueue<Int>, size: Int) {
     }
 }
 
-func insert4(queue: BrodalPriorityQueue<UInt32>, size: Int) {
+func insert4(queue: BrodalPriorityQueue<Int>, size: Int) {
     for _ in 0..<size {
-        let a = arc4random()
+        let a = random()
         queue.insert(element: a)
     }
 }
@@ -870,7 +871,7 @@ func insert4(queue: BrodalPriorityQueue<UInt32>, size: Int) {
 func insert4(queue: Deque<UInt32>, size: Int) -> Deque<UInt32> {
     var queue = queue
     for _ in 0..<size {
-        let a = arc4random()
+        let a = random()
         if a % 2 == 0 {
             queue.append(0)
         } else {
@@ -964,7 +965,7 @@ func test3(size: Int) {
 }
 
 func test4(size: Int) {
-    let queue = BrodalPriorityQueue<UInt32>()
+    let queue = BrodalPriorityQueue<Int>()
     
     var start = DispatchTime.now()
     insert4(queue: queue, size: size)
@@ -989,7 +990,7 @@ func run(input: String) {
     var index = 0
     while index < data.count {
         if data[index] == "q" {
-            print(queue.extractMin())
+            print(queue.extractMin() ?? "nil")
         } else {
             queue.insert(element: Int(data[index])!)
         }
