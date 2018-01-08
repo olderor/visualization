@@ -72,8 +72,6 @@ You can find test version of presentation [here](docs/show.pptx).
 Some other testing data and diagrams can be found [here](docs).
 
 
-Thanks to mattgallagher for the Swift Deque implementation.
-
-Created by olderor.
-
+Thanks to mattgallagher for the Swift Deque implementation.  
+Created by olderor.  
 Copyright © 2016 olderor. All rights reserved.
