@@ -1,12 +1,18 @@
-<h1>visualization</h1>
+# visualization
 Visualize data structures (Skew Binomial Heap and Brodal-Okasaki Priority Queue)
-</br>
-<h3>Click on the cat to watch the video-demo.</h3>
+
+### Click on the cat to watch the video-demo.
 [![ScreenShot](http://i.imgur.com/e5R2P7U.jpg)](https://vk.com/video79766031_456239032)
-</br></br>
-You can test structure using Xcode with playground available [here](forest/MyPlayground.playground).</br>
-All you need is to download 'MyPlayground.playground' to your local pc and open it using Xcode.</br></br>
-Or you can try to use [swift online compiler](https://www.google.com/search?q=swift+online+compiler) (I would recomend [this one](http://www.runswiftlang.com/)) by copy-pasting into it [code from here](testing.swift). (warning, this may not work as expected)</br>
+
+
+
+You can test structure using Xcode with playground available [here](forest/MyPlayground.playground).
+
+All you need is to download 'MyPlayground.playground' to your local pc and open it using Xcode.
+
+
+Or you can try to use [swift online compiler](https://www.google.com/search?q=swift+online+compiler) (I would recomend [this one](http://www.runswiftlang.com/)) by copy-pasting into it [code from here](testing.swift). (warning, this may not work as expected)
+
 ```swift
 // type your code at the end of the file containing source code.
 // create new queue of integer type.
@@ -66,6 +72,8 @@ You can find test version of presentation [here](docs/show.pptx).
 Some other testing data and diagrams can be found [here](docs).
 
 
-Thanks to mattgallagher for the Swift Deque implementation.</br>
-Created by olderor.</br>
+Thanks to mattgallagher for the Swift Deque implementation.
+
+Created by olderor.
+
 Copyright © 2016 olderor. All rights reserved.
